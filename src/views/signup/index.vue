@@ -1,29 +1,38 @@
 <template>
   <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on" label-position="left">
+    <el-form ref="signupForm" :model="signupForm" :rules="signupRules" class="login-form" autocomplete="on" label-position="left">
 
       <div class="title-container mb-4">
-        <h3 class="title">Đăng nhập</h3>
-        <div class="description">Đăng nhập hoặc đăng ký để sử dụng tất cả các công cụ hỗ trợ đầu tư hiệu quả</div>
+        <h3 class="title">Đăng ký</h3>
+        <div class="description">Vui lòng nhập đầy đủ thông tin cần thiết để tạo tài khoản mới</div>
       </div>
 
-      <el-form-item prop="username">
+      <el-form-item prop="email">
         <el-input
-          ref="username"
-          v-model="loginForm.username"
-          placeholder="Email hoặc số điện thoại"
-          name="username"
+          ref="email"
+          v-model="signupForm.email"
+          placeholder="Địa chỉ email"
+          name="email"
           type="text"
           tabindex="1"
           autocomplete="on"
         />
       </el-form-item>
-
+      <el-form-item prop="phone">
+        <el-input
+          ref="phone"
+          v-model="signupForm.phone"
+          placeholder="Số điện thoại"
+          name="phone"
+          type="text"
+          tabindex="1"
+          autocomplete="on"
+        />
+      </el-form-item>
       <el-form-item prop="password">
         <el-input
-          :key="passwordType"
           ref="password"
-          v-model="loginForm.password"
+          v-model="signupForm.password"
           :type="passwordType"
           placeholder="Mật khẩu"
           name="password"
@@ -31,15 +40,30 @@
           autocomplete="on"
           @keyup.enter.native="handleLogin"
         />
-        <span class="show-pwd" @click="showPwd">
+        <span class="show-pwd" @click="showPassword">
           <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
         </span>
       </el-form-item>
+      <el-form-item prop="checkPassword">
+        <el-input
+          ref="checkPassword"
+          v-model="signupForm.checkPassword"
+          :type="passwordType2"
+          placeholder="Xác nhận mật khẩu"
+          name="checkPassword"
+          tabindex="2"
+          autocomplete="on"
+          @keyup.enter.native="handleLogin"
+        />
+        <span class="show-pwd" @click="showConfirmPassword">
+          <svg-icon :icon-class="passwordType2 === 'password' ? 'eye' : 'eye-open'" />
+        </span>
+      </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Đăng nhập</el-button>
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Đăng ký</el-button>
 
       <div class="forgot-pass mb-1">Quên mật khẩu?</div>
-      <div><span class="description">Chưa có tài khoản?</span> <router-link to="/signup" class="signup">Đăng ký tại đây</router-link></div>
+      <div><router-link to="/login" class="signup">Đăng nhập tại đây</router-link></div>
     </el-form>
   </div>
 </template>
@@ -48,16 +72,43 @@
 export default {
   name: 'Login',
   data() {
+    const validatePassword = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('Vui lòng nhập mật khẩu'))
+      } else {
+        if (this.signupForm.checkPassword !== '') {
+          this.$refs.signupForm.validateField('checkPassword')
+        }
+        callback()
+      }
+    }
+    const validateConfirmPassword = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('Vui lòng nhập xác nhận mật khẩu'))
+      } else if (value !== this.signupForm.password) {
+        callback(new Error('Xác nhận mật khẩu không khớp'))
+      } else {
+        callback()
+      }
+    }
     return {
-      loginForm: {
-        username: 'admin',
-        password: '111111'
+      signupForm: {
+        email: 'admin',
+        phone: '',
+        password: '',
+        checkPassword: ''
       },
-      loginRules: {
-        username: [{ required: true, trigger: 'blur', message: 'Vui lòng nhập email hoặc số điện thoại' }],
-        password: [{ required: true, trigger: 'blur', message: 'Vui lòng nhập mật khẩu' }]
+      signupRules: {
+        email: [
+          { required: true, trigger: 'blur', message: 'Vui lòng nhập địa chỉ email' },
+          { type: 'email', message: 'Vui lòng nhập địa chỉ email đúng định dạng', trigger: ['blur', 'change'] }
+        ],
+        phone: [{ required: true, trigger: 'blur', message: 'Vui lòng nhập số điện thoại' }],
+        password: [{ trigger: 'blur', validator: validatePassword }],
+        checkPassword: [{ trigger: 'blur', validator: validateConfirmPassword }]
       },
       passwordType: 'password',
+      passwordType2: 'password',
       loading: false,
       redirect: undefined,
       otherQuery: {}
@@ -75,15 +126,8 @@ export default {
       immediate: true
     }
   },
-  mounted() {
-    if (this.loginForm.username === '') {
-      this.$refs.username.focus()
-    } else if (this.loginForm.password === '') {
-      this.$refs.password.focus()
-    }
-  },
   methods: {
-    showPwd() {
+    showPassword() {
       if (this.passwordType === 'password') {
         this.passwordType = ''
       } else {
@@ -93,18 +137,20 @@ export default {
         this.$refs.password.focus()
       })
     },
+    showConfirmPassword() {
+      if (this.passwordType2 === 'password') {
+        this.passwordType2 = ''
+      } else {
+        this.passwordType2 = 'password'
+      }
+      this.$nextTick(() => {
+        this.$refs.checkPassword.focus()
+      })
+    },
     handleLogin() {
-      this.$refs.loginForm.validate(valid => {
+      this.$refs.signupForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('user/login', this.loginForm)
-            .then(() => {
-              this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
-              this.loading = false
-            })
-            .catch(() => {
-              this.loading = false
-            })
         } else {
           console.log('error submit!!')
           return false

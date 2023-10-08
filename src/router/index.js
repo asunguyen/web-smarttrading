@@ -56,6 +56,11 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/signup',
+    component: () => import('@/views/signup/index'),
+    hidden: true
+  },
+  {
     path: '/auth-redirect',
     component: () => import('@/views/login/auth-redirect'),
     hidden: true
@@ -86,6 +91,7 @@ export const constantRoutes = [
   {
     path: '/documentation',
     component: Layout,
+    hidden: true,
     children: [
       {
         path: 'index',
@@ -98,6 +104,7 @@ export const constantRoutes = [
   {
     path: '/guide',
     component: Layout,
+    hidden: true,
     redirect: '/guide/index',
     children: [
       {
@@ -132,6 +139,7 @@ export const asyncRoutes = [
   {
     path: '/permission',
     component: Layout,
+    hidden: true,
     redirect: '/permission/page',
     alwaysShow: true, // will always show the root menu
     name: 'Permission',
@@ -174,6 +182,7 @@ export const asyncRoutes = [
   {
     path: '/icon',
     component: Layout,
+    hidden: true,
     children: [
       {
         path: 'index',
@@ -193,6 +202,7 @@ export const asyncRoutes = [
   {
     path: '/example',
     component: Layout,
+    hidden: true,
     redirect: '/example/list',
     name: 'Example',
     meta: {
@@ -225,6 +235,7 @@ export const asyncRoutes = [
   {
     path: '/tab',
     component: Layout,
+    hidden: true,
     children: [
       {
         path: 'index',
@@ -238,6 +249,7 @@ export const asyncRoutes = [
   {
     path: '/error',
     component: Layout,
+    hidden: true,
     redirect: 'noRedirect',
     name: 'ErrorPages',
     meta: {
@@ -263,6 +275,7 @@ export const asyncRoutes = [
   {
     path: '/error-log',
     component: Layout,
+    hidden: true,
     children: [
       {
         path: 'log',
@@ -276,6 +289,7 @@ export const asyncRoutes = [
   {
     path: '/excel',
     component: Layout,
+    hidden: true,
     redirect: '/excel/export-excel',
     name: 'Excel',
     meta: {
@@ -313,6 +327,7 @@ export const asyncRoutes = [
   {
     path: '/zip',
     component: Layout,
+    hidden: true,
     redirect: '/zip/download',
     alwaysShow: true,
     name: 'Zip',
@@ -330,6 +345,7 @@ export const asyncRoutes = [
   {
     path: '/pdf',
     component: Layout,
+    hidden: true,
     redirect: '/pdf/index',
     children: [
       {
@@ -349,6 +365,7 @@ export const asyncRoutes = [
   {
     path: '/theme',
     component: Layout,
+    hidden: true,
     children: [
       {
         path: 'index',
@@ -362,6 +379,7 @@ export const asyncRoutes = [
   {
     path: '/clipboard',
     component: Layout,
+    hidden: true,
     children: [
       {
         path: 'index',
@@ -375,6 +393,7 @@ export const asyncRoutes = [
   {
     path: 'external-link',
     component: Layout,
+    hidden: true,
     children: [
       {
         path: 'https://github.com/PanJiaChen/vue-element-admin',
