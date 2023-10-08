@@ -11,7 +11,7 @@
         <el-input
           ref="username"
           v-model="loginForm.username"
-          placeholder="Email hoặc số điện thoại"
+          placeholder="Tên người dùng"
           name="username"
           type="text"
           tabindex="1"
@@ -50,11 +50,11 @@ export default {
   data() {
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111'
+        username: '',
+        password: ''
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', message: 'Vui lòng nhập email hoặc số điện thoại' }],
+        username: [{ required: true, trigger: 'blur', message: 'Vui lòng nhập tên người dùng' }],
         password: [{ required: true, trigger: 'blur', message: 'Vui lòng nhập mật khẩu' }]
       },
       passwordType: 'password',
@@ -152,7 +152,7 @@ $cursor: #fff;
       padding: 12px 5px 12px 15px;
       color: black;
       height: 47px;
-      caret-color: $cursor;
+      /* caret-color: black; */
 
       &:-webkit-autofill {
         box-shadow: 0 0 0px 1000px $bg inset !important;

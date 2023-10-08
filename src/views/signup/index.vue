@@ -7,6 +7,17 @@
         <div class="description">Vui lòng nhập đầy đủ thông tin cần thiết để tạo tài khoản mới</div>
       </div>
 
+      <el-form-item prop="username">
+        <el-input
+          ref="username"
+          v-model="signupForm.username"
+          placeholder="Tên người dùng"
+          name="username"
+          type="text"
+          tabindex="1"
+          autocomplete="on"
+        />
+      </el-form-item>
       <el-form-item prop="email">
         <el-input
           ref="email"
@@ -38,7 +49,7 @@
           name="password"
           tabindex="2"
           autocomplete="on"
-          @keyup.enter.native="handleLogin"
+          @keyup.enter.native="handleSignup"
         />
         <span class="show-pwd" @click="showPassword">
           <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
@@ -53,14 +64,14 @@
           name="checkPassword"
           tabindex="2"
           autocomplete="on"
-          @keyup.enter.native="handleLogin"
+          @keyup.enter.native="handleSignup"
         />
         <span class="show-pwd" @click="showConfirmPassword">
           <svg-icon :icon-class="passwordType2 === 'password' ? 'eye' : 'eye-open'" />
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Đăng ký</el-button>
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleSignup">Đăng ký</el-button>
 
       <div class="forgot-pass mb-1">Quên mật khẩu?</div>
       <div><router-link to="/login" class="signup">Đăng nhập tại đây</router-link></div>
@@ -69,6 +80,8 @@
 </template>
 
 <script>
+import { signup } from '@/api/user'
+
 export default {
   name: 'Login',
   data() {
@@ -93,12 +106,14 @@ export default {
     }
     return {
       signupForm: {
-        email: 'admin',
+        username: '',
+        email: '',
         phone: '',
         password: '',
         checkPassword: ''
       },
       signupRules: {
+        username: [{ required: true, trigger: 'blur', message: 'Vui lòng nhập tên người dùng' }],
         email: [
           { required: true, trigger: 'blur', message: 'Vui lòng nhập địa chỉ email' },
           { type: 'email', message: 'Vui lòng nhập địa chỉ email đúng định dạng', trigger: ['blur', 'change'] }
@@ -147,10 +162,12 @@ export default {
         this.$refs.checkPassword.focus()
       })
     },
-    handleLogin() {
-      this.$refs.signupForm.validate(valid => {
+    handleSignup() {
+      this.$refs.signupForm.validate(async valid => {
         if (valid) {
           this.loading = true
+          const response = await signup()
+          console.log(response)
         } else {
           console.log('error submit!!')
           return false
@@ -198,7 +215,7 @@ $cursor: #fff;
       padding: 12px 5px 12px 15px;
       color: black;
       height: 47px;
-      caret-color: $cursor;
+      /* caret-color: $cursor; */
 
       &:-webkit-autofill {
         box-shadow: 0 0 0px 1000px $bg inset !important;
