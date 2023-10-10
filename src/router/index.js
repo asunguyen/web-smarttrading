@@ -102,6 +102,72 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/products',
+    component: Layout,
+    redirect: 'noRedirect',
+    name: 'Sản phẩm',
+    meta: {
+      title: 'Sản phẩm',
+      icon: 'el-icon-goods'
+    },
+    children: [
+      {
+        path: 'robot-integrate-vps',
+        component: () => import('@/views/products/robot-integrate-vps/index'),
+        name: 'Robot tích hợp VPS',
+        meta: { title: 'Robot tích hợp VPS', icon: 'el-icon-cpu', affix: true }
+      },
+      {
+        path: 'copytrade',
+        component: () => import('@/views/products/robot-integrate-vps/index'),
+        name: 'CopyTrade',
+        meta: { title: 'CopyTrade', icon: 'el-icon-copy-document', affix: true }
+      },
+      {
+        path: 'autobot-server',
+        component: () => import('@/views/products/autobot-server/index'),
+        name: 'AutoBot Server',
+        meta: { title: 'AutoBot Server', icon: 'el-icon-s-operation', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/services',
+    component: Layout,
+    redirect: 'noRedirect',
+    name: 'Dịch vụ',
+    meta: {
+      title: 'Dịch vụ',
+      icon: 'example'
+    },
+    children: [
+      {
+        path: 'training',
+        component: () => import('@/views/services/training/index'),
+        name: 'Đào tạo chứng khoán',
+        meta: { title: 'Đào tạo chứng khoán', icon: 'el-icon-notebook-2', affix: true }
+      },
+      {
+        path: 'advice',
+        component: () => import('@/views/services/training/index'),
+        name: 'Tư vấn đầu tư',
+        meta: { title: 'Tư vấn đầu tư', icon: 'money', affix: true }
+      },
+      {
+        path: 'prices',
+        component: () => import('@/views/services/prices/index'),
+        name: 'Bảng giá',
+        meta: { title: 'Bảng giá', icon: 'documentation', affix: true }
+      },
+      {
+        path: 'contact',
+        component: () => import('@/views/services/contact/index'),
+        name: 'Liên hệ',
+        meta: { title: 'Liên hệ', icon: 'el-icon-phone', affix: true }
+      }
+    ]
+  },
+  {
     path: '/guide',
     component: Layout,
     hidden: true,
@@ -139,7 +205,7 @@ export const asyncRoutes = [
   {
     path: '/permission',
     component: Layout,
-    hidden: true,
+    // hidden: true,
     redirect: '/permission/page',
     alwaysShow: true, // will always show the root menu
     name: 'Permission',
