@@ -89,6 +89,19 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/market',
+    component: Layout,
+    // redirect: '/dashboard',
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/market/index'),
+        name: 'Thị trường',
+        meta: { title: 'Thị trường', icon: 'international', affix: true }
+      }
+    ]
+  },
+  {
     path: '/documentation',
     component: Layout,
     hidden: true,

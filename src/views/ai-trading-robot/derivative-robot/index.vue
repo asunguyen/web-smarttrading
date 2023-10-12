@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="dashboard-container">
     <div class="trading-view-container">
       <VueTradingView :options="tradingViewOptions" />
     </div>
@@ -42,6 +42,6 @@ export default {
 
 <style lang="scss" scoped>
 .trading-view-container {
-  height: calc(100vh - 90px) !important;
+  height: calc(100vh - 50px) !important;
 }
 </style>
