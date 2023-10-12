@@ -102,6 +102,30 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/ai-trading-robot',
+    component: Layout,
+    redirect: 'noRedirect',
+    name: 'AI Trading Robot',
+    meta: {
+      title: 'AI Trading Robot',
+      icon: 'el-icon-s-data'
+    },
+    children: [
+      {
+        path: 'derivative',
+        component: () => import('@/views/ai-trading-robot/derivative-robot/index'),
+        name: 'Robot phái sinh',
+        meta: { title: 'Robot phái sinh', icon: 'el-icon-cpu', affix: true }
+      },
+      {
+        path: 'base',
+        component: () => import('@/views/ai-trading-robot/base-robot/index'),
+        name: 'Robot cơ sở',
+        meta: { title: 'Robot cơ sở', icon: 'bug', affix: true }
+      }
+    ]
+  },
+  {
     path: '/products',
     component: Layout,
     redirect: 'noRedirect',
