@@ -218,6 +218,49 @@ export const constantRoutes = [
       }
     ]
   },
+  // admin
+  {
+    path: '/admin',
+    component: Layout,
+    redirect: 'noRedirect',
+    name: 'Quản trị',
+    meta: {
+      title: 'Quản trị',
+      icon: 'example'
+    },
+    children: [
+      {
+        path: 'home',
+        component: () => import('@/views/admin/home'),
+        name: 'Tổng quan',
+        meta: { title: 'Tổng quan', icon: 'el-icon-notebook-2', affix: true }
+      },
+      {
+        path: 'quanly-user',
+        component: () => import('@/views/admin/user'),
+        name: 'Quản lý user',
+        meta: { title: 'Quản lý user', icon: 'el-icon-notebook-2', affix: true }
+      },
+      {
+        path: 'quanly-server',
+        component: () => import('@/views/admin/server'),
+        name: 'Quản lý máy chủ',
+        meta: { title: 'Quản lý máy chủ', icon: 'el-icon-notebook-2', affix: true }
+      },
+      {
+        path: 'quanly-uythac',
+        component: () => import('@/views/admin/tk-uy-thac'),
+        name: 'Quản lý tài khoản ủy thác',
+        meta: { title: 'Quản lý tài khoản ủy thác', icon: 'el-icon-notebook-2', affix: true }
+      },
+      {
+        path: 'quanly-bot',
+        component: () => import('@/views/admin/thong-so-bot'),
+        name: 'Quản lý Bot',
+        meta: { title: 'Quản lý Bot', icon: 'el-icon-notebook-2', affix: true }
+      }
+    ]
+  },
   {
     path: '/profile',
     component: Layout,
