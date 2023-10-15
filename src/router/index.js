@@ -258,6 +258,18 @@ export const constantRoutes = [
         component: () => import('@/views/admin/thong-so-bot'),
         name: 'Quản lý Bot',
         meta: { title: 'Quản lý Bot', icon: 'el-icon-notebook-2', affix: true }
+      },
+      {
+        path: 'quanly-system',
+        component: () => import('@/views/admin/system'),
+        name: 'Quản lý hệ thống',
+        meta: { title: 'Quản lý hệ thống', icon: 'el-icon-notebook-2', affix: true }
+      },
+      {
+        path: 'quanly-licenses',
+        component: () => import('@/views/admin/licenses-key'),
+        name: 'Quản lý licenses',
+        meta: { title: 'Quản lý licenses', icon: 'el-icon-notebook-2', affix: true }
       }
     ]
   },
