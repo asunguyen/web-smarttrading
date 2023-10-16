@@ -1,22 +1,20 @@
 <template>
   <div class="dashboard-container">
     <!-- <component :is="currentRole" /> -->
-    <div class="trading-view-container">
-      <VueTradingView :options="tradingViewOptions" />
-    </div>
+    <TVChartContainer />
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import VueTradingView from 'vue-trading-view'
+import TVChartContainer from '@/components/TVChartContainer/index.vue'
 // import adminDashboard from './admin'
 // import editorDashboard from './editor'
 
 export default {
   name: 'Dashboard',
   components: {
-    VueTradingView
+    TVChartContainer
   },
   // components: { adminDashboard, editorDashboard },
   data() {
@@ -56,9 +54,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.trading-view-container {
-  height: calc(100vh - 50px) !important;
-}
-</style>

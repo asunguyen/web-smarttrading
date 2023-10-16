@@ -205,6 +205,34 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/ext-chrome-guide',
+    component: Layout,
+    hidden: true,
+    redirect: '',
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/guide-extension-chrome/index'),
+        name: 'Guide',
+        meta: { title: 'SmartTrading - Tín hiệu phái sinh', icon: 'guide', noCache: true }
+      }
+    ]
+  },
+  {
+    path: '/copytrade-ext-guide',
+    component: Layout,
+    hidden: true,
+    redirect: '',
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/copytrade-ext-guide/index'),
+        name: 'Guide',
+        meta: { title: 'Công cụ CopyTrade', icon: 'guide', noCache: true }
+      }
+    ]
+  },
+  {
     path: '/guide',
     component: Layout,
     hidden: true,

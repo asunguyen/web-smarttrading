@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { getSecuritiesDetail } from '@/api/stock'
+import { getListSecurities, getSecuritiesDetail } from '@/api/stock'
 
 export default {
   created() {
@@ -11,6 +11,7 @@ export default {
   },
   methods: {
     async getSecuritiesDetail() {
+      await getListSecurities()
       await getSecuritiesDetail()
     }
   }
