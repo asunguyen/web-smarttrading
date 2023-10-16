@@ -8,7 +8,9 @@
       </div>
       <div class="mb-2">Click vào hình sau để xem chi tiết về tính năng và cài đặt</div>
       <div>
-        <img src="@/assets/images/vpsext.png" style="width: 100%">
+        <router-link to="/ext-chrome-guide">
+          <img src="@/assets/images/vpsext.png" style="width: 100%">
+        </router-link>
       </div>
     </el-card>
     <el-card class="mb-4">
@@ -20,7 +22,9 @@
       </div>
       <div class="mb-2">Click vào hình sau để xem chi tiết về tính năng và cài đặt</div>
       <div>
-        <img src="@/assets/images/copytrade.png" style="width: 100%">
+        <router-link to="/copytrade-ext-guide">
+          <img src="@/assets/images/copytrade.png" style="width: 100%">
+        </router-link>
       </div>
     </el-card>
     <el-card>
