@@ -205,6 +205,54 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/admin',
+    component: Layout,
+    redirect: 'noRedirect',
+    name: 'Quản trị',
+    meta: {
+      title: 'Quản trị',
+      icon: 'component'
+    },
+    children: [
+      {
+        path: 'customer',
+        component: () => import('@/views/customer/index'),
+        name: 'Khách hàng',
+        meta: { title: 'Khách hàng', icon: 'peoples', affix: true }
+      },
+      {
+        path: 'employee',
+        component: () => import('@/views/employee/index'),
+        name: 'Nhân viên',
+        meta: { title: 'Nhân viên', icon: 'user', affix: true }
+      },
+      {
+        path: 'license',
+        component: () => import('@/views/license/index'),
+        name: 'License',
+        meta: { title: 'License', icon: 'skill', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/profile',
+    component: Layout,
+    redirect: 'noRedirect',
+    name: 'Thông tin',
+    meta: {
+      title: 'Thông tin',
+      icon: 'component'
+    },
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/customer/index'),
+        name: 'Thông tin',
+        meta: { title: 'Thông tin', icon: 'user', affix: true }
+      }
+    ]
+  },
+  {
     path: '/ext-chrome-guide',
     component: Layout,
     hidden: true,
@@ -245,21 +293,21 @@ export const constantRoutes = [
         meta: { title: 'Guide', icon: 'guide', noCache: true }
       }
     ]
-  },
-  {
-    path: '/profile',
-    component: Layout,
-    redirect: '/profile/index',
-    hidden: true,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/profile/index'),
-        name: 'Profile',
-        meta: { title: 'Profile', icon: 'user', noCache: true }
-      }
-    ]
   }
+  // {
+  //   path: '/profile',
+  //   component: Layout,
+  //   redirect: '/profile/index',
+  //   hidden: true,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/profile/index'),
+  //       name: 'Profile',
+  //       meta: { title: 'Profile', icon: 'user', noCache: true }
+  //     }
+  //   ]
+  // }
 ]
 
 /**

@@ -29,3 +29,27 @@ export function logout() {
     method: 'post'
   })
 }
+
+export function getListCustomer(query) {
+  return request({
+    url: '/user',
+    method: 'get',
+    params: query
+  })
+}
+
+export function getListEmployee(query) {
+  return request({
+    url: '/user/get-employ',
+    method: 'get',
+    params: query
+  })
+}
+
+export function getListLicense(query) {
+  return request({
+    url: '/license',
+    method: 'get',
+    params: query
+  })
+}
