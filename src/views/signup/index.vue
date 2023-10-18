@@ -165,9 +165,23 @@ export default {
     handleSignup() {
       this.$refs.signupForm.validate(async valid => {
         if (valid) {
-          this.loading = true
-          const response = await signup()
-          console.log(response)
+          try {
+            this.loading = true
+            // eslint-disable-next-line no-unused-vars
+            const { checkPassword, ...data } = this.signupForm
+            const response = await signup(data)
+            if (response.code === 200) {
+              this.$message({
+                message: 'Tạo tài khoản thành công. Bạn có thể đăng nhập bằng tài khoản vừa tạo.',
+                type: 'success'
+              })
+              this.$router.push('/login')
+            }
+          } catch (error) {
+            console.log(error)
+          } finally {
+            this.loading = false
+          }
         } else {
           console.log('error submit!!')
           return false
