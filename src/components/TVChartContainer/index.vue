@@ -25,7 +25,7 @@ export default {
       type: String
     },
     datafeedUrl: {
-      default: 'http://localhost:5001/v1/chart', // 'https://demo_feed.tradingview.com',//
+      default: 'http://api.smtchart.vn/v1/chart', // 'https://demo_feed.tradingview.com',//
       type: String
     },
     libraryPath: {
@@ -41,7 +41,7 @@ export default {
       type: String
     },
     clientId: {
-      default: 'tradingview.com',
+      default: 'smtchart.vn',
       type: String
     },
     userId: {
