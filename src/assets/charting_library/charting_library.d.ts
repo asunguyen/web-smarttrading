@@ -17656,7 +17656,7 @@ export type ChartingLibraryFeatureset =
 "source_selection_markers" | 
 /** Allows you to jump to a particular bar using 'Go to' dialog @default true */
 "go_to_date" | 
-/** Allows you to hide 'charts by TradingView' text on small-screen devices @default true */
+/** Allows you to hide 'charts smtchart.vn' text on small-screen devices @default true */
 "adaptive_logo" | 
 /** Shows DOM panel when a user opens the Chart for the first time @default false */
 "show_dom_first_time" | 
