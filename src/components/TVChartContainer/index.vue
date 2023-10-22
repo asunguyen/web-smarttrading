@@ -17,7 +17,7 @@ export default {
   name: 'TVChartContainer',
   props: {
     symbol: {
-      default: 'AAPL',
+      default: 'SSI',
       type: String
     },
     interval: {
@@ -25,7 +25,7 @@ export default {
       type: String
     },
     datafeedUrl: {
-      default: 'https://demo_feed.tradingview.com',
+      default: 'http://localhost:5001/v1/chart', // 'https://demo_feed.tradingview.com',//
       type: String
     },
     libraryPath: {

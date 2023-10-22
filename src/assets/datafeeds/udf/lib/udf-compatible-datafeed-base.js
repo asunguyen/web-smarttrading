@@ -253,6 +253,7 @@ export class UDFCompatibleDatafeedBase {
         });
     }
     _send(urlPath, params) {
+        console.log(1);
         return this._requester.sendRequest(this._datafeedURL, urlPath, params);
     }
     _setupWithConfiguration(configurationData) {
