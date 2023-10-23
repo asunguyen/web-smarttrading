@@ -1,10 +1,9 @@
 import { getErrorMessage, logMessage, } from './helpers';
 export class DataPulseProvider {
-    constructor(historyProvider, updateFrequency=10*1000) {
+    constructor(historyProvider, updateFrequency) {
         this._subscribers = {};
         this._requestsPending = 0;
         this._historyProvider = historyProvider;
-        console.log("historyProvider:: ", historyProvider);
         setInterval(this._updateData.bind(this), updateFrequency);
     }
     subscribeBars(symbolInfo, resolution, newDataCallback, listenerGuid) {
@@ -45,8 +44,7 @@ export class DataPulseProvider {
     }
     _updateDataForSubscriber(listenerGuid) {
         const subscriptionRecord = this._subscribers[listenerGuid];
-        const rangeEndTime = parseInt((Date.now()).toString());
-        console.log("rangeEndTime:: ", rangeEndTime);
+        const rangeEndTime = parseInt((Date.now() / 1000).toString());
         // BEWARE: please note we really need 2 bars, not the only last one
         // see the explanation below. `10` is the `large enough` value to work around holidays
         const rangeStartTime = rangeEndTime - periodLengthSeconds(subscriptionRecord.resolution, 10);
