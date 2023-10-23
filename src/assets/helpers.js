@@ -1,0 +1,34 @@
+// Makes requests to CryptoCompare API
+import request from '@/utils/request'
+export async function makeApiRequest(path) {
+	try {
+		const response = await fetch(`https://services.entrade.com.vn/${path}`);
+		return response.json();
+	} catch (error) {
+		throw new Error(`CryptoCompare request error: ${error.status}`);
+	}
+}
+
+// Generates a symbol ID from a pair of the coins
+export async function GeSymbolType(path, type) {
+	try {
+		const response = await request({url: `http://localhost:5001/v1/chart/${path}?symbolType=${type}`, method: 'get'});//fetch(`http://api.smtchart/v1/chart/${path}?symbolType=${type}`);
+		return response ? response.data : [];
+	} catch (error) {
+		throw new Error(`CryptoCompare request error: ${error.status}`);
+	}
+}
+
+// Returns all parts of the symbol
+export function parseFullSymbol(fullSymbol) {
+	const match = fullSymbol.match(/^(\w+):(\w+)\/(\w+)$/);
+	if (!match) {
+		return null;
+	}
+
+	return {
+		exchange: match[1],
+		fromSymbol: match[2],
+		toSymbol: match[3],
+	};
+}
