@@ -4,7 +4,7 @@
 
 <script>
 import { widget } from '../../assets/charting_library'
-//import { UDFCompatibleDatafeed } from '../../assets/datafeeds/udf/lib/udf-compatible-datafeed'
+// import { UDFCompatibleDatafeed } from '../../assets/datafeeds/udf/lib/udf-compatible-datafeed'
 import Datafeed from '@/assets/datafeed.js'
 // function getLanguageFromURL() {
 //   const regex = new RegExp('[\\?&]lang=([^&#]*)')
@@ -2389,7 +2389,7 @@ export default {
               indicator.inputs,
               { visible }
             )
-            console.log("newStudyID:: ", newStudyID);
+            console.log('newStudyID:: ', newStudyID)
             // convert saved styles to overrides format ?
           })
         )
