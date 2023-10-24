@@ -22,6 +22,7 @@
       :page-sizes="[10, 20, 30, 50]"
       layout="total, sizes, prev, pager, next, jumper"
       background
+      hide-on-single-page
       @size-change="handleSizeChange"
       @current-change="getListCustomer"
     />
