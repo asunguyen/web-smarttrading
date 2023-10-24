@@ -2852,30 +2852,6 @@ export interface ChartPropertiesOverrides extends StudyOverrides {
 	 * @default 50
 	 */
 	"mainSeriesProperties.baselineStyle.baseLevelPercentage": number;
-	/**
-	 * Main series Line With Markers style Line Color.
-	 *
-	 * @default '#2962FF'
-	 */
-	"mainSeriesProperties.lineWithMarkersStyle.color": string;
-	/**
-	 * Main series Line With Markers style Line style.
-	 *
-	 * @default LineStyle.Solid
-	 */
-	"mainSeriesProperties.lineWithMarkersStyle.linestyle": OverrideLineStyle;
-	/**
-	 * Main series Line With Markers style Line width.
-	 *
-	 * @default 2
-	 */
-	"mainSeriesProperties.lineWithMarkersStyle.linewidth": number;
-	/**
-	 * Main series Line With Markers style Price Source.
-	 *
-	 * @default 'close'
-	 */
-	"mainSeriesProperties.lineWithMarkersStyle.priceSource": string;
 }
 /**
  * A chart template.
@@ -3091,7 +3067,7 @@ export interface ChartingLibraryWidgetOptions {
 	 */
 	studies_access?: AccessList;
 	/**
-	 * Maximum amount of studies allowed at one time within the layout. Minimum value is 2.
+	 * Maximum amount of studies on the chart of a multichart layout. Minimum value is 2.
 	 *
 	 * ```javascript
 	 * study_count_limit: 5,
@@ -3210,7 +3186,7 @@ export interface ChartingLibraryWidgetOptions {
 	/**
 	 * Use this option to customize the style or inputs of the indicators.
 	 * You can also customize the styles and inputs of the `Compare` series using this argument.
-	 * Refer to [Indicator Overrides](https://www.tradingview.com/charting-library-docs/latest/customization/overrides/Studies-Overrides.md) for more information.
+	 * See more details [here](https://www.tradingview.com/charting-library-docs/latest/customization/overrides/Studies-Overrides)
 	 *
 	 * ```javascript
 	 * studies_overrides: {
@@ -3377,8 +3353,7 @@ export interface ChartingLibraryWidgetOptions {
 	 */
 	custom_font_family?: string;
 	/**
-	 * Items that should be marked as favorite by default. This option requires that the usage of localstorage is disabled (see [featuresets](https://www.tradingview.com/charting-library-docs/latest/customization/Featuresets) to know more).
-	 * The `favorites` property is supposed to be an object. The following properties are supported:
+	 * Items that should be marked as favorite by default. This option requires that the usage of localstorage is disabled (see [featuresets](https://www.tradingview.com/charting-library-docs/latest/customization/Featuresets) to know more). The `favorites` property is supposed to be an object. The following properties are supported:
 	 *
 	 * ```javascript
 	 * favorites: {
@@ -3388,9 +3363,6 @@ export interface ChartingLibraryWidgetOptions {
 	 *     chartTypes: ['Area', 'Candles'],
 	 * },
 	 * ```
-	 *
-	 * If you want to allow users to add/remove items from favorites, you should enable/disable the [`items_favoriting`](https://www.tradingview.com/charting-library-docs/latest/customization/Featuresets.md#items_favoriting) featureset.
-	 *
 	 */
 	favorites?: Favorites<ChartTypeFavorites>;
 	/**
@@ -3486,7 +3458,7 @@ export interface ChartingLibraryWidgetOptions {
 	 */
 	header_widget_buttons_mode?: HeaderWidgetButtonsMode;
 	/**
-	 * You could use this object to override context menu. You can also change the menu on the fly using the {@link IChartingLibraryWidget.onContextMenu} method.
+	 * You could use this object to override context menu in some way.
 	 */
 	context_menu?: ContextMenuOptions;
 	/**
@@ -3510,7 +3482,7 @@ export interface ChartingLibraryWidgetOptions {
 	 * For example, if you want to rename "Trend Line" shape to "Line Shape", then you can do something like this:
 	 *
 	 * ```javascript
-	 * custom_translate_function: (key, options, isTranslated) => {
+	 * custom_translate_function: (key, options) => {
 	 *     if (key === 'Trend Line') {
 	 *         // patch the title of trend line
 	 *         return 'Line Shape';
@@ -3677,27 +3649,8 @@ export interface ContextMenuOptions {
 	 *
 	 * You can filter out, add yours and re-order items.
 	 *
-	 * The library will call your function each time it wants to display a context menu and will provide a list of items to display.
+	 * The library will call your function each time it wants to display a context menu and with provide a list of items to display.
 	 * This function should return an array of items to display.
-	 *
-	 * Example:
-	 *
-	 * ```js
-	 * context_menu: {
-	 *   items_processor: function(items, actionsFactory, params) {
-	 *      console.log(`Menu name is: ${params.menuName}`);
-	 *      const newItem = actionsFactory.createAction({
-	 *         actionId: 'hello-world',
-	 *         label: 'Say Hello',
-	 *         onExecute: function() {
-	 *            alert('Hello World');
-	 *         },
-	 *      });
-	 *      items.unshift(newItem);
-	 *      return Promise.resolve(items);
-	 *   },
-	 * },
-	 * ```
 	 */
 	items_processor?: ContextMenuItemsProcessor;
 	/**
@@ -3792,16 +3745,6 @@ export interface CreateContextMenuParams {
 	} | {
 		/** groupOfShapes type */
 		type: "groupOfShapes";
-		/** id */
-		id: string | null;
-	} | {
-		/** Trading position */
-		type: "position";
-		/** id */
-		id: string | null;
-	} | {
-		/** Trading order */
-		type: "order";
 		/** id */
 		id: string | null;
 	};
@@ -4235,19 +4178,6 @@ export interface CustomTimezoneInfo {
 	 * Display name for the timezone
 	 */
 	title: string;
-}
-/**
- * Additional translation options
- */
-export interface CustomTranslateOptions {
-	/** Plural/s of the phrase */
-	plural?: string | string[];
-	/** Count of the phrase */
-	count?: number;
-	/** Context of the phrase */
-	context?: string;
-	/** Replacements object */
-	replace?: Record<string, string>;
 }
 /**
  * Override properties for the Cypherpattern drawing tool.
@@ -7078,11 +7008,21 @@ export interface IBrokerConnectionAdapterFactory {
 	createWatchedValue<T>(value?: T): IWatchedValue<T>;
 	/**
 	 * Creates a price formatter.
-	 * @param priceScale - Defines the number of decimal places. It is `10^number-of-decimal-places`. If a price is displayed as `1.01`, `pricescale` is `100`; If it is displayed as `1.005`, `pricescale` is `1000`.
-	 * @param minMove - The amount of price precision steps for 1 tick. For example, since the tick size for U.S. equities is `0.01`, `minmov` is 1. But the price of the E-mini S&P futures contract moves upward or downward by `0.25` increments, so the `minmov` is `25`.
-	 * @param fractional - For common prices, is `false` or it can be skipped. For more information on fractional prices, refer to [Fractional format](https://www.tradingview.com/charting-library-docs/latest/connecting_data/Symbology.md#fractional-format).
-	 * @param minMove2 - For common prices, is `0` or it can be skipped.
-	 * @param variableMinTick - For common prices, is `string` (for example, `0.01 10 0.02 25 0.05`) or it can be skipped. For more information, refer to [Variable tick size](https://www.tradingview.com/charting-library-docs/latest/connecting_data/Symbology.md#variable-tick-size).
+	 * @param priceScale - defines the number of decimal places. It is `10^number-of-decimal-places`. If a price is displayed as `1.01`, `pricescale` is `100`; If it is displayed as `1.005`, `pricescale` is `1000`.
+	 * @param minMove - the amount of price precision steps for 1 tick. For example, since the tick size for U.S. equities is `0.01`, `minmov` is 1. But the price of the E-mini S&P futures contract moves upward or downward by `0.25` increments, so the `minmov` is `25`.
+	 * @param fractional - for common prices is `false` or it can be skipped.
+	 * @param minMove2 - for common prices is `0` or it can be skipped.
+	 * @param variableMinTick - for common prices is string (for example, `0.01 10 0.02 25 0.05`) or it can be skipped.
+	 *
+	 * Example:
+	 * 1. Typical stock with `0.01` price increment: `minmov = 1, pricescale = 100, minmove2 = 0`.
+	 * 2. If `minmov = 1, pricescale = 100, minmove2 = 0, variableMinTick = "0.01 10 0.02 25 0.05"`:
+	 *
+	 * - for `price = 9`: `minmov = 1, pricescale = 100, minmove2 = 0`.
+	 * - for `price = 13`: `minmov = 2, pricescale = 100, minmove2 = 0`.
+	 * - for `price = 27`: `minmov = 5, pricescale = 100, minmove2 = 0`.
+	 *
+	 * For more information on fractional prices, see this [article](https://www.tradingview.com/charting-library-docs/latest/connecting_data/Symbology#price-format)
 	 */
 	createPriceFormatter(priceScale?: number, minMove?: number, fractional?: boolean, minMove2?: number, variableMinTick?: string): IPriceFormatter;
 }
@@ -7505,7 +7445,7 @@ export interface IChartWidgetApi {
 	 * ```javascript
 	 * widget.activeChart().onSymbolChanged().subscribe(null, () => console.log('The symbol is changed'));
 	 * ```
-	 * @returns A subscription object for when a symbol is resolved (ie changing resolution, timeframe, currency, etc.)
+	 * @returns A subscription object for the chart symbol changing.
 	 */
 	onSymbolChanged(): ISubscription<() => void>;
 	/**
@@ -8403,7 +8343,7 @@ export interface IChartingLibraryWidget {
 	 * @param callback A function that will be called when the `shortCut` keys are input.
 	 * @example
 	 * ```javascript
-	 * widget.onShortcut("alt+q", function() {
+	 * widget.onShortcut("alt+s", function() {
 	 *   widget.chart().executeActionById("symbolSearch");
 	 * });
 	 *
@@ -9034,9 +8974,8 @@ export interface IContext {
 	 * @param  {string} period - period for the new symbol
 	 * @param  {string} currencyCode? - Currency code
 	 * @param  {string} unitId? - Unit id
-	 * @param  {string} unitId? - Subsession id
 	 */
-	new_sym(tickerid: string, period: string, currencyCode?: string, unitId?: string, subsessionId?: string): ISymbolInstrument;
+	new_sym(tickerid: string, period: string, currencyCode?: string, unitId?: string): ISymbolInstrument;
 	/**
 	 * Switch context to the other symbol received through {@link IContext.new_sym}
 	 * @param  {number} i - the index of the symbol (`0` for the main series)
@@ -9926,19 +9865,11 @@ export interface IOrderLineAdapter {
 	 */
 	getLineLength(): number;
 	/**
-	 * Get the unit of length specified for the line length of the order line.
-	 */
-	getLineLengthUnit(): OrderLineLengthUnit;
-	/**
 	 * Set the line length of the order line.
 	 *
-	 * If negative number is provided for the value and the unit is 'pixel' then
-	 * the position will be relative to the left edge of the chart.
-	 *
 	 * @param value The new line length.
-	 * @param [unit] - unit for the line length, defaults to 'percentage'.
 	 */
-	setLineLength(value: number, unit?: OrderLineLengthUnit): this;
+	setLineLength(value: number): this;
 	/**
 	 * Get the line style of the order line.
 	 */
@@ -10312,23 +10243,14 @@ export interface IPositionLineAdapter {
 	 */
 	setExtendLeft(value: boolean): this;
 	/**
-	 * Get the unit of length specified for the line length of the position line.
-	 */
-	getLineLengthUnit(): PositionLineLengthUnit;
-	/**
 	 * Get the line length of the position line.
 	 */
 	getLineLength(): number;
 	/**
 	 * Set the line length of the position line.
-	 *
-	 * If negative number is provided for the value and the unit is 'pixel' then
-	 * the position will be relative to the left edge of the chart.
-	 *
 	 * @param value The new line length.
-	 * @param [unit] - unit for the line length, defaults to 'percentage'.
 	 */
-	setLineLength(value: number, unit?: PositionLineLengthUnit): this;
+	setLineLength(value: number): this;
 	/**
 	 * Get the line style of the position line.
 	 */
@@ -10918,7 +10840,7 @@ export interface IStudyApi {
 	sendToBack(): void;
 	/**
 	 * Override one or more of the study's properties.
-	 * Refer to [Indicator Overrides](https://www.tradingview.com/charting-library-docs/latest/customization/overrides/Studies-Overrides.md) for a list of available overrides.
+	 * See [Studies Overrides](https://www.tradingview.com/charting-library-docs/latest/customization/overrides/Studies-Overrides) for a list of available overrides.
 	 *
 	 * @param overrides Property values to override.
 	 */
@@ -11761,10 +11683,6 @@ export interface LibrarySubsessionInfo {
 	 * Session corrections string. See {@link LibrarySymbolInfo.corrections}.
 	 */
 	"session-correction"?: string;
-	/**
-	 * Session to display. See {@link LibrarySymbolInfo.session_display}.
-	 */
-	"session-display"?: string;
 }
 export interface LibrarySymbolInfo {
 	/**
@@ -11971,12 +11889,10 @@ export interface LibrarySymbolInfo {
 	 */
 	seconds_multipliers?: string[];
 	/**
-	 * The boolean value specifying whether the datafeed can supply historical data at the daily resolution.
+	 * The boolean value showing whether data feed has its own daily resolution bars or not.
 	 *
-	 * If `has_daily` is set to `false`, all buttons for resolutions that include days are disabled for this particular symbol.
-	 * Otherwise, the library requests daily bars from the datafeed.
-	 * All daily resolutions that the datafeed supplies must be included in the {@link LibrarySymbolInfo.daily_multipliers} array.
-	 *
+	 * If `has_daily` = `false` then the library will build the respective resolutions using 1-minute bars by itself.
+	 * If not, then it will request those bars from the data feed only if specified resolution belongs to `daily_multipliers`, otherwise an error will be thrown.
 	 * @default true
 	 */
 	has_daily?: boolean;
@@ -15632,9 +15548,9 @@ export interface StudyOrDrawingAddedToChartEventParams {
 }
 /**
  * Study overrides.
- * See [Studies Overrides](https://www.tradingview.com/charting-library-docs/latest/customization/overrides/Studies-Overrides) to get a list of all possible properties to override.
  *
  * @example { 'a.overridable.property': 123 }
+ * See [Studies Overrides](https://www.tradingview.com/charting-library-docs/latest/customization/overrides/Studies-Overrides) to get a list of all possible properties to override.
  */
 export interface StudyOverrides {
 	/**
@@ -16752,10 +16668,6 @@ export interface TradingTerminalWidgetOptions extends Omit<ChartingLibraryWidget
 	 */
 	rss_news_feed?: RssNewsFeedParams;
 	/**
-	 * Title for the News Widget
-	 */
-	rss_news_title?: string;
-	/**
 	 * Use this property to set your own news getter function. Both the `symbol` and `callback` will be passed to the function.
 	 *
 	 * The callback function should be called with an object. The object should have two properties: `title` which is a optional string, and `newsItems` which is an array of news objects that have the following structure:
@@ -16793,6 +16705,19 @@ export interface TradingTerminalWidgetOptions extends Omit<ChartingLibraryWidget
 	 * @param host - Trading Host
 	 */
 	broker_factory?(host: IBrokerConnectionAdapterHost): IBrokerWithoutRealtime | IBrokerTerminal;
+}
+/**
+ * Additional translation options
+ */
+export interface TranslateOptions {
+	/** Plural of the phrase */
+	plural?: string;
+	/** Count of the phrase */
+	count?: number;
+	/** Context of the phrase */
+	context?: string;
+	/** Replacements object */
+	replace?: Record<string, string>;
 }
 /**
  * Override properties for the Trendangle drawing tool.
@@ -17475,9 +17400,9 @@ export type CellAlignment = "left" | "right";
  */
 export type ChartActionId = "chartProperties" | "compareOrAdd" | "scalesProperties" | "paneObjectTree" | "insertIndicator" | "symbolSearch" | "changeInterval" | "timeScaleReset" | "chartReset" | "seriesHide" | "studyHide" | "lineToggleLock" | "lineHide" | "scaleSeriesOnly" | "drawingToolbarAction" | "stayInDrawingModeAction" | "hideAllMarks" | "showCountdown" | "showSeriesLastValue" | "showSymbolLabelsAction" | "showStudyLastValue" | "showStudyPlotNamesAction" | "undo" | "redo" | "paneRemoveAllStudiesDrawingTools" | "showSymbolInfoDialog";
 /**
- * Chart type names for use within the `favorites` Widget Constructor option. This type is for Advanced Charts, if you are looking for the Trading Platform type then please see {@link TradingTerminalChartTypeFavorites}.
+ * Chart type names for use within the `favourites` widget constructor option. This type is for Advanced Charts, if you are looking for the Trading Platform type then please see {@link TradingTerminalChartTypeFavorites}.
  *
- * See {@link Favorites} for the Widget Constructor option where you can define these favorites, and {@link ChartingLibraryWidgetOptions.favorites} for the Widget Constructor option.
+ * See {@link Favorites} for the widget constructor option where you can define these favorites, and {@link ChartingLibraryWidgetOptions.favorites} for the Widget Constructor option.
  */
 export type ChartTypeFavorites = "Area" | "Bars" | "Candles" | "Heiken Ashi" | "Hollow Candles" | "Line" | "Line Break" | "Baseline" | "LineWithMarkers" | "Stepline" | "Columns" | "High-low";
 /** This is the list of all [featuresets](https://www.tradingview.com/charting-library-docs/latest/customization/Featuresets.md) that work in Advanced Charts */
@@ -17715,12 +17640,6 @@ export type ChartingLibraryFeatureset =
 /** Show the option to specify the default right margin in percentage within chart settings dialog @default false */
 "show_percent_option_for_right_margin" | 
 /**
- * Lock the visible range when adjusting the percentage right margin via the settings dialog.
- * This applies when the chart is already at the current default margin position.
- * @default false
- */
-"lock_visible_time_range_when_adjusting_percentage_right_margin" | 
-/**
  * Alternative loading mode for the library, which can be used to support
  * older browsers and a few non-standard browsers.
  * @default false
@@ -17767,21 +17686,15 @@ export type ChartingLibraryFeatureset =
  */
 "always_show_legend_values_on_mobile" | 
 /** Enable studies to extend the time scale, if enabled in the study metainfo */
-"studies_extend_time_scale" | 
-/**
- * Enable accessibility features. Adds a keyboard shortcut which turns on keyboard navigation (alt/opt + z).
- * @default true
- */
-"accessibility";
+"studies_extend_time_scale";
 /** These are defining the types for a background */
 export type ColorTypes = "solid" | "gradient";
 /**
  * Context menu items processor signature
  * @param  {readonlyIActionVariant[]} items - an array of items the library wants to display
  * @param  {ActionsFactory} actionsFactory - factory you could use to create a new items for the context menu.
- * @param  {CreateContextMenuParams} params - an object representing additional information about the context menu, such as the menu name.
  */
-export type ContextMenuItemsProcessor = (items: readonly IActionVariant[], actionsFactory: ActionsFactory, params: CreateContextMenuParams) => Promise<readonly IActionVariant[]>;
+export type ContextMenuItemsProcessor = (items: readonly IActionVariant[], actionsFactory: ActionsFactory) => Promise<readonly IActionVariant[]>;
 /**
  * @param  {readonlyIActionVariant[]} items - an array of items the library wants to display
  * @param  {CreateContextMenuParams} params - an object representing where the user right-clicked on (only if there is an existing menu)
@@ -17806,10 +17719,9 @@ export type CustomTimezones = "Africa/Cairo" | "Africa/Casablanca" | "Africa/Joh
 /**
  * Custom translation function
  * @param  {string} key - key for string to be translated
- * @param  {CustomTranslateOptions} [options] - additional translation options
- * @param  {boolean} [isTranslated] - True, if the provide key is already translated
+ * @param  {TranslateOptions} options? - additional translation options
  */
-export type CustomTranslateFunction = (key: string, options?: CustomTranslateOptions, isTranslated?: boolean) => string | null;
+export type CustomTranslateFunction = (key: string, options?: TranslateOptions) => string | null;
 export type DOMCallback = (data: DOMData) => void;
 export type DateFormat = keyof typeof dateFormatFunctions;
 export type DeepWriteable<T> = {
@@ -17932,20 +17844,15 @@ export type IProjectionBar = [
 	number,
 	number
 ];
-/**
- * An array of bar values.
- *
- * [time, open, high, low, close, volume, updatetime, isBarClosed]
- */
-export type ISeriesStudyResult = [
+export type ISeriesStudyResult = [ /* time */
 	number,
 	number,
 	number,
 	number,
 	number,
 	number,
-	number | undefined,
-	boolean | undefined
+	/* updatetime */ number | undefined,
+	/* isBarClosed */ boolean | undefined
 ];
 /**
  * Input field validator
@@ -17953,17 +17860,16 @@ export type ISeriesStudyResult = [
  */
 export type InputFieldValidator = (value: any) => InputFieldValidatorResult;
 export type InputFieldValidatorResult = PositiveBaseInputFieldValidatorResult | NegativeBaseInputFieldValidatorResult;
-export type LanguageCode = "ar" | "zh" | "cs" | "ca_ES" | "nl_NL" | "en" | "fr" | "de" | "el" | "he_IL" | "hu_HU" | "id_ID" | "it" | "ja" | "ko" | "pl" | "pt" | "ro" | "ru" | "es" | "sv" | "th" | "tr" | "vi" | "ms_MY" | "zh_TW";
+export type LanguageCode = "ar" | "zh" | "cs" | "da_DK" | "ca_ES" | "nl_NL" | "en" | "et_EE" | "fr" | "de" | "el" | "he_IL" | "hu_HU" | "id_ID" | "it" | "ja" | "ko" | "fa" | "pl" | "pt" | "ro" | "ru" | "sk_SK" | "es" | "sv" | "th" | "tr" | "vi" | "no" | "ms_MY" | "zh_TW";
 export type LayoutType = SingleChartLayoutType | MultipleChartsLayoutType;
 export type LegendMode = "horizontal" | "vertical";
 export type LibrarySessionId = "regular" | "extended" | "premarket" | "postmarket";
 export type MarkConstColors = "red" | "green" | "blue" | "yellow";
-export type MultipleChartsLayoutType = "2h" | "2v" | "2-1" | "3s" | "3h" | "3v" | "4" | "6" | "8" | "1-2" | "3r" | "4h" | "4v" | "4s" | "5h" | "6h" | "7h" | "8h" | "1-3" | "2-2" | "2-3" | "1-4" | "5s" | "6c" | "8c";
+export type MultipleChartsLayoutType = "2h" | "2v" | "2-1" | "3s" | "3h" | "3v" | "4" | "6" | "8" | "1-2" | "3r" | "4h" | "4v" | "4s" | "5h" | "6h" | "7h" | "8h" | "1-3" | "2-2" | "2-3" | "1-4" | "5s" | "6c" | "8c" | "10c5" | "12c6" | "12c4" | "14c7" | "16c8" | "16c4";
 export type OnActionExecuteHandler = (action: IAction) => void;
 export type OnActionUpdateHandler = (action: IAction) => void;
 export type OnReadyCallback = (configuration: DatafeedConfiguration) => void;
 export type Order = PlacedOrder | BracketOrder;
-export type OrderLineLengthUnit = "pixel" | "percentage";
 export type OrderTableColumn = AccountManagerColumn & {
 	/**
 	 * An optional numeric array of order statuses that is applied to order columns only. If it is available then the column will be displayed in the specified tabs of the status filter only.
@@ -17984,7 +17890,6 @@ export type PageName = "watchlist_details_news" | "data_window" | "object_tree";
  * Plot shape ID.
  */
 export type PlotShapeId = "shape_arrow_down" | "shape_arrow_up" | "shape_circle" | "shape_cross" | "shape_xcross" | "shape_diamond" | "shape_flag" | "shape_square" | "shape_label_down" | "shape_label_up" | "shape_triangle_down" | "shape_triangle_up";
-export type PositionLineLengthUnit = "pixel" | "percentage";
 export type PriceSource = "open" | "high" | "low" | "close";
 export type QuoteData = QuoteOkData | QuoteErrorData;
 /**
@@ -18155,9 +18060,9 @@ export type TimezoneId = CustomTimezones | "Etc/UTC" | "exchange";
 export type TradableSolutions = ChangeAccountSolution | ChangeSymbolSolution | OpenUrlSolution;
 export type TradingDialogCustomField = CheckboxFieldMetaInfo | TextWithCheckboxFieldMetaInfo | CustomComboBoxMetaInfo;
 /**
- * Chart type names for use within the `favorites` Widget Constructor option. This type is for Trading Platform, if you are looking for the Advanced Charts type then please see {@link ChartTypeFavorites}.
+ * Chart type names for use within the `favourites` widget constructor option. This type is for Trading Platform, if you are looking for the Advanced Charts type then please see {@link ChartTypeFavorites}.
  *
- * See {@link Favorites} for the Widget Constructor option where you can define these favorites, and {@link TradingTerminalWidgetOptions.favorites} for the Widget Constructor option.
+ * See {@link Favorites} for the widget constructor option where you can define these favorites, and {@link TradingTerminalWidgetOptions.favorites} for the Widget Constructor option.
  */
 export type TradingTerminalChartTypeFavorites = ChartTypeFavorites | "Renko" | "Kagi" | "Point & figure" | "Line Break";
 /** This is the list of all featuresets that work on Trading Platform (which is an extension of Advanced Charts) */
@@ -18180,7 +18085,7 @@ export type TradingTerminalFeatureset = ChartingLibraryFeatureset |
 "show_trading_notifications_history" | 
 /** If a bracket order is modified, the terminal passes its parent order to `modifyOrder`. The featureset disables this behavior @default false */
 "always_pass_called_order_to_modify" | 
-/** Enables Drawing Templates on Drawing toolbar. If disabled users will still be able to apply the default settings for their selection. @default true */
+/** Enables Drawing Templates on Drawing toolbar @default true */
 "drawing_templates" | 
 /** Shows the Account Manager Widget @default true */
 "trading_account_manager" | 
