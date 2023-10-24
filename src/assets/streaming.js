@@ -1,9 +1,15 @@
-const socket = io("https://dchart-socket.vndirect.com.vn/socket.io", {
+const socket = io("wss://dchart-socket.vndirect.com.vn/socket.io", {
     'transports': ["websocket", "polling"],
     'query': {
       'symbol': "VN30F1M"
     }
   });
+const socketTrading = io("wss://tradingviewrealtime.vps.com.vn/socket.io", {
+    'transports': ["websocket", "polling"],
+    'query': {
+      'symbol': "VN30F1M"
+    }
+})
 const channelToSubscription = new Map();
 
 socket.on('connect', () => {
@@ -19,6 +25,90 @@ socket.on('error', (error) => {
 });
 
 socket.on('price', data => {
+	
+	let parsedData = data;
+	try {
+        parsedData = JSON.parse(data);
+    } catch (error) {}
+    const newData = {
+        symbol: parsedData.symbol,
+        ts: Math.floor(parsedData.time / 1000),
+        volume: parseFloat(parsedData.volume),
+        price: parseFloat(parsedData.price)
+    };
+
+    console.log('[socket] Message:', parsedData);
+	const symbolList = "CHART." + parsedData.symbol;
+	const subscriptionItem = channelToSubscription.get(symbolList);
+    const lastDailyBar = subscriptionItem.lastDailyBar;
+	var lastBar = lastDailyBar;
+    const isNewBar = JSON.stringify(lastBar) === '{}';
+
+    let resolution = subscriptionItem.resolution;
+    if (resolution.includes('D')) {
+        resolution = 1440;
+    } else if (resolution.includes('W')) {
+        resolution = 10080;
+    }
+
+    const interval = resolution * 60;
+    const roundedTimestamp = Math.floor(newData.ts / interval) * interval;
+	if (subscriptionItem === undefined) {
+		return;
+	}
+    
+    console.log('[socket] newData:', newData);
+    const bar = updateBar(newData, lastDailyBar, subscriptionItem);
+    var upBar;
+
+    if (isNewBar || roundedTimestamp > lastBarTimestamp) {
+        upBar = {
+            ...lastDailyBar,
+            symbol: lastDailyBar.symbol,
+            resolution: subscriptionItem.resolution,
+            time: roundedTimestamp * 1000,
+            open: newData.price,
+            high: isNewBar ? newData.price : lastBar.close,
+            low: isNewBar ? newData.price : lastBar.close,
+            close: newData.price,
+            volume: newData.volume
+        };
+    }
+    else{
+        upBar = {
+            ...lastDailyBar,
+            high: Math.max(lastDailyBar.high, bar.high),
+            low: Math.min(lastDailyBar.low, bar.low),
+            close: newData.price,
+            volume: lastDailyBar.low +newData.volume,
+            time: bar.time,
+        };
+    }
+        
+
+    
+    
+    subscriptionItem.lastDailyBar = upBar;
+    //console.log('[socket] bar:', bar);
+    // Send data to every subscriber of that symbol
+    subscriptionItem.handlers.forEach(handler => handler.callback(upBar));
+
+});
+
+// socket tradingview
+socketTrading.on('connect', () => {
+	console.log('[socket] Connected');
+});
+
+socketTrading.on('disconnect', (reason) => {
+	console.log('[socket] Disconnected:', reason);
+});
+
+socketTrading.on('error', (error) => {
+	console.log('[socket] Error:', error);
+});
+
+socketTrading.on('price', data => {
 	
 	let parsedData = data;
 	try {
