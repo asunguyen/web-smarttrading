@@ -8,57 +8,56 @@ import {
 } from './streaming.js';
 
 const lastBarsCache = new Map();
-
 // DatafeedConfiguration implementation
 const configurationData = {
 	// Represents the resolutions for bars supported by your datafeed
 	supported_resolutions: ['1', '3', '5', '10', '15', '30', '45', '60', '120', "180", "240", 'D', 'W', 'M'],
-	
+
 	// The `exchanges` arguments are used for the `searchSymbols` method if a user selects the exchange
 	exchanges: [{
 		'name': "Tất cả",
 		'value': '',
 		'desc': "Tất cả sàn giao dịch"
-	  }, {
+	}, {
 		'name': "HOSE",
 		'value': 'HOSE',
 		'desc': "Sở giao dịch chứng khoán Tp HCM"
-	  }, {
+	}, {
 		'name': 'HNX',
 		'value': 'HNX',
 		'desc': "Sở giao dịch chứng khoán Tp Hà Nội"
-	  }, {
+	}, {
 		'name': "UPCOM",
 		'value': "UPCOM",
 		'desc': "Unlisted Public Company Market"
-	  },
+	},
 	],
 	// The `symbols_types` arguments are used for the `searchSymbols` method if a user selects this symbol type
 	symbols_types: [{
 		'name': "Tất cả",
 		'value': 'Tất cả'
-	  }, {
+	}, {
 		'name': "Cổ phiếu",
 		'value': "Cổ phiếu"
-	  }, {
+	}, {
 		'name': "Trái phiếu",
 		'value': "Trái phiếu"
-	  }, {
+	}, {
 		'name': "Chứng quyền",
 		'value': "Chứng quyền"
-	  }, {
+	}, {
 		'name': "ETF",
 		'value': "ETF"
-	  }, {
+	}, {
 		'name': "Chỉ số",
 		'value': "Chỉ số"
-	  }, {
+	}, {
 		'name': "Chứng chỉ quỹ",
 		'value': "Chứng chỉ quỹ"
-	  }, {
+	}, {
 		'name': "HĐTL",
 		'value': 'HĐTL'
-	  },
+	},
 	],
 };
 
@@ -151,10 +150,10 @@ export default {
 		const { from, to, firstDataRequest } = periodParams;
 		console.log('[getBars]: Method call', symbolInfo, resolution, from, to);
 		var resol = resolution;
-		try{
-			if(resolution == "60" || resolution == "120" || resolution == "180" || resolution == "240") resol = "1H";
+		try {
+			if (resolution == "60" || resolution == "120" || resolution == "180" || resolution == "240") resol = "1H";
 		}
-		catch (e){}
+		catch (e) { }
 		const urlParameters = {
 			symbol: symbolInfo.name,
 			from: from,
@@ -175,15 +174,15 @@ export default {
 				});
 				console.log('[getBars]: No data');
 			}
-			else{
-				
+			else {
+
 			}
 			let bars = [];
 			for (let i = 0; i < data.t.length; i++) {
 				let timeStamp = data.t[i];
-				if (timeStamp >= from && timeStamp < to){
+				if (timeStamp >= from && timeStamp < to) {
 					bars = [...bars, {
-						time: timeStamp*1000,
+						time: timeStamp * 1000,
 						low: data.l[i],
 						high: data.h[i],
 						open: data.o[i],
@@ -213,10 +212,16 @@ export default {
 			onHistoryCallback(bars, {
 				noData: false,
 			});
+
 		} catch (error) {
 			console.log('[getBars]: Get error', error);
 			onErrorCallback(error);
 		}
+		barInfor.symbolInfo = symbolInfo;
+		barInfor.resolution = resolution;
+		barInfor.periodParams = periodParams;
+		barInfor.onHistoryCallback = onHistoryCallback;
+		barInfor.onErrorCallback = onErrorCallback;
 	},
 
 	subscribeBars: (

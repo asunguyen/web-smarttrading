@@ -407,7 +407,9 @@ export default {
                 var superTrendS = this._context.new_var()
                 var prevSuperTrend = superTrendS.get(1)
                 if (isNaN(atr1)) direction = 1
-                else if (prevSuperTrend == prevUpperBand) { direction = close > upperBand ? -1 : 1 } else direction = close < lowerBand ? 1 : -1
+                else if (prevSuperTrend == prevUpperBand) {
+                  direction = close > upperBand ? -1 : 1
+                } else direction = close < lowerBand ? 1 : -1
                 superTrend = direction == -1 ? lowerBand : upperBand
                 superTrendS.set(superTrend)
 
@@ -641,7 +643,9 @@ export default {
                 var superTrendS = this._context.new_var()
                 var prevSuperTrend = superTrendS.get(1)
                 if (isNaN(atr1)) direction = 1
-                else if (prevSuperTrend == prevUpperBand) { direction = close > upperBand ? -1 : 1 } else direction = close < lowerBand ? 1 : -1
+                else if (prevSuperTrend == prevUpperBand) {
+                  direction = close > upperBand ? -1 : 1
+                } else direction = close < lowerBand ? 1 : -1
                 superTrend = direction == -1 ? lowerBand : upperBand
                 superTrendS.set(superTrend)
 
@@ -1468,7 +1472,9 @@ export default {
                       max4Vol * gapVol < volume &&
                       max4Vol > maxVol &&
                       close > ma50
-                    ) { buy = true }
+                    ) {
+                      buy = true
+                    }
                   }
                 }
                 var plotValue = buy ? 1 : NaN
@@ -1856,9 +1862,13 @@ export default {
                 var slow = [slowS.get(0), slowS.get(1)]
                 var fast = [fastS.get(0), fastS.get(1)]
                 var strong_long = false
-                if (fast[0] > fast[1] && slow[0] > slow[1] && fast[0] > 0) { strong_long = true }
+                if (fast[0] > fast[1] && slow[0] > slow[1] && fast[0] > 0) {
+                  strong_long = true
+                }
                 var strong_short = false
-                if (fast[0] < fast[1] && slow[0] < slow[1] && fast[0] < 0) { strong_short = true }
+                if (fast[0] < fast[1] && slow[0] < slow[1] && fast[0] < 0) {
+                  strong_short = true
+                }
                 var weak_long = false
                 if (
                   (fast[0] < fast[1] && slow[0] > slow[1] && fast[0] > 0) ||
@@ -1866,7 +1876,9 @@ export default {
                     slow[0] > slow[1] &&
                     fast[0] < 0 &&
                     fast[0] > slow[0])
-                ) { weak_long = true }
+                ) {
+                  weak_long = true
+                }
                 var weak_short = false
                 if (
                   (fast[0] > fast[1] && fast[0] < 0 && fast[0] < slow[0]) ||
@@ -1874,7 +1886,9 @@ export default {
                     slow[0] < slow[1] &&
                     fast[0] > 0 &&
                     fast[0] < slow[0])
-                ) { weak_short = true }
+                ) {
+                  weak_short = true
+                }
                 var color_power
                 if (strong_long) color_power = 0
                 else if (weak_long) color_power = 1
@@ -2117,9 +2131,13 @@ export default {
                 var slow = [slowS.get(0), slowS.get(1)]
                 var fast = [fastS.get(0), fastS.get(1)]
                 var strong_long = false
-                if (fast[0] > fast[1] && slow[0] > slow[1] && fast[0] > 0) { strong_long = true }
+                if (fast[0] > fast[1] && slow[0] > slow[1] && fast[0] > 0) {
+                  strong_long = true
+                }
                 var strong_short = false
-                if (fast[0] < fast[1] && slow[0] < slow[1] && fast[0] < 0) { strong_short = true }
+                if (fast[0] < fast[1] && slow[0] < slow[1] && fast[0] < 0) {
+                  strong_short = true
+                }
                 var weak_long = false
                 if (
                   (fast[0] < fast[1] && slow[0] > slow[1] && fast[0] > 0) ||
@@ -2127,7 +2145,9 @@ export default {
                     slow[0] > slow[1] &&
                     fast[0] < 0 &&
                     fast[0] > slow[0])
-                ) { weak_long = true }
+                ) {
+                  weak_long = true
+                }
                 var weak_short = false
                 if (
                   (fast[0] > fast[1] && fast[0] < 0 && fast[0] < slow[0]) ||
@@ -2135,7 +2155,9 @@ export default {
                     slow[0] < slow[1] &&
                     fast[0] > 0 &&
                     fast[0] < slow[0])
-                ) { weak_short = true }
+                ) {
+                  weak_short = true
+                }
                 var color_power
                 if (strong_long) color_power = 0
                 else if (weak_long) color_power = 1
@@ -2309,9 +2331,22 @@ export default {
     // eslint-disable-next-line new-cap
     const tvWidget = new widget(widgetOptions)
     this.tvWidget = tvWidget
-    console.log('tvWidget:: ', tvWidget)
 
     tvWidget.onChartReady(() => {
+      // console.log("Datafeed:: ", Datafeed);
+      // if (realtimebar) {
+      //   clearInterval(realtimebar);
+      // }
+      // realtimebar = setInterval(function () {
+      //   console.log("periodParams:: ", barInfor.periodParams);
+      //   Datafeed.getBars(
+      //     barInfor.symbolInfo,
+      //     barInfor.resolution,
+      //     barInfor.periodParams,
+      //     barInfor.onHistoryCallback,
+      //     barInfor.onErrorCallback
+      //   );
+      // }, 5000);
       tvWidget.subscribe('onAutoSaveNeeded', () => {
         console.log({
           indicators: thisVue.getCurrentChartUserIndicators(
@@ -2320,6 +2355,27 @@ export default {
         })
       })
       var pathName = window.location.pathname
+      // add bot
+      thisVue.restoreUserIndicators(
+        thisVue.freeDerivativeIndicators,
+        tvWidget.activeChart()
+      )
+      thisVue.restoreUserIndicators(
+        thisVue.scrapeDerivativeIndicators,
+        tvWidget.activeChart()
+      )
+      thisVue.restoreUserIndicators(
+        thisVue.trendDerivativeIndicators,
+        tvWidget.activeChart()
+      )
+      thisVue.restoreUserIndicators(
+        thisVue.freeBaseIndicators,
+        tvWidget.activeChart()
+      )
+      thisVue.restoreUserIndicators(
+        thisVue.trendBaseIndicators,
+        tvWidget.activeChart()
+      )
       if (pathName == '/robot-derivative/free') {
         thisVue.restoreUserIndicators(
           thisVue.freeDerivativeIndicators,
