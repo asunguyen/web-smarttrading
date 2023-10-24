@@ -115,7 +115,7 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/ai-trading-robot',
+    path: '/ai-trading',
     component: Layout,
     redirect: 'noRedirect',
     name: 'AI Trading Robot',
@@ -125,13 +125,13 @@ export const constantRoutes = [
     },
     children: [
       {
-        path: 'derivative',
+        path: 'robot-derivative/free',
         component: () => import('@/views/ai-trading-robot/derivative-robot/index'),
         name: 'Robot phái sinh',
         meta: { title: 'Robot phái sinh', icon: 'el-icon-cpu', affix: true }
       },
       {
-        path: 'base',
+        path: 'robot-base/free',
         component: () => import('@/views/ai-trading-robot/base-robot/index'),
         name: 'Robot cơ sở',
         meta: { title: 'Robot cơ sở', icon: 'bug', affix: true }
@@ -275,7 +275,7 @@ export const constantRoutes = [
       {
         path: '',
         component: () => import('@/views/copytrade-ext-guide/index'),
-        name: 'Guide',
+        name: 'Guide CopyTrade',
         meta: { title: 'Công cụ CopyTrade', icon: 'guide', noCache: true }
       }
     ]
