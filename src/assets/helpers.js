@@ -12,7 +12,7 @@ export async function makeApiRequest(path) {
 // Generates a symbol ID from a pair of the coins
 export async function GeSymbolType(path, type) {
 	try {
-		const response = await request({url: `http://localhost:5001/v1/chart/${path}?symbolType=${type}`, method: 'get'}); //request({url: `http://api.smtchart.vn/v1/chart/${path}?symbolType=${type}`, method: 'get'});//fetch(`http://api.smtchart/v1/chart/${path}?symbolType=${type}`);
+		const response = await request({url: `http://api.smtchart.vn/v1/chart/${path}?symbolType=${type}`, method: 'get'}); //request({url: `http://api.smtchart.vn/v1/chart/${path}?symbolType=${type}`, method: 'get'});//fetch(`http://api.smtchart/v1/chart/${path}?symbolType=${type}`);
 		return response ? response.data : [];
 	} catch (error) {
 		throw new Error(`CryptoCompare request error: ${error.status}`);
