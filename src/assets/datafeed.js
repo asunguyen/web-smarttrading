@@ -208,7 +208,7 @@ export default {
 					...bars[bars.length - 1],
 				});
 			}
-			console.log(`[getBars]: returned ${bars.length} bar(s)`);
+			console.log(`[getBars]: returned bar(0)`, bars[0]);
 			onHistoryCallback(bars, {
 				noData: false,
 			});
