@@ -2354,28 +2354,29 @@ export default {
           )
         })
       })
-      var pathName = window.location.pathname
+      var pathName = window.location.pathname;
+      console.log("pathName:: ", pathName);
       // add bot
-      thisVue.restoreUserIndicators(
-        thisVue.freeDerivativeIndicators,
-        tvWidget.activeChart()
-      )
-      thisVue.restoreUserIndicators(
-        thisVue.scrapeDerivativeIndicators,
-        tvWidget.activeChart()
-      )
-      thisVue.restoreUserIndicators(
-        thisVue.trendDerivativeIndicators,
-        tvWidget.activeChart()
-      )
-      thisVue.restoreUserIndicators(
-        thisVue.freeBaseIndicators,
-        tvWidget.activeChart()
-      )
-      thisVue.restoreUserIndicators(
-        thisVue.trendBaseIndicators,
-        tvWidget.activeChart()
-      )
+      // thisVue.restoreUserIndicators(
+      //   thisVue.freeDerivativeIndicators,
+      //   tvWidget.activeChart()
+      // )
+      // thisVue.restoreUserIndicators(
+      //   thisVue.scrapeDerivativeIndicators,
+      //   tvWidget.activeChart()
+      // )
+      // thisVue.restoreUserIndicators(
+      //   thisVue.trendDerivativeIndicators,
+      //   tvWidget.activeChart()
+      // )
+      // thisVue.restoreUserIndicators(
+      //   thisVue.freeBaseIndicators,
+      //   tvWidget.activeChart()
+      // )
+      // thisVue.restoreUserIndicators(
+      //   thisVue.trendBaseIndicators,
+      //   tvWidget.activeChart()
+      // )
       if (pathName == '/robot-derivative/free') {
         thisVue.restoreUserIndicators(
           thisVue.freeDerivativeIndicators,

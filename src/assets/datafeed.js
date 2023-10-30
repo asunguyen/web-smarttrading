@@ -150,6 +150,7 @@ export default {
 		const { from, to, firstDataRequest } = periodParams;
 		console.log('[getBars]: Method call', symbolInfo, resolution, from, to);
 		var resol = resolution;
+		
 		try {
 			if (resolution == "60" || resolution == "120" || resolution == "180" || resolution == "240") resol = "1H";
 		}
@@ -165,6 +166,9 @@ export default {
 			.map(name => `${name}=${encodeURIComponent(urlParameters[name])}`)
 			.join('&');
 		try {
+			if (!symbolInfo.pathRq) {
+				symbolInfo.pathRq = "stock";
+			}
 			const data = await makeApiRequest(`chart-api/v2/ohlcs/${symbolInfo.pathRq}?${query}`);
 			//console.log(data);
 			if (data.length === 0) {
