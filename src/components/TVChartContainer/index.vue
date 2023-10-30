@@ -2354,8 +2354,8 @@ export default {
           )
         })
       })
-      var pathName = window.location.pathname;
-      console.log("pathName:: ", pathName);
+      var pathName = window.location.pathname
+      console.log('pathName:: ', pathName)
       // add bot
       // thisVue.restoreUserIndicators(
       //   thisVue.freeDerivativeIndicators,
