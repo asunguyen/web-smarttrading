@@ -1,6 +1,6 @@
 <template>
   <el-card class="stock-leader">
-    <h2 class="stock-leader__title">Nhóm dẫn dắt thị trường</h2>
+    <h2 class="stock-leader__title mt-2">Nhóm dẫn dắt thị trường</h2>
     <el-tabs v-model="activeTab" type="card" @tab-click="handleClick">
       <el-tab-pane
         v-for="typeStock in listTypeStock"

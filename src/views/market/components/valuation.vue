@@ -1,10 +1,12 @@
 <template>
   <el-card class="valuation">
-    <h2 class="valuation__title">Định giá</h2>
-    <el-tabs v-model="activeTab" type="card" @tab-click="handleClick">
+    <h2 class="valuation__title mt-2">Định giá</h2>
+    <el-tabs v-model="activeTab" type="card" @tab-click="changeTab">
       <el-tab-pane
-        label="VN-Index"
-        name="vn-index"
+        v-for="typeStock in listTypeStock"
+        :key="typeStock.label"
+        :label="typeStock.label"
+        :name="typeStock.name"
       >
         <el-table
           v-loading="isLoading"
@@ -12,41 +14,121 @@
           border
           style="width: 100%"
         >
-          <el-table-column label="Chỉ tiêu" prop="name" />
-          <el-table-column label="2023" prop="value2023" align="center" width="100" />
-          <el-table-column label="2022" prop="value2022" align="center" width="100" />
+          <el-table-column label="Chỉ tiêu" prop="title">
+            <template slot-scope="{row}">
+              <span>{{ row.title | formatNameTableValuation }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="2023"
+            prop="currentValue"
+            align="center"
+            width="100"
+          >
+            <template slot-scope="{row}">
+              <span v-if="row.title === 'MARKETCAP'">{{ row.currentValue | formatBillion | roundUp | toThousandFilter }}</span>
+              <span v-else>{{ row.currentValue | roundTo2Digits }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="2022"
+            prop="lastYearValue"
+            align="center"
+            width="100"
+          >
+            <template slot-scope="{row}">
+              <span v-if="row.title === 'MARKETCAP'">{{ row.lastYearValue | formatBillion | roundUp | toThousandFilter }}</span>
+              <span v-else>{{ row.lastYearValue | roundTo2Digits }}</span>
+            </template>
+          </el-table-column>
         </el-table>
-        <!-- <highcharts ref="chart" :key="keyChart" :options="chartOptions" /> -->
-      </el-tab-pane>
-      <el-tab-pane
-        label="VN30"
-        name="vn30"
-      >
-        Tính năng đang phát triển
+        <!-- <div id="chart-container" /> -->
       </el-tab-pane>
     </el-tabs>
   </el-card>
 </template>
 
 <script>
+import { getListValuation, getListValuationLastYear } from '@/api/stock'
+const names = ['AAPL', 'GOOG']
+
 export default {
+  filters: {
+    formatNameTableValuation(value) {
+      if (!value) return
+      switch (value) {
+        case 'PRICE_TO_EARNINGS': return 'P/E'
+        case 'PRICE_TO_BOOK': return 'P/B'
+        case 'PRICE_TO_SALES': return 'P/S'
+        case 'ROAA_TR_AVG5Q': return 'ROAA (%)'
+        case 'ROAE_TR_AVG5Q': return 'ROAE (%)'
+        case 'DIVIDEND_YIELD': return 'Lợi tức cổ phần (%)'
+        case 'MARKETCAP': return 'Vốn hoá TT (tỷ đồng)'
+      }
+    }
+  },
   data() {
     return {
-      activeTab: 'vn-index',
-      isLoading: false,
-      tableData: [
-        { name: 'P/E', value2023: 11.73, value2022: 10.6 },
-        { name: 'P/B', value2023: 'N/A', value2022: 'N/A' },
-        { name: 'ROA(%)', value2023: 1.13, value2022: 'N/A' },
-        { name: 'ROE(%)', value2023: 'N/A', value2022: 'N/A' },
-        { name: 'Lợi tức cổ phần(%)', value2023: 'N/A', value2022: 'N/A' },
-        { name: 'Vốn hoá thị trường(tỷ đồng)', value2023: 'N/A', value2022: 'N/A' }
+      activeTab: 'VNIndex',
+      listTypeStock: [
+        { label: 'VN-INDEX', name: 'VNIndex' },
+        { label: 'VN30', name: 'vn30' },
+        { label: 'HNX', name: 'hnx' },
+        { label: 'UPCOM', name: 'upcom' }
       ],
-      seriesOptions: [],
-      seriesCounter: 0,
-      names: ['MSFT', 'AAPL', 'GOOG'],
-      keyChart: 0,
-      chartOptions: {
+      isLoading: false,
+      tableData: []
+    }
+  },
+  mounted() {
+    this.getData()
+    this.getListValuation(this.activeTab)
+  },
+  methods: {
+    changeTab() {
+      this.tableData = []
+      this.getListValuation(this.activeTab)
+    },
+    async getListValuation(typeStock) {
+      const response = await getListValuation({ typeStock })
+      const response2 = await getListValuationLastYear({
+        typeStock: this.activeTab
+      })
+      const array = [...response.data, ...response2.data]
+      const convertedArray = Object.values(
+        array.reduce((acc, item) => {
+          acc[item.ratioCode]
+            ? acc[item.ratioCode].cells.push({
+              reportDate: item.reportDate,
+              value: item.value
+            })
+            : (acc[item.ratioCode] = {
+              ratioCode: item.ratioCode,
+              cells: [{ reportDate: item.reportDate, value: item.value }]
+            })
+          return acc
+        }, {})
+      )
+      convertedArray.forEach((item) => {
+        const obj = {
+          title: item.ratioCode
+        }
+        item.cells.forEach((item2) => {
+          const currentYear = new Date().getFullYear()
+          const lastYear = new Date().getFullYear() - 1
+          if (item2.reportDate.includes(currentYear)) {
+            obj.currentValue = item2.value
+          } else if (item2.reportDate.includes(lastYear)) {
+            obj.lastYearValue = item2.value
+          }
+        })
+        this.tableData.push(obj)
+      })
+    },
+
+    createChart(series) {
+      // eslint-disable-next-line no-undef
+      Highcharts.stockChart('chart-container', {
         rangeSelector: {
           selected: 4
         },
@@ -54,11 +136,13 @@ export default {
           labels: {
             format: '{#if (gt value 0)}+{/if}{value}%'
           },
-          plotLines: [{
-            value: 0,
-            width: 2,
-            color: 'silver'
-          }]
+          plotLines: [
+            {
+              value: 0,
+              width: 2,
+              color: 'silver'
+            }
+          ]
         },
         plotOptions: {
           series: {
@@ -67,16 +151,33 @@ export default {
           }
         },
         tooltip: {
-          pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>',
+          pointFormat:
+            '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>',
           valueDecimals: 2,
           split: true
         },
-        series: []
-      }
+        series
+      })
+    },
+    async getData() {
+      const promises = names.map(
+        (name) =>
+          new Promise((resolve) => {
+            (async() => {
+              const data = await fetch(
+                'https://cdn.jsdelivr.net/gh/highcharts/highcharts@v7.0.0/' +
+                  'samples/data/' +
+                  name.toLowerCase() +
+                  '-c.json'
+              ).then((response) => response.json())
+              resolve({ name, data })
+            })()
+          })
+      )
+
+      const series = await Promise.all(promises)
+      this.createChart(series)
     }
-  },
-  methods: {
-    handleClick() {}
   }
 }
 </script>
@@ -91,7 +192,7 @@ export default {
       width: 100%;
     }
     .el-tabs__item {
-      width: 50%;
+      width: 25%;
       text-align: center;
     }
   }
