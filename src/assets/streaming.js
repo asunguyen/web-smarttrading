@@ -14,6 +14,7 @@
 
 const socket = io("http://stock.smtchart.vn", { 'transports': ["websocket", "polling"] });
 socket.on("onData", (data) => {
+    console.log("data stream:: ", data);
     let parsedData = JSON.parse(data);
     if (parsedData.DataType == "B") {
         let dataBar;
