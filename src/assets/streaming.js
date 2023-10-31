@@ -10,10 +10,13 @@
 //       'symbol': "VN30F1M"
 //     }
 // })
+// mongodbUrl = mongodb+srv://smarttrading:gcMXhKBgm45lRojO@smarttrading.s33oklk.mongodb.net/?retryWrites=true&w=majority
+// jwtKey = smtchart
 
 
 const socket = io("http://stock.smtchart.vn", { 'transports': ["websocket", "polling"] });
 socket.on("onData", (data) => {
+    console.log("data stream:: ", data);
     let parsedData = JSON.parse(data);
     if (parsedData.DataType == "B") {
         let dataBar;

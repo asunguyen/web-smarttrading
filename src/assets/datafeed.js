@@ -64,7 +64,6 @@ const configurationData = {
 // Obtains all symbols for all exchanges supported by CryptoCompare API
 async function getAllSymbols(symbolType) {
 	const data = await GeSymbolType('all-exchanges', symbolType);
-	console.log(data);
 	let allSymbols = [];
 	data.forEach(symbol => {
 		allSymbols = [...allSymbols, {
