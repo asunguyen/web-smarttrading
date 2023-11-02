@@ -27,7 +27,7 @@ export function getListValuationLastYear(query) {
 export function getListForeigns(typeForeign) {
   const year = new Date().getFullYear()
   const month = new Date().getMonth() + 1
-  const date = new Date().getDate()
+  const date = new Date().getDate() < 10 ? `0${new Date().getDate()}` : new Date().getDate()
   return request({
     url: typeForeign === 'buy'
       ? `https://finfo-api.vndirect.com.vn/v4/foreigns?q=type:STOCK,IFC,ETF~netVal:gt:0~tradingDate:${year}-${month}-${date}&sort=tradingDate~netVal:desc&size=10&fields=code,netVal,tradingDate`
