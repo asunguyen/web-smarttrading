@@ -2356,7 +2356,30 @@ export default {
       })
       var pathName = this.$router.currentRoute.fullPath
       // add bot
-
+      thisVue.restoreUserIndicators(
+          thisVue.freeDerivativeIndicators,
+          tvWidget.activeChart()
+        )
+        thisVue.restoreUserIndicators(
+          thisVue.scrapeDerivativeIndicators,
+          tvWidget.activeChart()
+        )
+        thisVue.restoreUserIndicators(
+          thisVue.trendDerivativeIndicators,
+          tvWidget.activeChart()
+        )
+        thisVue.restoreUserIndicators(
+          thisVue.freeBaseIndicators,
+          tvWidget.activeChart()
+        )
+        thisVue.restoreUserIndicators(
+          thisVue.tBaseIndicators,
+          tvWidget.activeChart()
+        )
+        thisVue.restoreUserIndicators(
+          thisVue.trendBaseIndicators,
+          tvWidget.activeChart()
+        )
       if (pathName == '/ai-trading/robot-derivative/free') {
         thisVue.restoreUserIndicators(
           thisVue.freeDerivativeIndicators,

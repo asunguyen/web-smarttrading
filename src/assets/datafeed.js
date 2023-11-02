@@ -5,6 +5,7 @@ import {
 import {
 	subscribeOnStream,
 	unsubscribeFromStream,
+	searchSymbolsFromStream
 } from './streaming.js';
 
 const lastBarsCache = new Map();
@@ -18,51 +19,19 @@ const configurationData = {
 		'name': "Tất cả",
 		'value': '',
 		'desc': "Tất cả sàn giao dịch"
-	}, {
-		'name': "HOSE",
-		'value': 'HOSE',
-		'desc': "Sở giao dịch chứng khoán Tp HCM"
-	}, {
-		'name': 'HNX',
-		'value': 'HNX',
-		'desc': "Sở giao dịch chứng khoán Tp Hà Nội"
-	}, {
-		'name': "UPCOM",
-		'value': "UPCOM",
-		'desc': "Unlisted Public Company Market"
 	},
 	],
 	// The `symbols_types` arguments are used for the `searchSymbols` method if a user selects this symbol type
 	symbols_types: [{
 		'name': "Tất cả",
 		'value': 'Tất cả'
-	}, {
-		'name': "Cổ phiếu",
-		'value': "Cổ phiếu"
-	}, {
-		'name': "Trái phiếu",
-		'value': "Trái phiếu"
-	}, {
-		'name': "Chứng quyền",
-		'value': "Chứng quyền"
-	}, {
-		'name': "ETF",
-		'value': "ETF"
-	}, {
-		'name': "Chỉ số",
-		'value': "Chỉ số"
-	}, {
-		'name': "Chứng chỉ quỹ",
-		'value': "Chứng chỉ quỹ"
-	}, {
-		'name': "HĐTL",
-		'value': 'HĐTL'
-	},
+	}
 	],
 };
 
 // Obtains all symbols for all exchanges supported by CryptoCompare API
 async function getAllSymbols(symbolType) {
+
 	const data = await GeSymbolType('all-exchanges', symbolType);
 	let allSymbols = [];
 	data.forEach(symbol => {
@@ -91,16 +60,24 @@ export default {
 		symbolType,
 		onResultReadyCallback,
 	) => {
-		console.log('[searchSymbols]: Method call');
-		const symbols = await getAllSymbols(symbolType);
-		const newSymbols = symbols.filter(symbol => {
-			const isExchangeValid = exchange === '' || symbol.exchange === exchange;
-			const isFullSymbolContainsInput = symbol.full_name
-				.toLowerCase()
-				.indexOf(userInput.toLowerCase()) !== -1;
-			return isExchangeValid && isFullSymbolContainsInput;
-		});
-		onResultReadyCallback(newSymbols);
+		searchSymbolsFromStream(userInput.toLowerCase());
+		var run = setInterval(() => {
+			var symbolList = localStorage.getItem("symbolList");
+			if(symbolList && symbolList.length > 0) {
+				clearInterval(run);
+				const symbols = JSON.parse(symbolList);
+				const newSymbols = symbols.filter(symbol => {
+					const isExchangeValid = exchange === '' || symbol.exchange === exchange;
+					const isFullSymbolContainsInput = symbol.symbol
+						.toLowerCase()
+						.indexOf(userInput.toLowerCase()) !== -1;
+					return isExchangeValid && isFullSymbolContainsInput;
+				});
+				onResultReadyCallback(newSymbols);
+			}
+			
+		}, 1000);
+
 	},
 
 	resolveSymbol: async (

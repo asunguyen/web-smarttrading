@@ -16,29 +16,27 @@
 
 const socket = io("http://localhost:5001", { 'transports': ["websocket", "polling"] });
 socket.on("onData", (data) => {
-    console.log("data stream:: ", data);
-    let dataBar = data;
+    let dataBar = data.chart;
     const newData = {
-        symbol: dataBar.Symbol,
-        ts: Math.floor(dataBar.time + 900),
+        symbol: data.infos.name,
+        ts: Math.floor((dataBar.time + data.infos.delay)),
         volume: parseFloat(dataBar.volume),
         price: parseFloat(dataBar.close / 1000),
         Hight: parseFloat(dataBar.max / 1000),
         Low: parseFloat(dataBar.min / 1000),
         Open: parseFloat(dataBar.open / 1000),
         Close: parseFloat(dataBar.close / 1000),
-
     };
-
-    const symbolList = "CHART." + dataBar.symbol;
+    console.log("new dataa:: ", JSON.stringify(newData));
+    const symbolList = "CHART." + newData.symbol;
     const subscriptionItem = channelToSubscription.get(symbolList);
     if (subscriptionItem === undefined) {
         return;
     }
-    const lastDailyBar = subscriptionItem ? subscriptionItem.lastDailyBar : null;
+    const lastDailyBar = subscriptionItem.lastDailyBar;
     var lastBar = lastDailyBar;
     var lastBarTimestamp = lastBar.time;
-    console.log("lastBarTimestamp:: ",lastBarTimestamp)
+
     const isNewBar = JSON.stringify(lastBar) === '{}';
 
     let resolution = subscriptionItem.resolution;
@@ -50,12 +48,10 @@ socket.on("onData", (data) => {
 
     const interval = resolution * 60;
     const roundedTimestamp = Math.floor(newData.ts / interval) * interval;
-    console.log("roundedTimestamp:: ", roundedTimestamp);
     const bar = updateBar(newData, lastDailyBar, subscriptionItem);
     var upBar;
-    if (isNewBar || roundedTimestamp > lastBarTimestamp) {
+    if (isNewBar || roundedTimestamp * 1000 > lastBarTimestamp) {
         const time = new Date().getTime();
-        console.log("time", time)
         upBar = {
             ...lastDailyBar,
             symbol: lastDailyBar.symbol,
@@ -120,7 +116,7 @@ export function subscribeOnStream(
         handlers: [handler],
     };
     channelToSubscription.set(symbolList, subscriptionItem);
-    socket.emit('addsymbol', {symbol: symbolInfo.name, resolution: resolution});
+    socket.emit('addsymbol', { symbol: symbolInfo.name, resolution: resolution });
 }
 
 export function unsubscribeFromStream(subscriberUID) {
@@ -135,7 +131,6 @@ export function unsubscribeFromStream(subscriberUID) {
 
             if (subscriptionItem.handlers.length === 0) {
                 // Unsubscribe from the channel if it was the last handler
-                console.log('[unsubscribeBars]: Unsubscribe from streaming. Channel:', channelString);
                 socket.emit('SubRemove', channelString);
                 channelToSubscription.delete(channelString);
                 break;
@@ -160,7 +155,7 @@ function updateBar(newData, subscriber, lastDailyBar) {
     const lastBarTimestamp = lastBar.time / 1000;
 
     let updatedBar = false;
-    if (isNewBar || roundedTimestamp > lastBarTimestamp) {
+    if (isNewBar || roundedTimestamp * 1000 > lastBarTimestamp) {
         updatedBar = {
             symbol: subscriber.symbol,
             resolution: subscriber.resolution,
@@ -184,4 +179,26 @@ function updateBar(newData, subscriber, lastDailyBar) {
     }
 
     return updatedBar;
+}
+export function searchSymbolsFromStream(symbol) {
+    localStorage.setItem("symbolList", "");
+    socket.emit("searchMarket", symbol);
+    
+    socket.on("searchrs", function (rs) {
+        localStorage.setItem("symbolList", "");
+        var data = rs;
+        let allSymbols = [];
+        data.forEach(symbol => {
+            allSymbols = [...allSymbols, {
+                symbol: symbol.symbol,
+                pro_name: symbol.symbol,
+                full_name: symbol.symbol,
+                description: symbol.description,
+                exchange: symbol.exchange,
+                type: symbol.type,
+                pathRq: symbol.pathRq
+            }];
+        });
+        localStorage.setItem("symbolList", JSON.stringify(allSymbols));
+    })
 }
