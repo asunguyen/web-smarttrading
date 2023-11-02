@@ -139,52 +139,53 @@ export default {
 			resolution: resol,
 		};
 		//console.log("OK:",symbolInfo);
-		
+
 		try {
 			getBarFromStream(urlParametersStream, (data) => {
 				const chart = data.chart;
 				if (chart.length === 0) {
-					// "noData" should be set if there is no data in the requested period
-					onHistoryCallback([], {
+				} else {
+					let bars = [];
+					for (let i = 0; i < chart.length; i++) {
+						let timeStamp = chart[i].time;
+						if (timeStamp >= from && timeStamp < to) {
+							bars = [...bars, {
+								time: timeStamp * 1000,
+								low: parseFloat(chart[i].min),
+								high: parseFloat(chart[i].max),
+								open: parseFloat(chart[i].open),
+								close: parseFloat(chart[i].close),
+								volume: chart[i].volume,
+							}];
+						}
+					}
+					if (firstDataRequest) {
+						console.log("bars.length - 1:: ", bars[bars.length - 1])
+						lastBarsCache.set(symbolInfo.name, {
+							...bars[bars.length - 1],
+						});
+					}
+					console.log(`[getBars]: returned bar`, bars);
+					onHistoryCallback(bars, {
 						noData: false,
 					});
-					console.log('[getBars]: No data');
+					console.log("lastBarsCache:: ", lastBarsCache);
+					console.log("resolution:: ", resolution);
+					barInfor.symbolInfo = symbolInfo;
+					barInfor.resolution = resolution;
+					barInfor.periodParams = periodParams;
+					barInfor.onHistoryCallback = onHistoryCallback;
+					barInfor.onErrorCallback = onErrorCallback;
 				}
-				let bars = [];
-				for (let i = 0; i < chart.length; i++) {
-					let timeStamp = chart[i].time;
-					if (timeStamp >= from && timeStamp < to) {
-						bars = [...bars, {
-							time: timeStamp*1000,
-							low: chart[i].min,
-							high: chart[i].max,
-							open: chart[i].open,
-							close: chart[i].close,
-							volume: chart[i].volume,
-						}];
-					}
-				}
-				if (firstDataRequest) {
-					lastBarsCache.set(symbolInfo.name, {
-						...bars[bars.length - 1],
-					});
-				}
-				console.log(`[getBars]: returned bar`, bars);
-				onHistoryCallback(bars, {
-					noData: false,
-				});
+				
 			});
-			
+
 
 		} catch (error) {
 			console.log('[getBars]: Get error', error);
 			onErrorCallback(error);
 		}
-		barInfor.symbolInfo = symbolInfo;
-		barInfor.resolution = resolution;
-		barInfor.periodParams = periodParams;
-		barInfor.onHistoryCallback = onHistoryCallback;
-		barInfor.onErrorCallback = onErrorCallback;
+
 	},
 
 	subscribeBars: (

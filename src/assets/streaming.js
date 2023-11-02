@@ -20,12 +20,12 @@ socket.on("onData", (data) => {
     const newData = {
         symbol: data.infos.name,
         ts: Math.floor((dataBar.time + data.infos.delay)),
-        volume: parseFloat(dataBar.volume),
-        price: parseFloat(dataBar.close / 1000),
-        Hight: parseFloat(dataBar.max / 1000),
-        Low: parseFloat(dataBar.min / 1000),
-        Open: parseFloat(dataBar.open / 1000),
-        Close: parseFloat(dataBar.close / 1000),
+        Volume: parseFloat(dataBar.volume),
+        price: parseFloat(dataBar.close),
+        Hight: parseFloat(dataBar.max),
+        Low: parseFloat(dataBar.min),
+        Open: parseFloat(dataBar.open),
+        Close: parseFloat(dataBar.close),
     };
     console.log("new dataa:: ", JSON.stringify(newData));
     const symbolList = "CHART." + newData.symbol;
@@ -58,10 +58,10 @@ socket.on("onData", (data) => {
             resolution: subscriptionItem.resolution,
             time: time,
             open: newData.Open,
-            high: isNewBar ? newData.Hight : lastBar.close,
-            low: isNewBar ? newData.Low : lastBar.close,
+            high: newData.Hight,
+            low: newData.Low,
             close: newData.Close,
-            volume: newData.volume
+            volume: newData.Volume
         };
     }
     else {
@@ -160,11 +160,11 @@ function updateBar(newData, subscriber, lastDailyBar) {
             symbol: subscriber.symbol,
             resolution: subscriber.resolution,
             time: roundedTimestamp,
-            open: newData.price,
-            high: isNewBar ? newData.price : lastBar.close,
-            low: isNewBar ? newData.price : lastBar.close,
-            close: newData.price,
-            volume: newData.volume
+            open: newData.Open,
+            high: newData.Hight,
+            low: newData.Low,
+            close: newData.Close,
+            volume: newData.Volume
         };
     } else {
         lastBar.high = newData.Hight;
