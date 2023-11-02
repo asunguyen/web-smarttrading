@@ -8,7 +8,6 @@ import {
 	searchSymbolsFromStream,
 	getBarFromStream
 } from './streaming.js';
-
 const lastBarsCache = new Map();
 // DatafeedConfiguration implementation
 const configurationData = {
@@ -94,34 +93,42 @@ export default {
 			symbol,
 		}) => symbol === symbolName);
 		if (!symbolItem) {
-			console.log('[resolveSymbol]: Cannot resolve symbol', symbolName);
-			onResolveErrorCallback('cannot resolve symbol');
-			return;
-		}
-		// Symbol information object
-		const symbolInfo = {
-			name: symbolItem.symbol,
-			full_name: symbolItem.full_name,
-			description: symbolItem.description,
-			listed_exchange: '',
-			type: symbolItem.type,
-			ticker: symbolItem.symbol,
-			exchange: symbolItem.exchange,
-			format: 'price',
-			supported_resolutions: configurationData.supported_resolutions,
-			session: '0900-1445',
-			timezone: 'Asia/Ho_Chi_Minh',
-			minmov: 1,
-			pricescale: 100,
-			has_intraday: true,
-			intraday_multipliers: ['1', '60'],
-			volume_precision: 8,
-			data_status: 'streaming',
-			pathRq: symbolItem.pathRq,
-		};
+			//console.log('[resolveSymbol]: Cannot resolve symbol', symbolName);
+			//onResolveErrorCallback('cannot resolve symbol');
+			let symbol = localStorage.getItem("loadSymbol");
+			if (symbol && symbol.length > 0) {
+				symbol = JSON.parse(symbol);
+				symbol.infos["data_status"] = "streaming";
+				symbol.infos["supported_resolutions"] = configurationData.supported_resolutions;
+				symbol.infos["format"] = 'price';
+				console.log("symbol.infos:: ", symbol.infos);
+				onSymbolResolvedCallback(symbol.infos);
+			}
+		} else {
+			const symbolInfo = {
+				name: symbolItem.symbol,
+				full_name: symbolItem.full_name,
+				description: symbolItem.description,
+				listed_exchange: '',
+				type: symbolItem.type,
+				ticker: symbolItem.symbol,
+				exchange: symbolItem.exchange,
+				format: 'price',
+				supported_resolutions: configurationData.supported_resolutions,
+				session: '0900-1445',
+				timezone: 'Asia/Ho_Chi_Minh',
+				minmov: 1,
+				pricescale: 100,
+				has_intraday: true,
+				intraday_multipliers: ['1', '60'],
+				volume_precision: 8,
+				data_status: 'streaming',
+				pathRq: symbolItem.pathRq,
+			};
 
-		console.log('[resolveSymbol]: Symbol resolved', symbolName);
-		onSymbolResolvedCallback(symbolInfo);
+			console.log('[resolveSymbol]: Symbol resolved', symbolName);
+			onSymbolResolvedCallback(symbolInfo);
+		}
 	},
 
 	getBars: async (symbolInfo, resolution, periodParams, onHistoryCallback, onErrorCallback) => {
@@ -142,42 +149,46 @@ export default {
 
 		try {
 			getBarFromStream(urlParametersStream, (data) => {
-				const chart = data.chart;
+				let chart = data.chart;
 				if (chart.length === 0) {
+					return;
 				} else {
+					chart = chart.reverse()
 					let bars = [];
 					for (let i = 0; i < chart.length; i++) {
 						let timeStamp = chart[i].time;
 						if (timeStamp >= from && timeStamp < to) {
-							bars = [...bars, {
-								time: timeStamp * 1000,
+							var item = {
+								time: chart[i].time * 1000,
 								low: parseFloat(chart[i].min),
 								high: parseFloat(chart[i].max),
 								open: parseFloat(chart[i].open),
 								close: parseFloat(chart[i].close),
 								volume: chart[i].volume,
-							}];
+							};
+							bars.push(item);
 						}
 					}
+
+					console.log(`[getBars]: returned bar`, bars);
 					if (firstDataRequest) {
 						console.log("bars.length - 1:: ", bars[bars.length - 1])
 						lastBarsCache.set(symbolInfo.name, {
 							...bars[bars.length - 1],
 						});
 					}
-					console.log(`[getBars]: returned bar`, bars);
+					
 					onHistoryCallback(bars, {
 						noData: false,
 					});
-					console.log("lastBarsCache:: ", lastBarsCache);
-					console.log("resolution:: ", resolution);
+
 					barInfor.symbolInfo = symbolInfo;
 					barInfor.resolution = resolution;
 					barInfor.periodParams = periodParams;
 					barInfor.onHistoryCallback = onHistoryCallback;
 					barInfor.onErrorCallback = onErrorCallback;
 				}
-				
+
 			});
 
 

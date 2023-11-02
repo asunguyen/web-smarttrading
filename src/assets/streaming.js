@@ -15,6 +15,7 @@
 
 
 const socket = io("http://localhost:5001", { 'transports': ["websocket", "polling"] });
+
 socket.on("onData", (data) => {
     let dataBar = data.chart;
     const newData = {
@@ -30,6 +31,7 @@ socket.on("onData", (data) => {
     console.log("new dataa:: ", JSON.stringify(newData));
     const symbolList = "CHART." + newData.symbol;
     const subscriptionItem = channelToSubscription.get(symbolList);
+    console.log("subscriptionItem:: ", subscriptionItem);
     if (subscriptionItem === undefined) {
         return;
     }
@@ -50,13 +52,12 @@ socket.on("onData", (data) => {
     const roundedTimestamp = Math.floor(newData.ts / interval) * interval;
     const bar = updateBar(newData, lastDailyBar, subscriptionItem);
     var upBar;
-    if (isNewBar || roundedTimestamp * 1000 > lastBarTimestamp) {
-        const time = new Date().getTime();
+    if (isNewBar || roundedTimestamp > lastBarTimestamp) {
         upBar = {
             ...lastDailyBar,
             symbol: lastDailyBar.symbol,
             resolution: subscriptionItem.resolution,
-            time: time,
+            time: newData.ts * 1000,
             open: newData.Open,
             high: newData.Hight,
             low: newData.Low,
@@ -80,7 +81,10 @@ socket.on("onData", (data) => {
 
 
 })
-
+socket.on("loadSymbol", (data) => {
+    localStorage.setItem("loadSymbol", "");
+    localStorage.setItem("loadSymbol", JSON.stringify(data));
+});
 const channelToSubscription = new Map();
 
 function getNextDailyBarTime(barTime) {
@@ -97,6 +101,7 @@ export function subscribeOnStream(
     onResetCacheNeededCallback,
     lastDailyBar,
 ) {
+    console.log("chạy vào đây trước");
     const symbolList = "CHART." + symbolInfo.name;
     const channelString = ["addsymbol", symbolInfo.name];
     const handler = {
@@ -155,11 +160,11 @@ function updateBar(newData, subscriber, lastDailyBar) {
     const lastBarTimestamp = lastBar.time / 1000;
 
     let updatedBar = false;
-    if (isNewBar || roundedTimestamp * 1000 > lastBarTimestamp) {
+    if (isNewBar || roundedTimestamp > lastBarTimestamp) {
         updatedBar = {
             symbol: subscriber.symbol,
             resolution: subscriber.resolution,
-            time: roundedTimestamp,
+            time: newData.ts * 1000,
             open: newData.Open,
             high: newData.Hight,
             low: newData.Low,
