@@ -167,14 +167,10 @@ function updateBar(newData, subscriber, lastDailyBar) {
             volume: newData.volume
         };
     } else {
-        if (newData.price < lastBar.low) {
-            lastBar.low = newData.price;
-        } else if (newData.price > lastBar.high) {
-            lastBar.high = newData.price;
-        }
-
-        lastBar.volume += newData.volume;
-        lastBar.close = newData.price;
+        lastBar.high = newData.Hight;
+        lastBar.low = newData.Low;
+        lastBar.volume = newData.volume;
+        lastBar.close = newData.Close;
         updatedBar = lastBar;
     }
 
@@ -201,4 +197,11 @@ export function searchSymbolsFromStream(symbol) {
         });
         localStorage.setItem("symbolList", JSON.stringify(allSymbols));
     })
+}
+
+export function getBarFromStream(urlParameters, next) {
+    socket.emit("getBar", urlParameters);
+    socket.on("rsBar", (data) => {
+        next(data);
+    });
 }

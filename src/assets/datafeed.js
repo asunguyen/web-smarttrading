@@ -5,7 +5,8 @@ import {
 import {
 	subscribeOnStream,
 	unsubscribeFromStream,
-	searchSymbolsFromStream
+	searchSymbolsFromStream,
+	getBarFromStream
 } from './streaming.js';
 
 const lastBarsCache = new Map();
@@ -63,7 +64,7 @@ export default {
 		searchSymbolsFromStream(userInput.toLowerCase());
 		var run = setInterval(() => {
 			var symbolList = localStorage.getItem("symbolList");
-			if(symbolList && symbolList.length > 0) {
+			if (symbolList && symbolList.length > 0) {
 				clearInterval(run);
 				const symbols = JSON.parse(symbolList);
 				const newSymbols = symbols.filter(symbol => {
@@ -75,7 +76,7 @@ export default {
 				});
 				onResultReadyCallback(newSymbols);
 			}
-			
+
 		}, 1000);
 
 	},
@@ -87,10 +88,11 @@ export default {
 		extension
 	) => {
 		console.log('[resolveSymbol]: Method call', symbolName);
-		const symbols = await getAllSymbols("Tất cả");
+		var symbolList = localStorage.getItem("symbolList");
+		const symbols = JSON.parse(symbolList) || [];
 		const symbolItem = symbols.find(({
-			full_name,
-		}) => full_name === symbolName);
+			symbol,
+		}) => symbol === symbolName);
 		if (!symbolItem) {
 			console.log('[resolveSymbol]: Cannot resolve symbol', symbolName);
 			onResolveErrorCallback('cannot resolve symbol');
@@ -130,64 +132,49 @@ export default {
 			if (resolution == "60" || resolution == "120" || resolution == "180" || resolution == "240") resol = "1H";
 		}
 		catch (e) { }
-		const urlParameters = {
-			symbol: symbolInfo.name,
+		const urlParametersStream = {
+			symbol: symbolInfo,
 			from: from,
 			to: to,
 			resolution: resol,
 		};
 		//console.log("OK:",symbolInfo);
-		const query = Object.keys(urlParameters)
-			.map(name => `${name}=${encodeURIComponent(urlParameters[name])}`)
-			.join('&');
+		
 		try {
-			const data = await makeApiRequest(`chart-api/v2/ohlcs/${symbolInfo.pathRq}?${query}`);
-			//console.log(data);
-			if (data.length === 0) {
-				// "noData" should be set if there is no data in the requested period
-				onHistoryCallback([], {
+			getBarFromStream(urlParametersStream, (data) => {
+				const chart = data.chart;
+				if (chart.length === 0) {
+					// "noData" should be set if there is no data in the requested period
+					onHistoryCallback([], {
+						noData: false,
+					});
+					console.log('[getBars]: No data');
+				}
+				let bars = [];
+				for (let i = 0; i < chart.length; i++) {
+					let timeStamp = chart[i].time;
+					if (timeStamp >= from && timeStamp < to) {
+						bars = [...bars, {
+							time: timeStamp*1000,
+							low: chart[i].min,
+							high: chart[i].max,
+							open: chart[i].open,
+							close: chart[i].close,
+							volume: chart[i].volume,
+						}];
+					}
+				}
+				if (firstDataRequest) {
+					lastBarsCache.set(symbolInfo.name, {
+						...bars[bars.length - 1],
+					});
+				}
+				console.log(`[getBars]: returned bar`, bars);
+				onHistoryCallback(bars, {
 					noData: false,
 				});
-				console.log('[getBars]: No data');
-			}
-			else {
-
-			}
-			let bars = [];
-			for (let i = 0; i < data.t.length; i++) {
-				let timeStamp = data.t[i];
-				if (timeStamp >= from && timeStamp < to) {
-					bars = [...bars, {
-						time: timeStamp * 1000,
-						low: data.l[i],
-						high: data.h[i],
-						open: data.o[i],
-						close: data.c[i],
-						volume: data.v[i],
-					}];
-				}
-			}
-			// data.forEach(bar => {
-			// 	if (bar.Timestamp >= from && bar.Timestamp < to){
-			// 		bars = [...bars, {
-			// 			time: bar.Timestamp*1000,
-			// 			low: bar.Low,
-			// 			high: bar.High,
-			// 			open: bar.Open,
-			// 			close: bar.Close,
-			// 			volume: bar.Volume
-			// 		}];
-			// 	}
-			// });
-			if (firstDataRequest) {
-				lastBarsCache.set(symbolInfo.full_name, {
-					...bars[bars.length - 1],
-				});
-			}
-			console.log(`[getBars]: returned bar(0)`, bars[0]);
-			onHistoryCallback(bars, {
-				noData: false,
 			});
+			
 
 		} catch (error) {
 			console.log('[getBars]: Get error', error);
@@ -214,7 +201,7 @@ export default {
 			onRealtimeCallback,
 			subscriberUID,
 			onResetCacheNeededCallback,
-			lastBarsCache.get(symbolInfo.full_name)
+			lastBarsCache.get(symbolInfo.name)
 		);
 	},
 
