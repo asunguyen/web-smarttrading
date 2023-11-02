@@ -2357,32 +2357,32 @@ export default {
       var pathName = this.$router.currentRoute.fullPath
       // add bot
 
-      if (pathName == '/ai-trading/robot-derivative/free') {
+      if (pathName === '/ai-trading/robot-derivative/free') {
         thisVue.restoreUserIndicators(
           thisVue.freeDerivativeIndicators,
           tvWidget.activeChart()
         )
-      } else if (pathName == '/robot-derivative/scrape') {
+      } else if (pathName === '/ai-trading/robot-derivative/scrape') {
         thisVue.restoreUserIndicators(
           thisVue.scrapeDerivativeIndicators,
           tvWidget.activeChart()
         )
-      } else if (pathName == '/robot-derivative/trend') {
+      } else if (pathName === '/ai-trading/robot-derivative/trend') {
         thisVue.restoreUserIndicators(
           thisVue.trendDerivativeIndicators,
           tvWidget.activeChart()
         )
-      } else if (pathName == '/ai-trading/robot-base/free') {
+      } else if (pathName === '/ai-trading/robot-base/free') {
         thisVue.restoreUserIndicators(
           thisVue.freeBaseIndicators,
           tvWidget.activeChart()
         )
-      } else if (pathName == '/robot-base/t-plus') {
+      } else if (pathName === '/ai-trading/robot-base/t-plus') {
         thisVue.restoreUserIndicators(
           thisVue.tBaseIndicators,
           tvWidget.activeChart()
         )
-      } else if (pathName == '/robot-base/trend') {
+      } else if (pathName === '/ai-trading/robot-base/trend') {
         thisVue.restoreUserIndicators(
           thisVue.trendBaseIndicators,
           tvWidget.activeChart()
