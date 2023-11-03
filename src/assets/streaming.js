@@ -14,7 +14,7 @@
 // jwtKey = smtchart
 
 
-const socket = io("http://localhost:5001", { 'transports': ["websocket", "polling"] });
+const socket = io("http://api.smtchart.vn", { 'transports': ["websocket", "polling"] });
 socket.on("onData", (data) => {
     infoSymbol = data.infos;
     let dataBar = data.chart;
