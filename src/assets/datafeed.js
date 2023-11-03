@@ -6,7 +6,8 @@ import {
 	subscribeOnStream,
 	unsubscribeFromStream,
 	searchSymbolsFromStream,
-	getBarFromStream
+	getBarFromStream,
+	getHistoryFromStream
 } from './streaming.js';
 const lastBarsCache = new Map();
 // DatafeedConfiguration implementation
@@ -51,7 +52,10 @@ async function getAllSymbols(symbolType) {
 export default {
 	onReady: (callback) => {
 		console.log('[onReady]: Method call');
-		setTimeout(() => callback(configurationData));
+		setTimeout(() => {
+			callback(configurationData);
+
+		});
 	},
 
 	searchSymbols: async (
@@ -135,10 +139,6 @@ export default {
 		const { from, to, firstDataRequest } = periodParams;
 		console.log('[getBars]: Method call', symbolInfo, resolution, from, to);
 		var resol = resolution;
-		try {
-			if (resolution == "60" || resolution == "120" || resolution == "180" || resolution == "240") resol = "1H";
-		}
-		catch (e) { }
 		const urlParametersStream = {
 			symbol: symbolInfo,
 			from: from,
@@ -172,7 +172,6 @@ export default {
 
 					console.log(`[getBars]: returned bar`, bars);
 					if (firstDataRequest) {
-						console.log("bars.length - 1:: ", bars[bars.length - 1])
 						lastBarsCache.set(symbolInfo.name, {
 							...bars[bars.length - 1],
 						});

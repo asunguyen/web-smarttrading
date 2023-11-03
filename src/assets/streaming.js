@@ -210,3 +210,10 @@ export function getBarFromStream(urlParameters, next) {
         next(data);
     });
 }
+
+export function getHistoryFromStream(symbol, next) {
+    socket.emit("loadHistory", symbol);
+    socket.on("resHistory", (data) => {
+        next(data);
+    })
+}
