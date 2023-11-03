@@ -83,6 +83,7 @@ export default {
 					.search(userInput.toLowerCase()) !== -1;
 				return isFullSymbolContainsInput;
 			});
+			symbolListCustom = newSymbols;
 			console.log("newSymbols:: ", newSymbols);
 			onResultReadyCallback(newSymbols);
 		})
@@ -97,66 +98,95 @@ export default {
 	) => {
 		console.log('[resolveSymbol]: Method call', symbolName);
 		let dem = 0;
-		var run = setInterval(() => {
-			dem++;
-			if (infoSymbol) {
-				clearInterval(run);
-				const symbolInfo = {
-					name: infoSymbol.name,
-					full_name: infoSymbol.full_name,
-					description: infoSymbol.description,
-					listed_exchange: '',
-					type: infoSymbol.type,
-					ticker: infoSymbol.name,
-					exchange: infoSymbol.exchange,
-					format: 'price',
-					supported_resolutions: configurationData.supported_resolutions,
-					session: '0900-1445',
-					timezone: 'Asia/Ho_Chi_Minh',
-					minmov: 1,
-					pricescale: 100,
-					has_intraday: true,
-					intraday_multipliers: ['1', '60'],
-					volume_precision: 8,
-					data_status: 'streaming',
-					pathRq: infoSymbol.pathRq,
-				};
-		
-				console.log('[resolveSymbol]: Symbol resolved', symbolName);
-				onSymbolResolvedCallback(symbolInfo);
-			} else {
-				if (dem == 5) {
+		console.log("symbolListCustom:: ", symbolListCustom);
+		if (symbolListCustom && symbolListCustom.length > 0) {
+			infoSymbol = symbolListCustom.find((x) => x.name == symbolName);
+			const symbolInfo = {
+				name: infoSymbol.name,
+				full_name: infoSymbol.full_name,
+				description: infoSymbol.description,
+				listed_exchange: '',
+				type: infoSymbol.type,
+				ticker: infoSymbol.name,
+				exchange: infoSymbol.exchange,
+				format: 'price',
+				supported_resolutions: configurationData.supported_resolutions,
+				session: '0900-1445',
+				timezone: 'Asia/Ho_Chi_Minh',
+				minmov: 1,
+				pricescale: 100,
+				has_intraday: true,
+				intraday_multipliers: ['1', '60'],
+				volume_precision: 8,
+				data_status: 'streaming',
+				pathRq: infoSymbol.pathRq,
+			};
+	
+			console.log('[resolveSymbol]: Symbol resolved', symbolName);
+			onSymbolResolvedCallback(symbolInfo);
+		} else {
+			var run = setInterval(() => {
+				dem++;
+				if (infoSymbol) {
 					clearInterval(run);
-					defaultGetSymbolShistory(symbolName, (data) => {
-						infoSymbol = data.infos;
-						const symbolInfo = {
-							name: infoSymbol.name,
-							full_name: infoSymbol.full_name,
-							description: infoSymbol.description,
-							listed_exchange: '',
-							type: infoSymbol.type,
-							ticker: infoSymbol.name,
-							exchange: infoSymbol.exchange,
-							format: 'price',
-							supported_resolutions: configurationData.supported_resolutions,
-							session: '0900-1445',
-							timezone: 'Asia/Ho_Chi_Minh',
-							minmov: 1,
-							pricescale: 100,
-							has_intraday: true,
-							intraday_multipliers: ['1', '60'],
-							volume_precision: 8,
-							data_status: 'streaming',
-							pathRq: infoSymbol.pathRq,
-						};
-				
-						console.log('[resolveSymbol]: Symbol resolved', symbolName);
-						onSymbolResolvedCallback(symbolInfo);
-					})
+					const symbolInfo = {
+						name: infoSymbol.name,
+						full_name: infoSymbol.full_name,
+						description: infoSymbol.description,
+						listed_exchange: '',
+						type: infoSymbol.type,
+						ticker: infoSymbol.name,
+						exchange: infoSymbol.exchange,
+						format: 'price',
+						supported_resolutions: configurationData.supported_resolutions,
+						session: '0900-1445',
+						timezone: 'Asia/Ho_Chi_Minh',
+						minmov: 1,
+						pricescale: 100,
+						has_intraday: true,
+						intraday_multipliers: ['1', '60'],
+						volume_precision: 8,
+						data_status: 'streaming',
+						pathRq: infoSymbol.pathRq,
+					};
+			
+					console.log('[resolveSymbol]: Symbol resolved', symbolName);
+					onSymbolResolvedCallback(symbolInfo);
+				} else {
+					if (dem == 5) {
+						clearInterval(run);
+						defaultGetSymbolShistory(symbolName, (data) => {
+							infoSymbol = data.infos;
+							const symbolInfo = {
+								name: infoSymbol.name,
+								full_name: infoSymbol.full_name,
+								description: infoSymbol.description,
+								listed_exchange: '',
+								type: infoSymbol.type,
+								ticker: infoSymbol.name,
+								exchange: infoSymbol.exchange,
+								format: 'price',
+								supported_resolutions: configurationData.supported_resolutions,
+								session: '0900-1445',
+								timezone: 'Asia/Ho_Chi_Minh',
+								minmov: 1,
+								pricescale: 100,
+								has_intraday: true,
+								intraday_multipliers: ['1', '60'],
+								volume_precision: 8,
+								data_status: 'streaming',
+								pathRq: infoSymbol.pathRq,
+							};
+					
+							console.log('[resolveSymbol]: Symbol resolved', symbolName);
+							onSymbolResolvedCallback(symbolInfo);
+						})
+					}
 				}
-			}
-
-		}, 1000);
+	
+			}, 1000);
+		}
+		
 		
 	},
 
@@ -181,41 +211,48 @@ export default {
 			.map(name => `${name}=${encodeURIComponent(urlParameters[name])}`)
 			.join('&');
 		try {
-			getDataSymbolHistoryFromStream(urlParameters, (data) => {
-				const dataChart = data.chart.reverse();
-				if (dataChart.length <= 2) {
-					// "noData" should be set if there is no data in the requested period
-					onHistoryCallback([], {
-						noData: false,
-					});
-					console.log('[getBars]: No data');
-				}
-				else {
-	
-				}
-				let bars = [];
-				for (let i = 0; i < dataChart.length; i++) {
-					let timeStamp = dataChart[i].time;
-					if (timeStamp >= from && timeStamp < to) {
-						bars = [...bars, {
-							time: timeStamp * 1000,
-							low: dataChart[i].min,
-							high: dataChart[i].max,
-							open: dataChart[i].open,
-							close: dataChart[i].close,
-							volume: dataChart[i].volume,
-						}];
-					}
-				}
-				if (firstDataRequest) {
-					lastBarsCache.set(symbolInfo.full_name, {
-						...bars[bars.length - 1],
-					});
-				}
-				onHistoryCallback(bars, {
+			let pathRq = "";
+			let data;
+			if (symbolInfo.type == "stock") {
+				data = await makeApiRequest(`chart-api/v2/ohlcs/${pathRq}?${query}`);
+			}
+			if (symbolInfo.type == "forex") {
+				console.log("forex");
+			}
+			//console.log(data);
+			if (data.length === 0) {
+				// "noData" should be set if there is no data in the requested period
+				onHistoryCallback([], {
 					noData: false,
 				});
-			})
+				console.log('[getBars]: No data');
+			}
+			else {
+
+			}
+			let bars = [];
+			for (let i = 0; i < data.t.length; i++) {
+				let timeStamp = data.t[i];
+				if (timeStamp >= from && timeStamp < to) {
+					bars = [...bars, {
+						time: timeStamp * 1000,
+						low: data.l[i],
+						high: data.h[i],
+						open: data.o[i],
+						close: data.c[i],
+						volume: data.v[i],
+					}];
+				}
+			}
+			if (firstDataRequest) {
+				lastBarsCache.set(symbolInfo.full_name, {
+					...bars[bars.length - 1],
+				});
+			}
+			console.log(`[getBars]: returned bar(0)`, bars[0]);
+			onHistoryCallback(bars, {
+				noData: false,
+			});
 
 		} catch (error) {
 			console.log('[getBars]: Get error', error);
