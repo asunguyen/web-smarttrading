@@ -6,9 +6,10 @@ import {
 	subscribeOnStream,
 	unsubscribeFromStream,
 	searchSymbolsFromStream,
-	getBarFromStream,
-	getHistoryFromStream
+	getDataSymbolHistoryFromStream,
+	defaultGetSymbolShistory
 } from './streaming.js';
+
 const lastBarsCache = new Map();
 // DatafeedConfiguration implementation
 const configurationData = {
@@ -20,7 +21,7 @@ const configurationData = {
 		'name': "Tất cả",
 		'value': '',
 		'desc': "Tất cả sàn giao dịch"
-	},
+	}
 	],
 	// The `symbols_types` arguments are used for the `searchSymbols` method if a user selects this symbol type
 	symbols_types: [{
@@ -32,7 +33,6 @@ const configurationData = {
 
 // Obtains all symbols for all exchanges supported by CryptoCompare API
 async function getAllSymbols(symbolType) {
-
 	const data = await GeSymbolType('all-exchanges', symbolType);
 	let allSymbols = [];
 	data.forEach(symbol => {
@@ -52,10 +52,7 @@ async function getAllSymbols(symbolType) {
 export default {
 	onReady: (callback) => {
 		console.log('[onReady]: Method call');
-		setTimeout(() => {
-			callback(configurationData);
-
-		});
+		setTimeout(() => callback(configurationData));
 	},
 
 	searchSymbols: async (
@@ -64,23 +61,31 @@ export default {
 		symbolType,
 		onResultReadyCallback,
 	) => {
-		searchSymbolsFromStream(userInput.toLowerCase());
-		var run = setInterval(() => {
-			var symbolList = localStorage.getItem("symbolList");
-			if (symbolList && symbolList.length > 0) {
-				clearInterval(run);
-				const symbols = JSON.parse(symbolList);
-				const newSymbols = symbols.filter(symbol => {
-					const isExchangeValid = exchange === '' || symbol.exchange === exchange;
-					const isFullSymbolContainsInput = symbol.symbol
-						.toLowerCase()
-						.indexOf(userInput.toLowerCase()) !== -1;
-					return isExchangeValid && isFullSymbolContainsInput;
-				});
-				onResultReadyCallback(newSymbols);
-			}
-
-		}, 1000);
+		searchSymbolsFromStream(userInput, (data) => {
+			var listData = data;
+			let allSymbols = [];
+			listData.forEach(symbol => {
+				allSymbols = [...allSymbols, {
+					symbol: symbol.symbol,
+					pro_name: symbol.symbol,
+					full_name: symbol.symbol,
+					description: symbol.description,
+					exchange: symbol.exchange,
+					type: symbol.type,
+					pathRq: symbol.pathRq
+				}];
+			});
+			const newSymbols = allSymbols.filter(symbol => {
+				symbol.name = symbol.symbol;
+				symbol.full_name = symbol.symbol;
+				const isFullSymbolContainsInput = symbol.symbol
+					.toLowerCase()
+					.search(userInput.toLowerCase()) !== -1;
+				return isFullSymbolContainsInput;
+			});
+			console.log("newSymbols:: ", newSymbols);
+			onResultReadyCallback(newSymbols);
+		})
 
 	},
 
@@ -91,111 +96,136 @@ export default {
 		extension
 	) => {
 		console.log('[resolveSymbol]: Method call', symbolName);
-		var symbolList = localStorage.getItem("symbolList");
-		const symbols = JSON.parse(symbolList) || [];
-		const symbolItem = symbols.find(({
-			symbol,
-		}) => symbol === symbolName);
-		if (!symbolItem) {
-			//console.log('[resolveSymbol]: Cannot resolve symbol', symbolName);
-			//onResolveErrorCallback('cannot resolve symbol');
-			let symbol = localStorage.getItem("loadSymbol");
-			if (symbol && symbol.length > 0) {
-				symbol = JSON.parse(symbol);
-				symbol.infos["data_status"] = "streaming";
-				symbol.infos["supported_resolutions"] = configurationData.supported_resolutions;
-				symbol.infos["format"] = 'price';
-				console.log("symbol.infos:: ", symbol.infos);
-				onSymbolResolvedCallback(symbol.infos);
+		let dem = 0;
+		var run = setInterval(() => {
+			dem++;
+			if (infoSymbol) {
+				clearInterval(run);
+				const symbolInfo = {
+					name: infoSymbol.name,
+					full_name: infoSymbol.full_name,
+					description: infoSymbol.description,
+					listed_exchange: '',
+					type: infoSymbol.type,
+					ticker: infoSymbol.name,
+					exchange: infoSymbol.exchange,
+					format: 'price',
+					supported_resolutions: configurationData.supported_resolutions,
+					session: '0900-1445',
+					timezone: 'Asia/Ho_Chi_Minh',
+					minmov: 1,
+					pricescale: 100,
+					has_intraday: true,
+					intraday_multipliers: ['1', '60'],
+					volume_precision: 8,
+					data_status: 'streaming',
+					pathRq: infoSymbol.pathRq,
+				};
+		
+				console.log('[resolveSymbol]: Symbol resolved', symbolName);
+				onSymbolResolvedCallback(symbolInfo);
+			} else {
+				if (dem == 5) {
+					clearInterval(run);
+					defaultGetSymbolShistory(symbolName, (data) => {
+						infoSymbol = data.infos;
+						const symbolInfo = {
+							name: infoSymbol.name,
+							full_name: infoSymbol.full_name,
+							description: infoSymbol.description,
+							listed_exchange: '',
+							type: infoSymbol.type,
+							ticker: infoSymbol.name,
+							exchange: infoSymbol.exchange,
+							format: 'price',
+							supported_resolutions: configurationData.supported_resolutions,
+							session: '0900-1445',
+							timezone: 'Asia/Ho_Chi_Minh',
+							minmov: 1,
+							pricescale: 100,
+							has_intraday: true,
+							intraday_multipliers: ['1', '60'],
+							volume_precision: 8,
+							data_status: 'streaming',
+							pathRq: infoSymbol.pathRq,
+						};
+				
+						console.log('[resolveSymbol]: Symbol resolved', symbolName);
+						onSymbolResolvedCallback(symbolInfo);
+					})
+				}
 			}
-		} else {
-			const symbolInfo = {
-				name: symbolItem.symbol,
-				full_name: symbolItem.full_name,
-				description: symbolItem.description,
-				listed_exchange: '',
-				type: symbolItem.type,
-				ticker: symbolItem.symbol,
-				exchange: symbolItem.exchange,
-				format: 'price',
-				supported_resolutions: configurationData.supported_resolutions,
-				session: '0900-1445',
-				timezone: 'Asia/Ho_Chi_Minh',
-				minmov: 1,
-				pricescale: 100,
-				has_intraday: true,
-				intraday_multipliers: ['1', '60'],
-				volume_precision: 8,
-				data_status: 'streaming',
-				pathRq: symbolItem.pathRq,
-			};
 
-			console.log('[resolveSymbol]: Symbol resolved', symbolName);
-			onSymbolResolvedCallback(symbolInfo);
-		}
+		}, 1000);
+		
 	},
 
 	getBars: async (symbolInfo, resolution, periodParams, onHistoryCallback, onErrorCallback) => {
 		const { from, to, firstDataRequest } = periodParams;
 		console.log('[getBars]: Method call', symbolInfo, resolution, from, to);
 		var resol = resolution;
-		const urlParametersStream = {
-			symbol: symbolInfo,
+		try {
+			if (resolution == "60" || resolution == "120" || resolution == "180" || resolution == "240") resol = "1H";
+		}
+		catch (e) { }
+		const urlParameters = {
+			symbol: symbolInfo.name,
+			full_name: symbolInfo.full_name,
 			from: from,
 			to: to,
 			resolution: resol,
+			getHistory: true
 		};
 		//console.log("OK:",symbolInfo);
-
+		const query = Object.keys(urlParameters)
+			.map(name => `${name}=${encodeURIComponent(urlParameters[name])}`)
+			.join('&');
 		try {
-			getBarFromStream(urlParametersStream, (data) => {
-				let chart = data.chart;
-				if (chart.length === 0) {
-					return;
-				} else {
-					chart = chart.reverse()
-					let bars = [];
-					for (let i = 0; i < chart.length; i++) {
-						let timeStamp = chart[i].time;
-						if (timeStamp >= from && timeStamp < to) {
-							var item = {
-								time: chart[i].time * 1000,
-								low: parseFloat(chart[i].min),
-								high: parseFloat(chart[i].max),
-								open: parseFloat(chart[i].open),
-								close: parseFloat(chart[i].close),
-								volume: chart[i].volume,
-							};
-							bars.push(item);
-						}
-					}
-
-					console.log(`[getBars]: returned bar`, bars);
-					if (firstDataRequest) {
-						lastBarsCache.set(symbolInfo.name, {
-							...bars[bars.length - 1],
-						});
-					}
-					
-					onHistoryCallback(bars, {
+			getDataSymbolHistoryFromStream(urlParameters, (data) => {
+				const dataChart = data.chart.reverse();
+				if (dataChart.length <= 2) {
+					// "noData" should be set if there is no data in the requested period
+					onHistoryCallback([], {
 						noData: false,
 					});
-
-					barInfor.symbolInfo = symbolInfo;
-					barInfor.resolution = resolution;
-					barInfor.periodParams = periodParams;
-					barInfor.onHistoryCallback = onHistoryCallback;
-					barInfor.onErrorCallback = onErrorCallback;
+					console.log('[getBars]: No data');
 				}
-
-			});
-
+				else {
+	
+				}
+				let bars = [];
+				for (let i = 0; i < dataChart.length; i++) {
+					let timeStamp = dataChart[i].time;
+					if (timeStamp >= from && timeStamp < to) {
+						bars = [...bars, {
+							time: timeStamp * 1000,
+							low: dataChart[i].min,
+							high: dataChart[i].max,
+							open: dataChart[i].open,
+							close: dataChart[i].close,
+							volume: dataChart[i].volume,
+						}];
+					}
+				}
+				if (firstDataRequest) {
+					lastBarsCache.set(symbolInfo.full_name, {
+						...bars[bars.length - 1],
+					});
+				}
+				onHistoryCallback(bars, {
+					noData: false,
+				});
+			})
 
 		} catch (error) {
 			console.log('[getBars]: Get error', error);
 			onErrorCallback(error);
 		}
-
+		barInfor.symbolInfo = symbolInfo;
+		barInfor.resolution = resolution;
+		barInfor.periodParams = periodParams;
+		barInfor.onHistoryCallback = onHistoryCallback;
+		barInfor.onErrorCallback = onErrorCallback;
 	},
 
 	subscribeBars: (
@@ -212,7 +242,7 @@ export default {
 			onRealtimeCallback,
 			subscriberUID,
 			onResetCacheNeededCallback,
-			lastBarsCache.get(symbolInfo.name)
+			lastBarsCache.get(symbolInfo.full_name)
 		);
 	},
 
