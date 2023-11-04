@@ -22,11 +22,7 @@ export default {
       type: String
     },
     interval: {
-      default: 'D',
-      type: String
-    },
-    datafeedUrl: {
-      default: 'http://localhost:5001/v1/chart', // 'http://api.smtchart.vn/v1/chart', // 'https://demo_feed.tradingview.com',//
+      default: '1',
       type: String
     },
     libraryPath: {
@@ -116,18 +112,15 @@ export default {
     const container = this.$refs.chartContainer
     const widgetOptions = {
       symbol: this.symbol,
-      // BEWARE: no trailing slash is expected in feed URL
-      datafeed: Datafeed, // new UDFCompatibleDatafeed(this.datafeedUrl),
-      // datafeed: new window.Datafeeds.UDFCompatibleDatafeed(this.datafeedUrl),
+      datafeed: Datafeed, 
       locale: 'vi',
       timezone: 'Asia/Ho_Chi_Minh',
-      realtimeUrl: 'wss://realtime.entrade.com.vn/wss',
       interval: this.interval,
       container: container,
       library_path: this.libraryPath,
       logo: {
         image: '@/assets/logo-st.png',
-        link: 'https://smarttrading.vn/'
+        link: 'http://smtchart.vn/'
       },
       theme: 'dark',
       charts_storage_url: this.chartsStorageUrl,

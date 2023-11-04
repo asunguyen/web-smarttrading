@@ -1,6 +1,5 @@
 const socket = io("http://localhost:5001", { 'transports': ["websocket", "polling"] });
 socket.on("onData", (data) => {
-    console.log("data:: ", data);
     let dataBar = data.chart;
     try {
         const newData = {
@@ -22,7 +21,7 @@ socket.on("onData", (data) => {
         }
         const lastDailyBar = subscriptionItem ? subscriptionItem.lastDailyBar : null;
         var lastBar = lastDailyBar;
-        var lastBarTimestamp = lastBar.time/1000;
+        var lastBarTimestamp = Math.floor(lastBar.time/1000);
         const isNewBar = JSON.stringify(lastBar) === '{}';
 
         let resolution = subscriptionItem.resolution;
@@ -31,12 +30,10 @@ socket.on("onData", (data) => {
         } else if (resolution.includes('W')) {
             resolution = 10080;
         }
-
         const interval = resolution * 60;
         const roundedTimestamp = Math.floor(newData.ts / interval) * interval;
 
         const bar = updateBar(newData, lastDailyBar, subscriptionItem);
-        console.log("bar:: ", bar);
         var upBar;
         if (isNewBar || roundedTimestamp > lastBarTimestamp) {
             console.log(1);
@@ -44,7 +41,7 @@ socket.on("onData", (data) => {
                 ...lastDailyBar,
                 symbol: lastDailyBar.symbol,
                 resolution: subscriptionItem.resolution,
-                time: new Date().getTime(),
+                time: Math.floor((new Date().getTime())/1000),
                 open: newData.price,
                 high: isNewBar ? newData.price : lastBar.close,
                 low: isNewBar ? newData.price : lastBar.close,
@@ -63,13 +60,12 @@ socket.on("onData", (data) => {
                 time: bar.time,
             };
         }
+        if (upBar.time < lastDailyBar.time) {
+            upBar.time = lastDailyBar.time + 1000;
+        }
         subscriptionItem.lastDailyBar = upBar;
         // Send data to every subscriber of that symbol
-        console.log("upBar:: ", upBar);
         subscriptionItem.handlers.forEach(handler => handler.callback(upBar));
-
-
-
     }catch(err) {
         console.log(err);
     }
@@ -110,7 +106,6 @@ export function subscribeOnStream(
         handlers: [handler],
     };
     channelToSubscription.set(symbolList, subscriptionItem);
-    console.log("changeSymbol");
     socket.emit('changeSymbol', {symbolInfo: symbolInfo});
 }
 
@@ -127,7 +122,6 @@ export function unsubscribeFromStream(subscriberUID) {
             if (subscriptionItem.handlers.length === 0) {
                 // Unsubscribe from the channel if it was the last handler
                 console.log('[unsubscribeBars]: Unsubscribe from streaming. Channel:', channelString);
-                socket.emit('SubRemove', channelString);
                 channelToSubscription.delete(channelString);
                 break;
             }
@@ -145,21 +139,20 @@ function updateBar(newData, subscriber, lastDailyBar) {
     } else if (resolution.includes('W')) {
         resolution = 10080;
     }
-
     const interval = resolution * 60;
     const roundedTimestamp = Math.floor(newData.ts / interval) * interval;
-    const lastBarTimestamp = lastBar.time / 1000;
+    const lastBarTimestamp =  Math.floor(lastBar.time / 1000);
 
     let updatedBar = false;
     if (isNewBar || roundedTimestamp > lastBarTimestamp) {
         updatedBar = {
             symbol: subscriber.symbol,
             resolution: subscriber.resolution,
-            time: roundedTimestamp,
-            open: newData.price,
-            high: isNewBar ? newData.price : lastBar.close,
-            low: isNewBar ? newData.price : lastBar.close,
-            close: newData.price,
+            time: roundedTimestamp*1000,
+            open: newData.Open,
+            high: isNewBar ? newData.Hight : lastBar.close,
+            low: isNewBar ? newData.Low : lastBar.close,
+            close: newData.Close,
             volume: newData.volume
         };
     } else {
