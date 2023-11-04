@@ -5,9 +5,6 @@ import {
 import {
 	subscribeOnStream,
 	unsubscribeFromStream,
-	searchSymbolsFromStream,
-	getDataSymbolHistoryFromStream,
-	defaultGetSymbolShistory
 } from './streaming.js';
 
 const lastBarsCache = new Map();
@@ -17,23 +14,25 @@ const configurationData = {
 	supported_resolutions: ['1', '3', '5', '10', '15', '30', '45', '60', '120', "180", "240", 'D', 'W', 'M'],
 
 	// The `exchanges` arguments are used for the `searchSymbols` method if a user selects the exchange
-	exchanges: [{
-		'name': "Tất cả",
-		'value': '',
-		'desc': "Tất cả sàn giao dịch"
-	}
+	exchanges: [
+		{
+			'name': "Tất cả",
+			'value': '',
+			'desc': "Tất cả sàn giao dịch"
+		}
 	],
 	// The `symbols_types` arguments are used for the `searchSymbols` method if a user selects this symbol type
-	symbols_types: [{
-		'name': "Tất cả",
-		'value': 'Tất cả'
-	}
+	symbols_types: [
+		{
+			'name': "Tất cả",
+			'value': 'Tất cả'
+		}
 	],
 };
 
 // Obtains all symbols for all exchanges supported by CryptoCompare API
 async function getAllSymbols(symbolType) {
-	const data = await GeSymbolType('all-exchanges', symbolType);
+	const data = await GeSymbolType('search', "");
 	let allSymbols = [];
 	data.forEach(symbol => {
 		allSymbols = [...allSymbols, {
@@ -61,33 +60,16 @@ export default {
 		symbolType,
 		onResultReadyCallback,
 	) => {
-		searchSymbolsFromStream(userInput, (data) => {
-			var listData = data;
-			let allSymbols = [];
-			listData.forEach(symbol => {
-				allSymbols = [...allSymbols, {
-					symbol: symbol.symbol,
-					pro_name: symbol.symbol,
-					full_name: symbol.symbol,
-					description: symbol.description,
-					exchange: symbol.exchange,
-					type: symbol.type,
-					pathRq: symbol.pathRq
-				}];
-			});
-			const newSymbols = allSymbols.filter(symbol => {
-				symbol.name = symbol.symbol;
-				symbol.full_name = symbol.symbol;
-				const isFullSymbolContainsInput = symbol.symbol
-					.toLowerCase()
-					.search(userInput.toLowerCase()) !== -1;
-				return isFullSymbolContainsInput;
-			});
-			symbolListCustom = newSymbols;
-			console.log("newSymbols:: ", newSymbols);
-			onResultReadyCallback(newSymbols);
-		})
-
+		console.log('[searchSymbols]: Method call');
+		const symbols = await GeSymbolType('search', userInput);
+		const newSymbols = symbols.filter(symbol => {
+			const isExchangeValid = exchange === '' || symbol.exchange === exchange;
+			const isFullSymbolContainsInput = symbol.symbol
+				.toLowerCase()
+				.indexOf(userInput.toLowerCase()) !== -1;
+			return isExchangeValid && isFullSymbolContainsInput;
+		});
+		onResultReadyCallback(newSymbols);
 	},
 
 	resolveSymbol: async (
@@ -97,97 +79,39 @@ export default {
 		extension
 	) => {
 		console.log('[resolveSymbol]: Method call', symbolName);
-		let dem = 0;
-		console.log("symbolListCustom:: ", symbolListCustom);
-		if (symbolListCustom && symbolListCustom.length > 0) {
-			infoSymbol = symbolListCustom.find((x) => x.name == symbolName);
-			const symbolInfo = {
-				name: infoSymbol.name,
-				full_name: infoSymbol.full_name,
-				description: infoSymbol.description,
-				listed_exchange: '',
-				type: infoSymbol.type,
-				ticker: infoSymbol.name,
-				exchange: infoSymbol.exchange,
-				format: 'price',
-				supported_resolutions: configurationData.supported_resolutions,
-				session: '0900-1445',
-				timezone: 'Asia/Ho_Chi_Minh',
-				minmov: 1,
-				pricescale: 100,
-				has_intraday: true,
-				intraday_multipliers: ['1', '60'],
-				volume_precision: 8,
-				data_status: 'streaming',
-				pathRq: infoSymbol.pathRq,
-			};
-	
-			console.log('[resolveSymbol]: Symbol resolved', symbolName);
-			onSymbolResolvedCallback(symbolInfo);
-		} else {
-			var run = setInterval(() => {
-				dem++;
-				if (infoSymbol) {
-					clearInterval(run);
-					const symbolInfo = {
-						name: infoSymbol.name,
-						full_name: infoSymbol.full_name,
-						description: infoSymbol.description,
-						listed_exchange: '',
-						type: infoSymbol.type,
-						ticker: infoSymbol.name,
-						exchange: infoSymbol.exchange,
-						format: 'price',
-						supported_resolutions: configurationData.supported_resolutions,
-						session: '0900-1445',
-						timezone: 'Asia/Ho_Chi_Minh',
-						minmov: 1,
-						pricescale: 100,
-						has_intraday: true,
-						intraday_multipliers: ['1', '60'],
-						volume_precision: 8,
-						data_status: 'streaming',
-						pathRq: infoSymbol.pathRq,
-					};
-			
-					console.log('[resolveSymbol]: Symbol resolved', symbolName);
-					onSymbolResolvedCallback(symbolInfo);
-				} else {
-					if (dem == 5) {
-						clearInterval(run);
-						defaultGetSymbolShistory(symbolName, (data) => {
-							infoSymbol = data.infos;
-							const symbolInfo = {
-								name: infoSymbol.name,
-								full_name: infoSymbol.full_name,
-								description: infoSymbol.description,
-								listed_exchange: '',
-								type: infoSymbol.type,
-								ticker: infoSymbol.name,
-								exchange: infoSymbol.exchange,
-								format: 'price',
-								supported_resolutions: configurationData.supported_resolutions,
-								session: '0900-1445',
-								timezone: 'Asia/Ho_Chi_Minh',
-								minmov: 1,
-								pricescale: 100,
-								has_intraday: true,
-								intraday_multipliers: ['1', '60'],
-								volume_precision: 8,
-								data_status: 'streaming',
-								pathRq: infoSymbol.pathRq,
-							};
-					
-							console.log('[resolveSymbol]: Symbol resolved', symbolName);
-							onSymbolResolvedCallback(symbolInfo);
-						})
-					}
-				}
-	
-			}, 1000);
+		const symbols = await GeSymbolType('search', symbolName);
+		const symbolItem = symbols.find(({
+			full_name,
+		}) => full_name === symbolName);
+		if (!symbolItem) {
+			console.log('[resolveSymbol]: Cannot resolve symbol', symbolName);
+			onResolveErrorCallback('cannot resolve symbol');
+			return;
 		}
-		
-		
+		// Symbol information object
+		const symbolInfo = {
+			name: symbolItem.symbol,
+			full_name: symbolItem.full_name,
+			description: symbolItem.description,
+			listed_exchange: '',
+			type: symbolItem.type,
+			ticker: symbolItem.symbol,
+			exchange: symbolItem.exchange,
+			format: 'price',
+			supported_resolutions: configurationData.supported_resolutions,
+			session: '0900-1445',
+			timezone: 'Asia/Ho_Chi_Minh',
+			minmov: 1,
+			pricescale: 100,
+			has_intraday: true,
+			intraday_multipliers: ['1', '60'],
+			volume_precision: 8,
+			data_status: 'streaming',
+			pathRq: symbolItem.pathRq,
+		};
+
+		console.log('[resolveSymbol]: Symbol resolved', symbolInfo);
+		onSymbolResolvedCallback(symbolInfo);
 	},
 
 	getBars: async (symbolInfo, resolution, periodParams, onHistoryCallback, onErrorCallback) => {
@@ -200,25 +124,18 @@ export default {
 		catch (e) { }
 		const urlParameters = {
 			symbol: symbolInfo.name,
-			full_name: symbolInfo.full_name,
+			exchange: symbolInfo.exchange,
 			from: from,
 			to: to,
 			resolution: resol,
-			getHistory: true
 		};
 		//console.log("OK:",symbolInfo);
 		const query = Object.keys(urlParameters)
 			.map(name => `${name}=${encodeURIComponent(urlParameters[name])}`)
 			.join('&');
 		try {
-			let pathRq = "";
-			let data;
-			if (symbolInfo.type == "stock") {
-				data = await makeApiRequest(`chart-api/v2/ohlcs/${pathRq}?${query}`);
-			}
-			if (symbolInfo.type == "forex") {
-				console.log("forex");
-			}
+			const response = await makeApiRequest(`history?${query}`);
+			const data = response.data;
 			//console.log(data);
 			if (data.length === 0) {
 				// "noData" should be set if there is no data in the requested period
@@ -231,16 +148,16 @@ export default {
 
 			}
 			let bars = [];
-			for (let i = 0; i < data.t.length; i++) {
-				let timeStamp = data.t[i];
+			for (let i = 0; i < data.length; i++) {
+				let timeStamp = data[i].time;
 				if (timeStamp >= from && timeStamp < to) {
 					bars = [...bars, {
 						time: timeStamp * 1000,
-						low: data.l[i],
-						high: data.h[i],
-						open: data.o[i],
-						close: data.c[i],
-						volume: data.v[i],
+						low: data[i].min,
+						high: data[i].max,
+						open: data[i].open,
+						close: data[i].close,
+						volume: data[i].volume,
 					}];
 				}
 			}

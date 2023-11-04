@@ -1,45 +1,28 @@
-// const socketd = io("wss://dchart-socket.vndirect.com.vn/socket.io", {
-//     'transports': ["websocket", "polling"],
-//     'query': {
-//       'symbol': "VN30F1M"
-//     }
-//   });
-// const socketTrading = io("wss://tradingviewrealtime.vps.com.vn", {
-//     'transports': ["websocket", "polling"],
-//     'query': {
-//       'symbol': "VN30F1M"
-//     }
-// })
-// mongodbUrl = mongodb+srv://smarttrading:gcMXhKBgm45lRojO@smarttrading.s33oklk.mongodb.net/?retryWrites=true&w=majority
-// jwtKey = smtchart
-
-
-const socket = io("http://api.smtchart.vn", { 'transports': ["websocket", "polling"] });
+const socket = io("http://localhost:5001", { 'transports': ["websocket", "polling"] });
 socket.on("onData", (data) => {
-    infoSymbol = data.infos;
+    console.log("data:: ", data);
     let dataBar = data.chart;
     try {
-
         const newData = {
-            symbol: data.infos.name,
+            symbol: dataBar.symbol,
             ts: Math.floor(dataBar.time),
             volume: parseFloat(dataBar.volume),
-            price: parseFloat(dataBar.close / 1000),
-            Hight: parseFloat(dataBar.hight / 1000),
-            Low: parseFloat(dataBar.low / 1000),
-            Open: parseFloat(dataBar.open / 1000),
-            Close: parseFloat(dataBar.close / 1000),
+            price: parseFloat(dataBar.close),
+            Hight: parseFloat(dataBar.max),
+            Low: parseFloat(dataBar.min),
+            Open: parseFloat(dataBar.open),
+            Close: parseFloat(dataBar.close),
 
         };
-
-        const symbolList = "CHART." + dataBar.Symbol;
+        console.log("newData:: ", newData);
+        const symbolList = "CHART." + dataBar.symbol;
         const subscriptionItem = channelToSubscription.get(symbolList);
         if (subscriptionItem === undefined) {
             return;
         }
         const lastDailyBar = subscriptionItem ? subscriptionItem.lastDailyBar : null;
         var lastBar = lastDailyBar;
-        var lastBarTimestamp = lastBar.time;
+        var lastBarTimestamp = lastBar.time/1000;
         const isNewBar = JSON.stringify(lastBar) === '{}';
 
         let resolution = subscriptionItem.resolution;
@@ -53,32 +36,36 @@ socket.on("onData", (data) => {
         const roundedTimestamp = Math.floor(newData.ts / interval) * interval;
 
         const bar = updateBar(newData, lastDailyBar, subscriptionItem);
+        console.log("bar:: ", bar);
         var upBar;
         if (isNewBar || roundedTimestamp > lastBarTimestamp) {
+            console.log(1);
             upBar = {
                 ...lastDailyBar,
                 symbol: lastDailyBar.symbol,
                 resolution: subscriptionItem.resolution,
                 time: new Date().getTime(),
-                open: newData.Open,
-                high: isNewBar ? newData.Hight : lastBar.close,
-                low: isNewBar ? newData.Low : lastBar.close,
-                close: newData.Close,
+                open: newData.price,
+                high: isNewBar ? newData.price : lastBar.close,
+                low: isNewBar ? newData.price : lastBar.close,
+                close: newData.price,
                 volume: newData.volume
             };
         }
-        else {
+        else{
+            console.log(2);
             upBar = {
                 ...lastDailyBar,
                 high: Math.max(lastDailyBar.high, bar.high),
                 low: Math.min(lastDailyBar.low, bar.low),
                 close: newData.price,
-                volume: lastDailyBar.low + newData.volume,
+                volume: lastDailyBar.low +newData.volume,
                 time: bar.time,
             };
         }
         subscriptionItem.lastDailyBar = upBar;
         // Send data to every subscriber of that symbol
+        console.log("upBar:: ", upBar);
         subscriptionItem.handlers.forEach(handler => handler.callback(upBar));
 
 
@@ -123,7 +110,8 @@ export function subscribeOnStream(
         handlers: [handler],
     };
     channelToSubscription.set(symbolList, subscriptionItem);
-    socket.emit('stopGetHistory');
+    console.log("changeSymbol");
+    socket.emit('changeSymbol', {symbolInfo: symbolInfo});
 }
 
 export function unsubscribeFromStream(subscriberUID) {
@@ -187,24 +175,4 @@ function updateBar(newData, subscriber, lastDailyBar) {
     }
 
     return updatedBar;
-}
-
-export function searchSymbolsFromStream(symbolName, next) {
-    socket.emit("searchSymbol", symbolName);
-    socket.on("resSearchSymbol", (data) => {
-        next(data);
-    })
-}
-
-export function getDataSymbolHistoryFromStream(qrsearch, next) {
-    socket.emit("getHistorySymbol", qrsearch);
-    socket.on("resHistorySymbol", (data) => {
-        next(data);
-    })
-}
-export function defaultGetSymbolShistory(symbolName, next) {
-    socket.emit("activeDataHistory", symbolName)
-    socket.on("resHistorySymbol", (data) => {
-        next(data);
-    })
 }
