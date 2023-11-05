@@ -1,7 +1,7 @@
 <template>
   <el-card class="foreign">
-    <h2 class="foreign__title  mt-2">Khối ngoại</h2>
-    <el-tabs v-model="activeTab" type="card" @tab-click="handleClick">
+    <h2 class="foreign__title mt-2">Khối ngoại</h2>
+    <el-tabs v-model="activeTab" type="card" @tab-click="changeTab">
       <el-tab-pane
         v-for="foreign in listForeign"
         :key="foreign.label"
@@ -15,8 +15,16 @@
           style="width: 100%"
         >
           <el-table-column label="STT" type="index" align="center" width="50" />
-          <el-table-column label="Mã CK" prop="symbol" align="center" />
-          <el-table-column label="GT mua ròng" prop="value" align="center" />
+          <el-table-column label="Mã CK" prop="code" align="center">
+            <template slot-scope="{row}">
+              <span><b>{{ row.code }}</b></span>
+            </template>
+          </el-table-column>
+          <el-table-column label="GT mua ròng" prop="netVal" align="center">
+            <template slot-scope="{row}">
+              <span>{{ row.netVal | formatBillion }}</span>
+            </template>
+          </el-table-column>
           <el-table-column label="Giá" prop="price" align="center" />
           <el-table-column label="Thay đổi" prop="change" align="center" />
         </el-table>
@@ -26,6 +34,8 @@
 </template>
 
 <script>
+import { getListForeigns } from '@/api/stock'
+
 export default {
   data() {
     return {
@@ -35,22 +45,20 @@ export default {
         { label: 'NN bán ròng', name: 'sell' }
       ],
       isLoading: false,
-      tableData: [
-        { symbol: 'VCI', value: 78.65, price: 35.6, change: '+1.6 (+4.71%)' },
-        { symbol: 'VCI', value: 78.65, price: 35.6, change: '+1.6 (+4.71%)' },
-        { symbol: 'VCI', value: 78.65, price: 35.6, change: '+1.6 (+4.71%)' },
-        { symbol: 'VCI', value: 78.65, price: 35.6, change: '+1.6 (+4.71%)' },
-        { symbol: 'VCI', value: 78.65, price: 35.6, change: '+1.6 (+4.71%)' },
-        { symbol: 'VCI', value: 78.65, price: 35.6, change: '+1.6 (+4.71%)' },
-        { symbol: 'VCI', value: 78.65, price: 35.6, change: '+1.6 (+4.71%)' },
-        { symbol: 'VCI', value: 78.65, price: 35.6, change: '+1.6 (+4.71%)' },
-        { symbol: 'VCI', value: 78.65, price: 35.6, change: '+1.6 (+4.71%)' },
-        { symbol: 'VCI', value: 78.65, price: 35.6, change: '+1.6 (+4.71%)' }
-      ]
+      tableData: []
     }
   },
+  mounted() {
+    this.getListForeigns(this.activeTab)
+  },
   methods: {
-    handleClick() {}
+    changeTab() {
+      this.getListForeigns(this.activeTab)
+    },
+    async getListForeigns(typeForeign) {
+      const response = await getListForeigns(typeForeign)
+      this.tableData = response.data
+    }
   }
 }
 </script>

@@ -66,3 +66,23 @@ export function toThousandFilter(num) {
 export function uppercaseFirst(string) {
   return string.charAt(0).toUpperCase() + string.slice(1)
 }
+
+/**
+ * format billion
+ * @param {num} num
+ */
+export function formatBillion(num) {
+  return ((+num || 0) / 1000000000)
+}
+
+/**
+ * round to 2 digits after the comma
+ * @param {num} num
+ */
+export function roundTo2Digits(num) {
+  return (+num || 0).toFixed(2)
+}
+
+export function roundUp(num) {
+  return Math.ceil((+num || 0))
+}
