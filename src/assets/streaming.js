@@ -1,4 +1,4 @@
-const socket = io("http://localhost:5001", { 'transports': ["websocket", "polling"] });
+const socket = io("http://api.smtchart.vn", { 'transports': ["websocket", "polling"] });
 socket.on("onData", (data) => {
     let dataBar = data.chart;
     try {
@@ -13,7 +13,6 @@ socket.on("onData", (data) => {
             Close: parseFloat(dataBar.close),
 
         };
-        console.log("newData:: ", newData);
         const symbolList = "CHART." + dataBar.symbol;
         const subscriptionItem = channelToSubscription.get(symbolList);
         if (subscriptionItem === undefined) {
@@ -36,12 +35,11 @@ socket.on("onData", (data) => {
         const bar = updateBar(newData, lastDailyBar, subscriptionItem);
         var upBar;
         if (isNewBar || roundedTimestamp > lastBarTimestamp) {
-            console.log(1);
             upBar = {
                 ...lastDailyBar,
                 symbol: lastDailyBar.symbol,
                 resolution: subscriptionItem.resolution,
-                time: Math.floor((new Date().getTime())/1000),
+                time: roundedTimestamp*1000,
                 open: newData.price,
                 high: isNewBar ? newData.price : lastBar.close,
                 low: isNewBar ? newData.price : lastBar.close,
@@ -50,7 +48,6 @@ socket.on("onData", (data) => {
             };
         }
         else{
-            console.log(2);
             upBar = {
                 ...lastDailyBar,
                 high: Math.max(lastDailyBar.high, bar.high),

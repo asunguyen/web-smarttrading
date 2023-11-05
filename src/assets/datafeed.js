@@ -60,7 +60,6 @@ export default {
 		symbolType,
 		onResultReadyCallback,
 	) => {
-		console.log('[searchSymbols]: Method call');
 		const symbols = await GeSymbolType('search', userInput);
 		const newSymbols = symbols.filter(symbol => {
 			const isExchangeValid = exchange === '' || symbol.exchange === exchange;
@@ -78,17 +77,17 @@ export default {
 		onResolveErrorCallback,
 		extension
 	) => {
+		console.log("extension:: ", extension);
 		console.log('[resolveSymbol]: Method call', symbolName);
 		const symbols = await GeSymbolType('search', symbolName);
 		const symbolItem = symbols.find(({
-			full_name,
-		}) => full_name === symbolName);
+			full_name, symbol
+		}) => (full_name === symbolName || symbol == symbolName));
 		if (!symbolItem) {
 			console.log('[resolveSymbol]: Cannot resolve symbol', symbolName);
 			onResolveErrorCallback('cannot resolve symbol');
 			return;
 		}
-		// Symbol information object
 		const symbolInfo = {
 			name: symbolItem.symbol,
 			full_name: symbolItem.full_name,
@@ -99,8 +98,8 @@ export default {
 			exchange: symbolItem.exchange,
 			format: 'price',
 			supported_resolutions: configurationData.supported_resolutions,
-			session: '0900-1445',
 			timezone: 'Asia/Ho_Chi_Minh',
+			session: "24x7",
 			minmov: 1,
 			pricescale: 100,
 			has_intraday: true,
@@ -108,6 +107,7 @@ export default {
 			volume_precision: 8,
 			data_status: 'streaming',
 			pathRq: symbolItem.pathRq,
+			id: symbolItem.id
 		};
 
 		console.log('[resolveSymbol]: Symbol resolved', symbolInfo);
@@ -116,9 +116,8 @@ export default {
 
 	getBars: async (symbolInfo, resolution, periodParams, onHistoryCallback, onErrorCallback) => {
 		const { from, to, firstDataRequest } = periodParams;
-		console.log('[getBars]: Method call', symbolInfo, resolution, from, to);
+		console.log('[getBars]: Method call:: ',);
 		var resol = resolution;
-		console.log("resolution:: ", resolution);
 		// try {
 		// 	if (resolution == "60" || resolution == "120" || resolution == "180" || resolution == "240") resol = "1H";
 		// }
@@ -158,14 +157,12 @@ export default {
 					}];
 					if (i == data.length -1) {
 						if (firstDataRequest) {
-							console.log("symbolInfo.full_name:: ", symbolInfo.full_name);
 							lastBarsCache.set(symbolInfo.full_name, {
 								...bars[bars.length - 1],
 							});
 						}
-						console.log(`[getBars]: returned bar(0)`, bars);
 						onHistoryCallback(bars, {
-							noData: false,
+							noData: true,
 						});
 					}
 				}
