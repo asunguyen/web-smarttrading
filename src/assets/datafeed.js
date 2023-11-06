@@ -14,56 +14,25 @@ const configurationData = {
 	supported_resolutions: ['1', '3', '5', '10', '15', '30', '45', '60', '120', "180", "240", 'D', 'W', 'M'],
 
 	// The `exchanges` arguments are used for the `searchSymbols` method if a user selects the exchange
-	exchanges: [{
-		'name': "Tất cả",
-		'value': '',
-		'desc': "Tất cả sàn giao dịch"
-	}, {
-		'name': "HOSE",
-		'value': 'HOSE',
-		'desc': "Sở giao dịch chứng khoán Tp HCM"
-	}, {
-		'name': 'HNX',
-		'value': 'HNX',
-		'desc': "Sở giao dịch chứng khoán Tp Hà Nội"
-	}, {
-		'name': "UPCOM",
-		'value': "UPCOM",
-		'desc': "Unlisted Public Company Market"
-	},
+	exchanges: [
+		{
+			'name': "Tất cả",
+			'value': '',
+			'desc': "Tất cả sàn giao dịch"
+		}
 	],
 	// The `symbols_types` arguments are used for the `searchSymbols` method if a user selects this symbol type
-	symbols_types: [{
-		'name': "Tất cả",
-		'value': 'Tất cả'
-	}, {
-		'name': "Cổ phiếu",
-		'value': "Cổ phiếu"
-	}, {
-		'name': "Trái phiếu",
-		'value': "Trái phiếu"
-	}, {
-		'name': "Chứng quyền",
-		'value': "Chứng quyền"
-	}, {
-		'name': "ETF",
-		'value': "ETF"
-	}, {
-		'name': "Chỉ số",
-		'value': "Chỉ số"
-	}, {
-		'name': "Chứng chỉ quỹ",
-		'value': "Chứng chỉ quỹ"
-	}, {
-		'name': "HĐTL",
-		'value': 'HĐTL'
-	},
+	symbols_types: [
+		{
+			'name': "Tất cả",
+			'value': 'Tất cả'
+		}
 	],
 };
 
 // Obtains all symbols for all exchanges supported by CryptoCompare API
 async function getAllSymbols(symbolType) {
-	const data = await GeSymbolType('all-exchanges', symbolType);
+	const data = await GeSymbolType('search', "");
 	let allSymbols = [];
 	data.forEach(symbol => {
 		allSymbols = [...allSymbols, {
@@ -91,11 +60,10 @@ export default {
 		symbolType,
 		onResultReadyCallback,
 	) => {
-		console.log('[searchSymbols]: Method call');
-		const symbols = await getAllSymbols(symbolType);
+		const symbols = await GeSymbolType('search', userInput);
 		const newSymbols = symbols.filter(symbol => {
 			const isExchangeValid = exchange === '' || symbol.exchange === exchange;
-			const isFullSymbolContainsInput = symbol.full_name
+			const isFullSymbolContainsInput = symbol.symbol
 				.toLowerCase()
 				.indexOf(userInput.toLowerCase()) !== -1;
 			return isExchangeValid && isFullSymbolContainsInput;
@@ -109,17 +77,17 @@ export default {
 		onResolveErrorCallback,
 		extension
 	) => {
+		console.log("extension:: ", extension);
 		console.log('[resolveSymbol]: Method call', symbolName);
-		const symbols = await getAllSymbols("Tất cả");
+		const symbols = await GeSymbolType('search', symbolName);
 		const symbolItem = symbols.find(({
-			full_name,
-		}) => full_name === symbolName);
+			full_name, symbol
+		}) => (full_name === symbolName || symbol == symbolName));
 		if (!symbolItem) {
 			console.log('[resolveSymbol]: Cannot resolve symbol', symbolName);
 			onResolveErrorCallback('cannot resolve symbol');
 			return;
 		}
-		// Symbol information object
 		const symbolInfo = {
 			name: symbolItem.symbol,
 			full_name: symbolItem.full_name,
@@ -130,8 +98,8 @@ export default {
 			exchange: symbolItem.exchange,
 			format: 'price',
 			supported_resolutions: configurationData.supported_resolutions,
-			session: '0900-1445',
 			timezone: 'Asia/Ho_Chi_Minh',
+			session: "24x7",
 			minmov: 1,
 			pricescale: 100,
 			has_intraday: true,
@@ -139,22 +107,24 @@ export default {
 			volume_precision: 8,
 			data_status: 'streaming',
 			pathRq: symbolItem.pathRq,
+			id: symbolItem.id
 		};
 
-		console.log('[resolveSymbol]: Symbol resolved', symbolName);
+		console.log('[resolveSymbol]: Symbol resolved', symbolInfo);
 		onSymbolResolvedCallback(symbolInfo);
 	},
 
 	getBars: async (symbolInfo, resolution, periodParams, onHistoryCallback, onErrorCallback) => {
 		const { from, to, firstDataRequest } = periodParams;
-		console.log('[getBars]: Method call', symbolInfo, resolution, from, to);
+		console.log('[getBars]: Method call:: ',);
 		var resol = resolution;
-		try {
-			if (resolution == "60" || resolution == "120" || resolution == "180" || resolution == "240") resol = "1H";
-		}
-		catch (e) { }
+		// try {
+		// 	if (resolution == "60" || resolution == "120" || resolution == "180" || resolution == "240") resol = "1H";
+		// }
+		// catch (e) { }
 		const urlParameters = {
 			symbol: symbolInfo.name,
+			exchange: symbolInfo.exchange,
 			from: from,
 			to: to,
 			resolution: resol,
@@ -164,9 +134,10 @@ export default {
 			.map(name => `${name}=${encodeURIComponent(urlParameters[name])}`)
 			.join('&');
 		try {
-			const data = await makeApiRequest(`chart-api/v2/ohlcs/${symbolInfo.pathRq}?${query}`);
+			const response = await makeApiRequest(`history?${query}`);
+			const data = response.data;
 			//console.log(data);
-			if (data.length === 0) {
+			if (data.length == 0) {
 				// "noData" should be set if there is no data in the requested period
 				onHistoryCallback([], {
 					noData: false,
@@ -174,53 +145,32 @@ export default {
 				console.log('[getBars]: No data');
 			}
 			else {
-
-			}
-			let bars = [];
-			for (let i = 0; i < data.t.length; i++) {
-				let timeStamp = data.t[i];
-				if (timeStamp >= from && timeStamp < to) {
+				let bars = [];
+				for (let i = 0; i < data.length; i++) {
 					bars = [...bars, {
-						time: timeStamp * 1000,
-						low: data.l[i],
-						high: data.h[i],
-						open: data.o[i],
-						close: data.c[i],
-						volume: data.v[i],
+						time: data[i].time * 1000,
+						low: data[i].min,
+						high: data[i].max,
+						open: data[i].open,
+						close: data[i].close,
+						volume: data[i].volume,
 					}];
+					if (i == data.length -1) {
+						if (firstDataRequest) {
+							lastBarsCache.set(symbolInfo.full_name, {
+								...bars[bars.length - 1],
+							});
+						}
+						onHistoryCallback(bars, {
+							noData: true,
+						});
+					}
 				}
 			}
-			// data.forEach(bar => {
-			// 	if (bar.Timestamp >= from && bar.Timestamp < to){
-			// 		bars = [...bars, {
-			// 			time: bar.Timestamp*1000,
-			// 			low: bar.Low,
-			// 			high: bar.High,
-			// 			open: bar.Open,
-			// 			close: bar.Close,
-			// 			volume: bar.Volume
-			// 		}];
-			// 	}
-			// });
-			if (firstDataRequest) {
-				lastBarsCache.set(symbolInfo.full_name, {
-					...bars[bars.length - 1],
-				});
-			}
-			console.log(`[getBars]: returned bar(0)`, bars[0]);
-			onHistoryCallback(bars, {
-				noData: false,
-			});
-
 		} catch (error) {
 			console.log('[getBars]: Get error', error);
 			onErrorCallback(error);
 		}
-		barInfor.symbolInfo = symbolInfo;
-		barInfor.resolution = resolution;
-		barInfor.periodParams = periodParams;
-		barInfor.onHistoryCallback = onHistoryCallback;
-		barInfor.onErrorCallback = onErrorCallback;
 	},
 
 	subscribeBars: (

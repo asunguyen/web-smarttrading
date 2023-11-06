@@ -1,54 +1,26 @@
-// const socketd = io("wss://dchart-socket.vndirect.com.vn/socket.io", {
-//     'transports': ["websocket", "polling"],
-//     'query': {
-//       'symbol': "VN30F1M"
-//     }
-//   });
-// const socketTrading = io("wss://tradingviewrealtime.vps.com.vn", {
-//     'transports': ["websocket", "polling"],
-//     'query': {
-//       'symbol': "VN30F1M"
-//     }
-// })
-// mongodbUrl = mongodb+srv://smarttrading:gcMXhKBgm45lRojO@smarttrading.s33oklk.mongodb.net/?retryWrites=true&w=majority
-// jwtKey = smtchart
-
-
-const socket = io("http://stock.smtchart.vn", { 'transports': ["websocket", "polling"] });
+const socket = io("http://api.smtchart.vn", { 'transports': ["websocket", "polling"] });
 socket.on("onData", (data) => {
-    console.log("data stream:: ", data);
-    let parsedData = JSON.parse(data);
-    if (parsedData.DataType == "B") {
-        let dataBar;
-        console.log(parsedData);
-        try {
-            //parsedData = JSON.parse(data.Content || data);
-            dataBar = JSON.parse(parsedData.Content);
-        } catch (error) { }
-        const y = dataBar.TradingDate.split("/");
-        const time = y[2] + "-" + y[1] + "-" + y[0] + " " + dataBar.Time;
-        const timetmp = new Date(time).getTime();
-        console.log("dataBar.Symbol:: ", dataBar.Symbol);
+    let dataBar = data.chart;
+    try {
         const newData = {
-            symbol: dataBar.Symbol,
-            ts: Math.floor(timetmp),
-            volume: parseFloat(dataBar.Volume),
-            price: parseFloat(dataBar.Close / 1000),
-            Hight: parseFloat(dataBar.Hight / 1000),
-            Low: parseFloat(dataBar.Low / 1000),
-            Open: parseFloat(dataBar.Open / 1000),
-            Close: parseFloat(dataBar.Close / 1000),
+            symbol: dataBar.symbol,
+            ts: Math.floor(dataBar.time),
+            volume: parseFloat(dataBar.volume),
+            price: parseFloat(dataBar.close),
+            Hight: parseFloat(dataBar.max),
+            Low: parseFloat(dataBar.min),
+            Open: parseFloat(dataBar.open),
+            Close: parseFloat(dataBar.close),
 
         };
-
-        const symbolList = "CHART." + dataBar.Symbol;
+        const symbolList = "CHART." + dataBar.symbol;
         const subscriptionItem = channelToSubscription.get(symbolList);
         if (subscriptionItem === undefined) {
             return;
         }
         const lastDailyBar = subscriptionItem ? subscriptionItem.lastDailyBar : null;
         var lastBar = lastDailyBar;
-        var lastBarTimestamp = lastBar.time;
+        var lastBarTimestamp = Math.floor(lastBar.time/1000);
         const isNewBar = JSON.stringify(lastBar) === '{}';
 
         let resolution = subscriptionItem.resolution;
@@ -57,7 +29,6 @@ socket.on("onData", (data) => {
         } else if (resolution.includes('W')) {
             resolution = 10080;
         }
-
         const interval = resolution * 60;
         const roundedTimestamp = Math.floor(newData.ts / interval) * interval;
 
@@ -68,30 +39,33 @@ socket.on("onData", (data) => {
                 ...lastDailyBar,
                 symbol: lastDailyBar.symbol,
                 resolution: subscriptionItem.resolution,
-                time: new Date().getTime(),
-                open: newData.Open,
-                high: isNewBar ? newData.Hight : lastBar.close,
-                low: isNewBar ? newData.Low : lastBar.close,
-                close: newData.Close,
+                time: roundedTimestamp*1000,
+                open: newData.price,
+                high: isNewBar ? newData.price : lastBar.close,
+                low: isNewBar ? newData.price : lastBar.close,
+                close: newData.price,
                 volume: newData.volume
             };
         }
-        else {
+        else{
             upBar = {
                 ...lastDailyBar,
                 high: Math.max(lastDailyBar.high, bar.high),
                 low: Math.min(lastDailyBar.low, bar.low),
                 close: newData.price,
-                volume: lastDailyBar.low + newData.volume,
+                volume: lastDailyBar.low +newData.volume,
                 time: bar.time,
             };
+        }
+        if (upBar.time < lastDailyBar.time) {
+            upBar.time = lastDailyBar.time + 1000;
         }
         subscriptionItem.lastDailyBar = upBar;
         // Send data to every subscriber of that symbol
         subscriptionItem.handlers.forEach(handler => handler.callback(upBar));
+    }catch(err) {
+        console.log(err);
     }
-
-
 })
 
 const channelToSubscription = new Map();
@@ -129,7 +103,7 @@ export function subscribeOnStream(
         handlers: [handler],
     };
     channelToSubscription.set(symbolList, subscriptionItem);
-    socket.emit('addsymbol', symbolInfo.name);
+    socket.emit('changeSymbol', {symbolInfo: symbolInfo});
 }
 
 export function unsubscribeFromStream(subscriberUID) {
@@ -145,7 +119,6 @@ export function unsubscribeFromStream(subscriberUID) {
             if (subscriptionItem.handlers.length === 0) {
                 // Unsubscribe from the channel if it was the last handler
                 console.log('[unsubscribeBars]: Unsubscribe from streaming. Channel:', channelString);
-                socket.emit('SubRemove', channelString);
                 channelToSubscription.delete(channelString);
                 break;
             }
@@ -163,21 +136,20 @@ function updateBar(newData, subscriber, lastDailyBar) {
     } else if (resolution.includes('W')) {
         resolution = 10080;
     }
-
     const interval = resolution * 60;
     const roundedTimestamp = Math.floor(newData.ts / interval) * interval;
-    const lastBarTimestamp = lastBar.time / 1000;
+    const lastBarTimestamp =  Math.floor(lastBar.time / 1000);
 
     let updatedBar = false;
     if (isNewBar || roundedTimestamp > lastBarTimestamp) {
         updatedBar = {
             symbol: subscriber.symbol,
             resolution: subscriber.resolution,
-            time: roundedTimestamp,
-            open: newData.price,
-            high: isNewBar ? newData.price : lastBar.close,
-            low: isNewBar ? newData.price : lastBar.close,
-            close: newData.price,
+            time: roundedTimestamp*1000,
+            open: newData.Open,
+            high: isNewBar ? newData.Hight : lastBar.close,
+            low: isNewBar ? newData.Low : lastBar.close,
+            close: newData.Close,
             volume: newData.volume
         };
     } else {
