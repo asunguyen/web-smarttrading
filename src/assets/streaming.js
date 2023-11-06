@@ -5,12 +5,12 @@ socket.on("onData", (data) => {
         const newData = {
             symbol: dataBar.symbol,
             ts: Math.floor(dataBar.time),
-            volume: parseFloat(dataBar.volume),
-            price: parseFloat(dataBar.close),
-            Hight: parseFloat(dataBar.max),
-            Low: parseFloat(dataBar.min),
-            Open: parseFloat(dataBar.open),
-            Close: parseFloat(dataBar.close),
+            volume: dataBar.volume,
+            price: dataBar.close,
+            Hight: dataBar.max,
+            Low: dataBar.min,
+            Open: dataBar.open,
+            Close: dataBar.close,
 
         };
         const symbolList = "CHART." + dataBar.symbol;
