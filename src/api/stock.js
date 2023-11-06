@@ -1,17 +1,20 @@
 import request from '@/utils/request'
+import moment from 'moment'
 
 // const baseURL = process.env.VUE_APP_BASE_API_STOCK
 
 export function getListTopStocks(query) {
   return request({
-    url: `https://finfo-api.vndirect.com.vn/v4/top_stocks?q=index:${query.typeStock}~nmVolumeAvgCr20D:gte:10000~priceChgPctCr1D:${query.type}:0&size=10&sort=${query.sort}`,
+    url: query.name === 'accumulatedVal'
+      ? `https://finfo-api.vndirect.com.vn/v4/top_stocks?q=index:${query.floor}~accumulatedVal:gt:0&size=10&sort=accumulatedVal`
+      : `https://finfo-api.vndirect.com.vn/v4/top_stocks?q=index:${query.floor}~nmVolumeAvgCr20D:gte:10000~priceChgPctCr1D:${query.type}:0&size=10&sort=${query.sort}`,
     methods: 'get'
   })
 }
 
 export function getListValuation(query) {
   return request({
-    url: `https://finfo-api.vndirect.com.vn/v4/ratios/latest?order=reportDate&where=code:${query.typeStock}&filter=itemCode:81007,81008,81013,81014,81016,81017,82005,82006,82007,82008,81001,81002,81004,81005`,
+    url: `https://finfo-api.vndirect.com.vn/v4/ratios/latest?order=reportDate&where=code:${query.floor}&filter=itemCode:81007,81008,81013,81014,81016,81017,82005,82006,82007,82008,81001,81002,81004,81005`,
     method: 'get'
   })
 }
@@ -19,19 +22,91 @@ export function getListValuation(query) {
 export function getListValuationLastYear(query) {
   const lastYear = new Date().getFullYear() - 1
   return request({
-    url: `https://finfo-api.vndirect.com.vn/v4/ratios/latest?order=reportDate&where=code:${query.typeStock}~reportDate:lte:${lastYear}-12-31&filter=itemCode:81007,81008,81013,81014,81016,81017,82005,82006,82007,82008,81001,81002,81004,81005`,
+    url: `https://finfo-api.vndirect.com.vn/v4/ratios/latest?order=reportDate&where=code:${query.floor}~reportDate:lte:${lastYear}-12-31&filter=itemCode:81007,81008,81013,81014,81016,81017,82005,82006,82007,82008,81001,81002,81004,81005`,
     method: 'get'
   })
 }
 
 export function getListForeigns(typeForeign) {
-  const year = new Date().getFullYear()
-  const month = new Date().getMonth() + 1
-  const date = new Date().getDate() < 10 ? `0${new Date().getDate()}` : new Date().getDate()
+  const date = moment(new Date()).format('YYYY-MM-DD')
+  const type = typeForeign === 'buy' ? 'gt' : 'lt'
+  const sort = typeForeign === 'buy' ? 'desc' : 'asc'
   return request({
-    url: typeForeign === 'buy'
-      ? `https://finfo-api.vndirect.com.vn/v4/foreigns?q=type:STOCK,IFC,ETF~netVal:gt:0~tradingDate:${year}-${month}-${date}&sort=tradingDate~netVal:desc&size=10&fields=code,netVal,tradingDate`
-      : `https://finfo-api.vndirect.com.vn/v4/foreigns?q=type:STOCK,IFC,ETF~netVal:lt:0~tradingDate:${year}-${month}-${date}&sort=tradingDate~netVal:asc&size=10&fields=code,netVal,tradingDate`,
+    url: `https://finfo-api.vndirect.com.vn/v4/foreigns?q=type:STOCK,IFC,ETF~netVal:${type}:0~tradingDate:${date}&sort=tradingDate~netVal:${sort}&size=10&fields=code,netVal,tradingDate`,
+    method: 'get'
+  })
+}
+
+export function getChangePrices(period) {
+  return request({
+    url: `https://finfo-api.vndirect.com.vn/v4/change_prices?q=code:VNINDEX,HNX,UPCOM,VN30,VN30F1M~period:${period}`,
+    method: 'get'
+  })
+}
+
+export function getVnMarketPrices(floorCode, period) {
+  let date
+  const now = new Date()
+  switch (period) {
+    // case '1D': return ''
+    case 'MTD': {
+      const d = moment().startOf('month')
+      date = moment(d).format('YYYY-MM-DD')
+      break
+    }
+    case 'QTD': {
+      const d = moment().startOf('quarter')
+      date = moment(d).format('YYYY-MM-DD')
+      break
+    }
+    case 'YTD': {
+      const d = new Date(new Date().getFullYear(), 0, 1)
+      date = moment(d).format('YYYY-MM-DD')
+      break
+    }
+    case '5D': {
+      const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7)
+      date = moment(d).format('YYYY-MM-DD')
+      break
+    }
+    case '1M': {
+      const d = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate())
+      date = moment(d).format('YYYY-MM-DD')
+      break
+    }
+    case '3M': {
+      const d = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate())
+      date = moment(d).format('YYYY-MM-DD')
+      break
+    }
+    case '6M': {
+      const d = new Date(now.getFullYear(), now.getMonth() - 6, now.getDate())
+      date = moment(d).format('YYYY-MM-DD')
+      break
+    }
+    case '1Y': {
+      const d = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate())
+      date = moment(d).format('YYYY-MM-DD')
+      break
+    }
+    default: date = '2023-10-29'
+  }
+  return request({
+    url: `https://finfo-api.vndirect.com.vn/v4/vnmarket_prices?sort=date:desc&size=300&q=code:${floorCode}~date:gte:${date}`,
+    method: 'get'
+  })
+}
+
+export function getIndexIntradayHistories(floor) {
+  return request({
+    url: `https://api-finfo.vndirect.com.vn/v4/index_intraday_histories?sort=time:asc&q=code:${floor}~tradingDate:2023-11-03&fields=tradingDate_Time,accumulatedVal&size=100000`,
+    method: 'get'
+  })
+}
+
+export function getIndexIntradayLastest(floor) {
+  return request({
+    url: `https://api-finfo.vndirect.com.vn/v4/index_intraday_latest?sort=time:asc&q=code:${floor}&fields=tradingDate_Time,accumulatedVal&size=100000`,
     method: 'get'
   })
 }

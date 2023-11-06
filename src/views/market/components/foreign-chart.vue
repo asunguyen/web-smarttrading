@@ -3,10 +3,10 @@
     <h2 class="foreign-chart__title mt-0">Diễn biến giao dịch khối ngoại</h2>
     <el-tabs v-model="activeTab" type="card" @tab-click="handleClick">
       <el-tab-pane label="Giá trị" name="value">
-        <highcharts ref="chartValue" :options="chartValueOptions" />
+        <!-- <highcharts ref="chartValue" :options="chartValueOptions" /> -->
       </el-tab-pane>
       <el-tab-pane label="Khối lượng" name="volume">
-        <highcharts ref="chartVolume" :options="chartVolumeOptions" />
+        <!-- <highcharts ref="chartVolume" :options="chartVolumeOptions" /> -->
       </el-tab-pane>
     </el-tabs>
   </el-card>

@@ -11,18 +11,17 @@
         <el-table
           v-loading="isLoading"
           :data="tableData"
-          border
           style="width: 100%"
         >
           <el-table-column label="STT" type="index" align="center" width="50" />
-          <el-table-column label="Mã CK" prop="code" align="center">
+          <el-table-column label="Mã CK" prop="code">
             <template slot-scope="{row}">
               <span><b>{{ row.code }}</b></span>
             </template>
           </el-table-column>
-          <el-table-column label="GT mua ròng" prop="netVal" align="center">
+          <el-table-column label="GT mua ròng (Tỷ đồng)" prop="netVal" align="center">
             <template slot-scope="{row}">
-              <span>{{ row.netVal | formatBillion }}</span>
+              <span>{{ row.netVal | formatBillion | roundTo2Digits }}</span>
             </template>
           </el-table-column>
           <el-table-column label="Giá" prop="price" align="center" />
