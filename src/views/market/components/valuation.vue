@@ -3,30 +3,32 @@
     <h2 class="valuation__title mt-2">Định giá</h2>
     <el-tabs v-model="activeTab" type="card" @tab-click="changeTab">
       <el-tab-pane
-        v-for="typeStock in listTypeStock"
-        :key="typeStock.label"
-        :label="typeStock.label"
-        :name="typeStock.name"
+        v-for="floor in listFloor"
+        :key="floor.label"
+        :label="floor.label"
+        :name="floor.name"
       >
         <el-table
           v-loading="isLoading"
           :data="tableData"
-          border
           style="width: 100%"
         >
           <el-table-column label="Chỉ tiêu" prop="title">
             <template slot-scope="{row}">
-              <span>{{ row.title | formatNameTableValuation }}</span>
+              <span><b>{{ row.title | formatNameTableValuation }}</b></span>
             </template>
           </el-table-column>
           <el-table-column
-            label="2023"
+            label="Hiện tại"
             prop="currentValue"
             align="center"
             width="100"
           >
             <template slot-scope="{row}">
-              <span v-if="row.title === 'MARKETCAP'">{{ row.currentValue | formatBillion | roundUp | toThousandFilter }}</span>
+              <span v-if="['ROAA_TR_AVG5Q', 'ROAE_TR_AVG5Q', 'DIVIDEND_YIELD'].includes(row.title)">
+                {{ row.currentValue * 100 | roundTo2Digits }}
+              </span>
+              <span v-else-if="row.title === 'MARKETCAP'">{{ row.currentValue | formatBillion | roundUp | toThousandFilter }}</span>
               <span v-else>{{ row.currentValue | roundTo2Digits }}</span>
             </template>
           </el-table-column>
@@ -37,7 +39,10 @@
             width="100"
           >
             <template slot-scope="{row}">
-              <span v-if="row.title === 'MARKETCAP'">{{ row.lastYearValue | formatBillion | roundUp | toThousandFilter }}</span>
+              <span v-if="['ROAA_TR_AVG5Q', 'ROAE_TR_AVG5Q', 'DIVIDEND_YIELD'].includes(row.title)">
+                {{ row.lastYearValue * 100 | roundTo2Digits }}
+              </span>
+              <span v-else-if="row.title === 'MARKETCAP'">{{ row.lastYearValue | formatBillion | roundUp | toThousandFilter }}</span>
               <span v-else>{{ row.lastYearValue | roundTo2Digits }}</span>
             </template>
           </el-table-column>
@@ -70,8 +75,8 @@ export default {
   data() {
     return {
       activeTab: 'VNIndex',
-      listTypeStock: [
-        { label: 'VN-INDEX', name: 'VNIndex' },
+      listFloor: [
+        { label: 'VNINDEX', name: 'VNIndex' },
         { label: 'VN30', name: 'vn30' },
         { label: 'HNX', name: 'hnx' },
         { label: 'UPCOM', name: 'upcom' }
@@ -81,7 +86,7 @@ export default {
     }
   },
   mounted() {
-    this.getData()
+    // this.getData()
     this.getListValuation(this.activeTab)
   },
   methods: {
@@ -89,10 +94,10 @@ export default {
       this.tableData = []
       this.getListValuation(this.activeTab)
     },
-    async getListValuation(typeStock) {
-      const response = await getListValuation({ typeStock })
+    async getListValuation(floor) {
+      const response = await getListValuation({ floor })
       const response2 = await getListValuationLastYear({
-        typeStock: this.activeTab
+        floor: this.activeTab
       })
       const array = [...response.data, ...response2.data]
       const convertedArray = Object.values(

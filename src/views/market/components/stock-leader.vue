@@ -8,7 +8,7 @@
         :label="typeStock.label"
         :name="typeStock.name"
       >
-        <highcharts ref="chart" :options="chartOptions" />
+        <!-- <highcharts ref="chart" :options="chartOptions" /> -->
       </el-tab-pane>
     </el-tabs>
   </el-card>
