@@ -98,8 +98,18 @@ export function getVnMarketPrices(floorCode, period) {
 }
 
 export function getIndexIntradayHistories(floor) {
+  const now = new Date()
+  const day = now.getDay()
+  let date
+  if (day === 6 || day === 0) {
+    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 2)
+    date = moment(d).format('YYYY-MM-DD')
+  } else {
+    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1)
+    date = moment(d).format('YYYY-MM-DD')
+  }
   return request({
-    url: `https://api-finfo.vndirect.com.vn/v4/index_intraday_histories?sort=time:asc&q=code:${floor}~tradingDate:2023-11-03&fields=tradingDate_Time,accumulatedVal&size=100000`,
+    url: `https://api-finfo.vndirect.com.vn/v4/index_intraday_histories?sort=time:asc&q=code:${floor}~tradingDate:${date}&fields=tradingDate_Time,accumulatedVal&size=100000`,
     method: 'get'
   })
 }
@@ -111,3 +121,23 @@ export function getIndexIntradayLastest(floor) {
   })
 }
 
+export function getGoods() {
+  return request({
+    url: `https://finfo-api.vndirect.com.vn/v4/indexes?q=code:SPOT_GOLDS,GEN1ST_BRENT_OIL,GEN1ST_COTTON2,GEN1ST_RUB_TCM,GEN1ST_SUGAR11,FW3M_COPPER,SPOT_IRON_QINGDAO,HRC_3MM_EXPORT`,
+    method: 'get'
+  })
+}
+
+export function getChangePricesGoods() {
+  return request({
+    url: `https://finfo-api.vndirect.com.vn/v4/change_prices?q=period:1D~code:SPOT_GOLDS,GEN1ST_BRENT_OIL,GEN1ST_COTTON2,GEN1ST_RUB_TCM,GEN1ST_SUGAR11,FW3M_COPPER,SPOT_IRON_QINGDAO,HRC_3MM_EXPORT`,
+    method: 'get'
+  })
+}
+
+export function getCurrenciesRate() {
+  return request({
+    url: `https://finfo-api.vndirect.com.vn/v4/currencies/latest?order=tradingDate&where=locale:VN&filter=code:USD_VND,EUR_VND,CNY_VND,JPY_VND,EUR_USD,USD_JPY,USD_CNY`,
+    method: 'get'
+  })
+}
