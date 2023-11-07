@@ -61,14 +61,14 @@ export default {
 		onResultReadyCallback,
 	) => {
 		const symbols = await GeSymbolType('search', userInput);
-		const newSymbols = symbols.filter(symbol => {
-			const isExchangeValid = exchange === '' || symbol.exchange === exchange;
-			const isFullSymbolContainsInput = symbol.symbol
-				.toLowerCase()
-				.indexOf(userInput.toLowerCase()) !== -1;
-			return isExchangeValid && isFullSymbolContainsInput;
-		});
-		onResultReadyCallback(newSymbols);
+		// const newSymbols = symbols.filter(symbol => {
+		// 	const isExchangeValid = exchange === '' || symbol.exchange === exchange;
+		// 	const isFullSymbolContainsInput = symbol.symbol
+		// 		.toLowerCase()
+		// 		.indexOf(userInput.toLowerCase()) !== -1;
+		// 	return isExchangeValid && isFullSymbolContainsInput;
+		// });
+		onResultReadyCallback(symbols);
 	},
 
 	resolveSymbol: async (
