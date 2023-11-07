@@ -19,7 +19,7 @@
     <h2>Thanh khoản và dữ liệu thị trường</h2>
     <el-row :gutter="10">
       <el-col :xs="24" :sm="12" :md="16" :lg="16" :xl="16"><MarketLiquidity /></el-col>
-      <!-- <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="8"><MarketData /></el-col> -->
+      <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="8"><MarketData /></el-col>
     </el-row>
     <!-- <h2>Độ rộng thị trường</h2>
     <el-row>
