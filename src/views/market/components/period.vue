@@ -74,9 +74,9 @@ import { getChangePrices, getVnMarketPrices } from '@/api/stock'
 export default {
   data() {
     return {
-      period: '1D',
+      period: 'MTD',
       listPeriods: [
-        { label: '1 ngày', value: '1D' },
+        // { label: '1 ngày', value: '1D' },
         { label: 'Từ đầu tháng', value: 'MTD' },
         { label: 'Từ đầu quý', value: 'QTD' },
         { label: 'Từ đầu năm', value: 'YTD' },

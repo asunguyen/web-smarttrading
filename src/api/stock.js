@@ -141,3 +141,10 @@ export function getCurrenciesRate() {
     method: 'get'
   })
 }
+
+export function getMarketWidth(floor) {
+  return request({
+    url: `https://mkw-socket-v2.vndirect.com.vn/mkwsocketv2/gainerslosers?index=${floor}`,
+    method: 'get'
+  })
+}
