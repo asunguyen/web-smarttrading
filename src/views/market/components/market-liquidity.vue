@@ -21,10 +21,6 @@ export default {
   data() {
     return {
       activeTab: 'VNINDEX',
-      listFloor: [
-        { label: 'HOSE', name: 'VNINDEX' },
-        { label: 'HNX', name: 'hnx' }
-      ],
       isLoading: false
     }
   },
@@ -88,9 +84,10 @@ export default {
             text: 'GTGD (tỷ VNĐ)'
           }
         },
-        // tooltip: {
-        //   pointFormat: '{series.name} had stockpiled <b>{point.y:,.0f}</b><br/>warheads in {point.x}'
-        // },
+        tooltip: {
+          xDateFormat: '%H:%M:%S'
+          // pointFormat: '{series.name} had stockpiled <b>{point.y:,.0f}</b><br/>warheads in {point.x}'
+        },
         plotOptions: {
           area: {
             // pointStart: 1698976801000,

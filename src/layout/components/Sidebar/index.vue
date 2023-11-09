@@ -12,7 +12,8 @@
         :collapse-transition="false"
         mode="vertical"
       >
-        <sidebar-item v-for="route in constantRoutes" :key="route.path" :item="route" :base-path="route.path" />
+        <!-- <sidebar-item v-for="route in constantRoutes" :key="route.path" :item="route" :base-path="route.path" /> -->
+        <sidebar-item v-for="route in asyncRoutes" :key="route.path" :item="route" :base-path="route.path" />
       </el-menu>
     </el-scrollbar>
   </div>
@@ -23,7 +24,7 @@ import { mapGetters } from 'vuex'
 import Logo from './Logo'
 import SidebarItem from './SidebarItem'
 import variables from '@/styles/variables.scss'
-import { constantRoutes } from '@/router'
+import { constantRoutes, asyncRoutes } from '@/router'
 
 export default {
   components: { SidebarItem, Logo },
@@ -52,6 +53,9 @@ export default {
     },
     constantRoutes() {
       return constantRoutes
+    },
+    asyncRoutes() {
+      return asyncRoutes
     }
   }
 }

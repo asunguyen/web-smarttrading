@@ -43,7 +43,7 @@
           <el-table-column label="Thay đổi" prop="changePct">
             <template slot-scope="{row}">
               <span :class="{'text-success': row.changePct > 0, 'text-danger': row.changePct < 0, 'text-warning': row.changePct === 0 || !row.changePct}">
-                {{ row.changePct | roundTo2Digits | toThousandFilter }}%
+                {{ row.changePct | roundTo2Digits }}%
               </span>
             </template>
           </el-table-column>
