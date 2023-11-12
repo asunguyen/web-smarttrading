@@ -141,3 +141,24 @@ export function getCurrenciesRate() {
     method: 'get'
   })
 }
+
+export function getMarketWidth(floor) {
+  return request({
+    url: `https://mkw-socket-v2.vndirect.com.vn/mkwsocketv2/gainerslosers?index=${floor}`,
+    method: 'get'
+  })
+}
+
+export function getLeaderLarger(floor) {
+  return request({
+    url: `https://mkw-socket-v2.vndirect.com.vn/mkwsocketv2/leaderlarger?index=${floor}`,
+    method: 'get'
+  })
+}
+
+export function getForeign() {
+  return request({
+    url: `https://finfo-api.vndirect.com.vn/v4/foreigns?sort=tradingDate&q=code:VNINDEX&size=30`,
+    method: 'get'
+  })
+}

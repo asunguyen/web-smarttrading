@@ -1,13 +1,13 @@
 import { login, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken, setUserInfo, getUserInfo, removeUserInfo } from '@/utils/auth'
+import { getToken, setToken, removeToken, removeUserInfo } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 
 const state = {
   token: getToken(),
-  name: getUserInfo() ? JSON.parse(getUserInfo()).username : '',
+  name: '',
   avatar: '',
   introduction: '',
-  roles: getUserInfo() ? (JSON.parse(getUserInfo()).isAdmin ? ['admin'] : ['editor']) : []
+  roles: []
 }
 
 const mutations = {
@@ -36,11 +36,6 @@ const actions = {
       login({ username: username.trim(), password: password }).then(response => {
         commit('SET_TOKEN', response.token)
         setToken(response.token)
-        setUserInfo(JSON.stringify(response.data))
-        commit('SET_NAME', response.data.username)
-
-        const roles = response.data.isAdmin ? ['admin'] : ['editor']
-        commit('SET_ROLES', roles)
         resolve()
       }).catch(error => {
         reject(error)
@@ -58,7 +53,8 @@ const actions = {
           reject('Verification failed, please Login again.')
         }
 
-        const { roles, name, avatar, introduction } = data
+        const { isAdmin, username } = data
+        const roles = isAdmin ? ['admin'] : ['editor']
 
         // roles must be a non-empty array
         if (!roles || roles.length <= 0) {
@@ -66,10 +62,10 @@ const actions = {
         }
 
         commit('SET_ROLES', roles)
-        commit('SET_NAME', name)
-        commit('SET_AVATAR', avatar)
-        commit('SET_INTRODUCTION', introduction)
-        resolve(data)
+        commit('SET_NAME', username)
+        // commit('SET_AVATAR', avatar)
+        // commit('SET_INTRODUCTION', introduction)
+        resolve({ roles, username })
       }).catch(error => {
         reject(error)
       })

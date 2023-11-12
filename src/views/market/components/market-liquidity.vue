@@ -21,19 +21,15 @@ export default {
   data() {
     return {
       activeTab: 'VNINDEX',
-      listFloor: [
-        { label: 'HOSE', name: 'VNINDEX' },
-        { label: 'HNX', name: 'hnx' }
-      ],
       isLoading: false
     }
   },
   watch: {
     activeTab(value) {
       if (value === 'VNINDEX') {
-        this.getIndexIntraday(this.activeTab, 'chart-container-liquidity-vnindex')
+        this.getIndexIntraday(value, 'chart-container-liquidity-vnindex')
       } else if (value === 'HNX') {
-        this.getIndexIntraday(this.activeTab, 'chart-container-liquidity-hnx')
+        this.getIndexIntraday(value, 'chart-container-liquidity-hnx')
       }
     }
   },
@@ -88,9 +84,10 @@ export default {
             text: 'GTGD (tỷ VNĐ)'
           }
         },
-        // tooltip: {
-        //   pointFormat: '{series.name} had stockpiled <b>{point.y:,.0f}</b><br/>warheads in {point.x}'
-        // },
+        tooltip: {
+          xDateFormat: '%H:%M:%S'
+          // pointFormat: '{series.name} had stockpiled <b>{point.y:,.0f}</b><br/>warheads in {point.x}'
+        },
         plotOptions: {
           area: {
             // pointStart: 1698976801000,
@@ -120,9 +117,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.market-liquidity {
-
-}
-</style>

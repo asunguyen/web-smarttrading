@@ -38,7 +38,7 @@
                       'text-warning': row.priceChgCr1D === 0
                     }"
                   >
-                    {{ row.priceChgCr1D }} ({{ row.priceChgPctCr1D | roundTo2Digits }}%)
+                    {{ row.priceChgCr1D | roundTo2Digits }} ({{ row.priceChgPctCr1D | roundTo2Digits }}%)
                   </span>
                   <span v-else>-</span>
                 </template>

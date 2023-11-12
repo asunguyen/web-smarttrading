@@ -1,92 +1,125 @@
 <template>
   <el-card class="foreign-chart">
     <h2 class="foreign-chart__title mt-0">Diễn biến giao dịch khối ngoại</h2>
-    <el-tabs v-model="activeTab" type="card" @tab-click="handleClick">
+    <el-tabs v-model="activeTab" v-loading="isLoading" type="card">
       <el-tab-pane label="Giá trị" name="value">
-        <!-- <highcharts ref="chartValue" :options="chartValueOptions" /> -->
+        <div id="chart-container-foreign-value" class="mt-4" />
       </el-tab-pane>
       <el-tab-pane label="Khối lượng" name="volume">
-        <!-- <highcharts ref="chartVolume" :options="chartVolumeOptions" /> -->
+        <div id="chart-container-foreign-volume" class="mt-4" />
       </el-tab-pane>
     </el-tabs>
   </el-card>
 </template>
 
 <script>
+import { getForeign } from '@/api/stock'
+
 export default {
   data() {
     return {
       activeTab: 'value',
-      chartValueOptions: {
+      isLoading: false
+    }
+  },
+  watch: {
+    activeTab(value) {
+      if (value === 'value') {
+        this.getForeign('chart-container-foreign-value')
+      } else if (value === 'volume') {
+        this.getForeign('chart-container-foreign-volume')
+      }
+    }
+  },
+  mounted() {
+    this.getForeign()
+  },
+  methods: {
+    async getForeign(chartId) {
+      try {
+        this.isLoading = true
+        const response = await getForeign()
+
+        const dataNetValue = response.data.map(item => {
+          return [new Date(item.tradingDate).getTime(), item.netVal / 1000000000]
+        })
+
+        const dataNetVolume = response.data.map(item => {
+          return [new Date(item.tradingDate).getTime(), item.netVol / 1000000]
+        })
+
+        if (this.activeTab === 'value') {
+          this.createChart(dataNetValue, chartId)
+        } else if (this.activeTab === 'volume') {
+          this.createChart(dataNetVolume, chartId)
+        }
+      } catch (error) {
+        console.log(error)
+      } finally {
+        this.isLoading = false
+      }
+    },
+    createChart(data, chartId = 'chart-container-foreign-value') {
+      function redrawColumns(chart) {
+        chart.series[0].data.forEach(item => {
+          if (item.y < 0) {
+            item.update({
+              color: '#C32022'
+            })
+          }
+        })
+      }
+      // eslint-disable-next-line no-undef
+      Highcharts.chart(chartId, {
         chart: {
-          type: 'column'
+          type: 'column',
+          events: {
+            load: function() {
+              redrawColumns(this)
+            }
+          }
         },
         title: {
           text: ''
         },
         xAxis: {
-          categories: [
-            '2/10/2023',
-            '3/10/2023',
-            '4/10/2023',
-            '5/10/2023',
-            '6/10/2023',
-            '9/10/2023',
-            '10/10/2023',
-            '11/10/2023',
-            '12/10/2023',
-            '13/10/2023',
-            '16/10/2023',
-            '17/10/2023',
-            '18/10/2023',
-            '19/10/2023',
-            '20/10/2023',
-            '23/10/2023',
-            '24/10/2023',
-            '25/10/2023',
-            '26/10/2023',
-            '27/10/2023'
-          ],
+          type: 'datetime',
           labels: {
-            style: {
-              fontSize: '10px'
-            }
+            format: '{value:%d/%m}'
           }
         },
         yAxis: {
           title: {
-            text: ''
+            text: this.activeTab === 'value' ? 'Tỷ đồng' : 'Triệu cổ phiếu'
           }
+        },
+        legend: {
+          enabled: false
         },
         credits: {
           enabled: false
         },
         plotOptions: {
           column: {
-            borderRadius: '25%'
+            borderRadius: '5%'
           },
           series: {
-            pointWidth: 10
+            pointWidth: 15
           }
+        },
+        tooltip: {
+          xDateFormat: '%d/%m/%Y',
+          pointFormat: '{series.name}: <b>{point.y:,.2f}</b><br/>'
         },
         series: [
           {
-            name: 'Giá trị mua',
-            data: [665, 969, 1034, 266, 800, 335, 558, 659, 607, 644, 316, 719, 1249, 1299, 1044, 501, 646, 415, 1369, 347],
-            color: '#004370'
-          },
-          {
-            name: 'Giá trị bán',
-            data: [-549, -1096, -876, -966, -658, -839, -823, -590, -110, -795, -106, -624, -694, -1042, -848, -1573, -1082, -945, -1410, -1036],
-            color: '#C32022'
+            name: this.activeTab === 'value' ? 'Giá trị ròng' : 'Khối lượng ròng',
+            data: data,
+            color: '#43B13E'
           }
         ]
-      },
-      chartVolumeOptions: {}
+      })
     }
-  },
-  methods: {
-    handleClick() {}
   }
 }
 </script>

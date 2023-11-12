@@ -16,10 +16,11 @@ export function signup(data) {
   })
 }
 
-export function getInfo() {
+export function getInfo(token) {
   return request({
     url: '/user/get-info',
-    method: 'get'
+    method: 'get',
+    params: { token }
   })
 }
 
