@@ -25,9 +25,9 @@ export default {
   watch: {
     activeTab(value) {
       if (value === 'VNINDEX') {
-        this.getMarketWidth(this.activeTab, 'chart-container-market-width-vnindex')
+        this.getMarketWidth(value, 'chart-container-market-width-vnindex')
       } else if (value === 'HNX') {
-        this.getMarketWidth(this.activeTab, 'chart-container-market-width-hnx')
+        this.getMarketWidth(value, 'chart-container-market-width-hnx')
       }
     }
   },
