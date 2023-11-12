@@ -1,30 +1,91 @@
 <template>
   <el-card class="stock-leader">
     <h2 class="stock-leader__title mt-2">Nhóm dẫn dắt thị trường</h2>
-    <el-tabs v-model="activeTab" type="card" @tab-click="handleClick">
-      <el-tab-pane
-        v-for="typeStock in listTypeStock"
-        :key="typeStock.label"
-        :label="typeStock.label"
-        :name="typeStock.name"
-      >
-        <!-- <highcharts ref="chart" :options="chartOptions" /> -->
+    <el-tabs v-model="activeTab" v-loading="isLoading" type="card">
+      <el-tab-pane label="VNINDEX" name="VNINDEX">
+        <div id="chart-container-stock-leader-vnindex" class="mt-4" />
+      </el-tab-pane>
+      <el-tab-pane label="HNX" name="HNX">
+        <div id="chart-container-stock-leader-hnx" class="mt-4" />
+      </el-tab-pane>
+      <el-tab-pane label="VN30" name="VN30">
+        <div id="chart-container-stock-leader-vn30" class="mt-4" />
       </el-tab-pane>
     </el-tabs>
   </el-card>
 </template>
 
 <script>
+import { getLeaderLarger } from '@/api/stock'
+
 export default {
   data() {
     return {
-      activeTab: 'vn-index',
-      listTypeStock: [
-        { label: 'VN-Index', name: 'vn-index' },
-        { label: 'HNX', name: 'hnx' },
-        { label: 'UPCOM', name: 'upcom' }
-      ],
-      chartOptions: {
+      activeTab: 'VNINDEX',
+      isLoading: false
+    }
+  },
+  watch: {
+    activeTab(value) {
+      if (value === 'VNINDEX') {
+        this.getLeaderLarger(value, 'chart-container-stock-leader-vnindex')
+      } else if (value === 'HNX') {
+        this.getLeaderLarger(value, 'chart-container-stock-leader-hnx')
+      } else if (value === 'VN30') {
+        this.getLeaderLarger(value, 'chart-container-stock-leader-vn30')
+      }
+    }
+  },
+  mounted() {
+    this.getLeaderLarger(this.activeTab)
+  },
+  methods: {
+    async getLeaderLarger(floor, chartId) {
+      try {
+        this.isLoading = true
+        const response = await getLeaderLarger(floor)
+
+        const dataPositive = response.data.filter(item => item.point > 0)
+        const amountOfPositiveItem = dataPositive.length >= 6 ? 6 : dataPositive.length
+        dataPositive.sort((a, b) => {
+          return b.point - a.point
+        })
+        const resultDataPositive = dataPositive.slice(0, amountOfPositiveItem)
+
+        const dataNegative = response.data.filter(item => item.point < 0)
+        const amountOfNegativeItem = dataNegative.length >= 6 ? 6 : dataNegative.length
+        dataNegative.sort((a, b) => {
+          return a.point - b.point
+        })
+        const resultDataNegative = dataNegative.slice(0, amountOfNegativeItem)
+
+        this.createChart(resultDataPositive, resultDataNegative, chartId)
+      } catch (error) {
+        console.log(error)
+      } finally {
+        this.isLoading = false
+      }
+    },
+    createChart(dataPositive, dataNegative, chartId = 'chart-container-stock-leader-vnindex') {
+      const thisVue = this
+      const dataPointPositive = dataPositive.map(item => item.point)
+      const lengthOfDataPointPositive = dataPositive.length
+      for (let i = 0; i < lengthOfDataPointPositive; i++) {
+        dataPointPositive.push(0)
+      }
+
+      const dataPointNegative = dataNegative.map(item => item.point)
+      const lengthOfDataPointNegative = dataPositive.length
+      for (let i = 0; i < lengthOfDataPointNegative; i++) {
+        dataPointNegative.push(0)
+      }
+
+      const dataSymbolPositive = dataPositive.map(item => item.symbol)
+      const dataSymbolNegative = dataNegative.map(item => item.symbol)
+      const dataSymbol = [...dataSymbolPositive, ...dataSymbolNegative.reverse()]
+
+      // eslint-disable-next-line no-undef
+      Highcharts.chart(chartId, {
         chart: {
           type: 'column'
         },
@@ -32,16 +93,11 @@ export default {
           text: ''
         },
         xAxis: {
-          categories: ['PVS', 'CEO', 'SHS', 'THD', 'MBS', 'PVI', 'TNG', 'DHT', 'VNT', 'L14', 'PMS', 'TMB', 'S55', 'NTH', 'CDN', 'TVC', 'VNR', 'TAR', 'DTK', 'VIF'],
-          labels: {
-            style: {
-              fontSize: '10px'
-            }
-          }
+          categories: dataSymbol
         },
         yAxis: {
           title: {
-            text: ''
+            text: 'Mức độ đóng góp (điểm)'
           }
         },
         credits: {
@@ -49,21 +105,21 @@ export default {
         },
         plotOptions: {
           column: {
-            borderRadius: '25%'
+            borderRadius: '5%'
           },
           series: {
-            pointWidth: 8
+            pointWidth: 12
           }
         },
         series: [
           {
             name: 'Mức đóng góp tăng',
-            data: [0.844, 0.545, 0.383, 0.272, 0.206, 0.11, 0.107, 0.104, 0.1, 0.094, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            data: dataPointPositive,
             color: '#43B13E'
           },
           {
             name: 'Mức đóng góp giảm',
-            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -0.03, -0.032, -0.035, -0.055, -0.058, -0.07, -0.089, -0.101, -0.161, -0.206],
+            data: dataPointNegative.reverse(),
             color: '#C32022'
           }
         ],
@@ -71,15 +127,12 @@ export default {
           formatter() {
             return `
               <b>${this.x}</b><br>
-              Đóng góp vào VN-Index ${this.y}
+              Đóng góp vào ${thisVue.activeTab} ${this.y.toFixed(3)}
             `
           }
         }
-      }
+      })
     }
-  },
-  methods: {
-    handleClick() {}
   }
 }
 </script>

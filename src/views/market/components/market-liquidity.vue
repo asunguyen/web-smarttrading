@@ -27,9 +27,9 @@ export default {
   watch: {
     activeTab(value) {
       if (value === 'VNINDEX') {
-        this.getIndexIntraday(this.activeTab, 'chart-container-liquidity-vnindex')
+        this.getIndexIntraday(value, 'chart-container-liquidity-vnindex')
       } else if (value === 'HNX') {
-        this.getIndexIntraday(this.activeTab, 'chart-container-liquidity-hnx')
+        this.getIndexIntraday(value, 'chart-container-liquidity-hnx')
       }
     }
   },
@@ -117,9 +117,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.market-liquidity {
-
-}
-</style>
