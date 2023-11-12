@@ -49,6 +49,11 @@ export default {
     isCollapse() {
       return !this.sidebar.opened
     }
+  },
+  mounted() {
+    if (!this.permission_routes.length) {
+      this.$store.dispatch('permission/generateRoutes', [])
+    }
   }
 }
 </script>
