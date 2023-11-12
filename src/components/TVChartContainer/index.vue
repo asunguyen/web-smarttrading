@@ -13,7 +13,6 @@ import Datafeed from "@/assets/datafeed.js";
 //     ? null
 //     : decodeURIComponent(results[1].replace(/\+/g, ' '))
 // }
-
 export default {
   name: "TVChartContainer",
   props: {
@@ -2072,93 +2071,11 @@ export default {
             },
             constructor: function () {
               this.init = function (context, inputCallback) {
-                this._context = context;
-                this._input = inputCallback;
-                this.f_1 = function (src, len, ctx) {
-                  var series_0 = ctx.new_var(
-                    PineJS.Std.max(PineJS.Std.change(src), 0)
-                  );
-                  return PineJS.Std.rma(series_0, len, ctx);
-                };
-
-                this.f_2 = function (src, len, ctx) {
-                  var series_0 = ctx.new_var(
-                    -PineJS.Std.min(PineJS.Std.change(src), 0)
-                  );
-                  return PineJS.Std.rma(series_0, len, ctx);
-                };
+                console.log("context:: ", context);
               };
               this.main = function (context, inputCallback) {
-                this._context = context;
-                this._input = inputCallback;
-                var fast_rsi_period = this._input(0);
-                var slow_rsi_period = this._input(1);
-                var ma_period = this._input(2);
-                var accdistV = PineJS.Std.accdist(this._context);
-                var accdistS = this._context.new_var(accdistV);
-
-                var rsi_fast =
-                  PineJS.Std.rsi(
-                    this.f_1(accdistS, fast_rsi_period, this._context),
-                    this.f_2(accdistS, fast_rsi_period, this._context)
-                  ) - 50;
-                var rsi_slow =
-                  PineJS.Std.rsi(
-                    this.f_1(accdistS, slow_rsi_period, this._context),
-                    this.f_2(accdistS, slow_rsi_period, this._context)
-                  ) - 50;
-                var rsi_fast_series = this._context.new_var(rsi_fast);
-                var rsi_slow_series = this._context.new_var(rsi_slow);
-                var slowX = PineJS.Std.wma(
-                  rsi_slow_series,
-                  ma_period,
-                  this._context
-                );
-                var fastX = PineJS.Std.wma(
-                  rsi_fast_series,
-                  ma_period,
-                  this._context
-                );
-                var slowS = this._context.new_var(slowX);
-                var fastS = this._context.new_var(fastX);
-                var slow = [slowS.get(0), slowS.get(1)];
-                var fast = [fastS.get(0), fastS.get(1)];
-                var strong_long = false;
-                if (fast[0] > fast[1] && slow[0] > slow[1] && fast[0] > 0) {
-                  strong_long = true;
-                }
-                var strong_short = false;
-                if (fast[0] < fast[1] && slow[0] < slow[1] && fast[0] < 0) {
-                  strong_short = true;
-                }
-                var weak_long = false;
-                if (
-                  (fast[0] < fast[1] && slow[0] > slow[1] && fast[0] > 0) ||
-                  (fast[0] > fast[1] &&
-                    slow[0] > slow[1] &&
-                    fast[0] < 0 &&
-                    fast[0] > slow[0])
-                ) {
-                  weak_long = true;
-                }
-                var weak_short = false;
-                if (
-                  (fast[0] > fast[1] && fast[0] < 0 && fast[0] < slow[0]) ||
-                  (fast[0] < fast[1] &&
-                    slow[0] < slow[1] &&
-                    fast[0] > 0 &&
-                    fast[0] < slow[0])
-                ) {
-                  weak_short = true;
-                }
-                var color_power;
-                if (strong_long) color_power = 0;
-                else if (weak_long) color_power = 1;
-                else if (strong_short) color_power = 2;
-                else if (weak_short) color_power = 3;
-                else color_power = 4;
-                // console.log(slowS.get(0));
-                return [slowS.get(0), color_power];
+                console.log("context main:: ", context)
+                
               };
             },
           },
@@ -2348,31 +2265,21 @@ export default {
         });
       });
       var pathName = this.$router.currentRoute.fullPath;
+      if (pathName == "/dashboard") {
+        thisVue.restoreUserIndicators(
+          thisVue.freeDerivativeIndicators,
+          tvWidget.activeChart()
+        );
+        thisVue.restoreUserIndicators(
+          thisVue.freeBaseIndicators,
+          tvWidget.activeChart()
+        );
+        thisVue.restoreUserIndicators(
+          thisVue.scrapeDerivativeIndicators,
+          tvWidget.activeChart()
+        );
+      }
       // add bot
-      thisVue.restoreUserIndicators(
-        thisVue.freeDerivativeIndicators,
-        tvWidget.activeChart()
-      );
-      thisVue.restoreUserIndicators(
-        thisVue.scrapeDerivativeIndicators,
-        tvWidget.activeChart()
-      );
-      thisVue.restoreUserIndicators(
-        thisVue.trendDerivativeIndicators,
-        tvWidget.activeChart()
-      );
-      thisVue.restoreUserIndicators(
-        thisVue.freeBaseIndicators,
-        tvWidget.activeChart()
-      );
-      thisVue.restoreUserIndicators(
-        thisVue.tBaseIndicators,
-        tvWidget.activeChart()
-      );
-      thisVue.restoreUserIndicators(
-        thisVue.trendBaseIndicators,
-        tvWidget.activeChart()
-      );
       if (pathName == "/ai-trading/robot-derivative/free") {
         thisVue.restoreUserIndicators(
           thisVue.freeDerivativeIndicators,
@@ -2435,6 +2342,7 @@ export default {
         Promise.all(
           indicators.map(async (indicator) => {
             const visible = indicator.visible;
+            console.log("indicator.inputs:: ", indicator.inputs);
             const newStudyID = await activeChart.createStudy(
               indicator.name,
               false,
