@@ -162,3 +162,14 @@ export function getForeign() {
     method: 'get'
   })
 }
+
+export function test() {
+  return request({
+    url: `https://vietstock.vn/_Partials/NewsNewUpdatePaging`,
+    method: 'post',
+    data: {
+      item: 15,
+      row: 1
+    }
+  })
+}
