@@ -1,36 +1,40 @@
 <template>
   <div class="app-container">
-    <iframe id="frameID" src="https://s.cafef.vn/du-lieu.chn#data" style="width: 100%; height: 100vh" />
+    <iframe
+      id="frameID"
+      sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+      allowFullscreen
+      frameborder="0"
+      style="width: 100%; height: 100vh"
+    ></iframe>
   </div>
 </template>
 
 <script>
-import $ from 'jquery'
-
+import $ from "jquery";
+import request from "@/utils/request";
 export default {
+  methods: {
+    async test() {
+      const res = await request({
+        url: "http://localhost:5001/v1/vimo/get-html",
+        method: "get",
+        params: { url: "https://s.cafef.vn/du-lieu.chn#data"},
+      });
+      if (res && res.code == 200) {
+        const htmlHead = res.data.split("</head>")[0].split(`<head id="Head1">`)[1];
+        const htmlBody = res.data.split("</body>")[0].split(`<body style="background-color: #fff;">`)[1];
+        $("#frameID").contents().find("head").html(htmlHead);
+        $("#frameID").contents().find("body").html(htmlBody);
+        let iframeEL = $("#frameID").contents().find("body");
+        iframeEL.find("#header__clearFix").remove();
+        iframeEL.find(".v4__header").remove();
+        iframeEL.find(".footer").remove();
+      }
+    },
+  },
   mounted() {
-    $(document).ready(function() {
-      const iframe = document.getElementById('frameID').contentWindow
-      console.log(iframe)
-      iframe.document.querySelector('body').style.backgroundColor = 'blue'
-    })
-
-    // $(document).ready(function() {
-    //   setTimeout(function() {
-    //     $('#frameID').load(function() {
-    //       $('#frameID').contents().find('body').html('Hey, i`ve changed content of <body>! Yay!!!')
-    //     })
-    //   }, 300)
-    // })
-
-    // $(document).ready(function() {
-    //   setTimeout(
-    //     function() {
-    //       $('#frameID').contents().find('#header__clearFix').addClass('asdasd')
-    //     },
-    //     300
-    //   )
-    // })
-  }
-}
+    this.test();
+  },
+};
 </script>
