@@ -1,7 +1,7 @@
 <template>
   <el-card class="valuation">
     <h2 class="valuation__title mt-2">Định giá</h2>
-    <el-tabs v-model="activeTab" type="card" @tab-click="changeTab">
+    <el-tabs v-model="activeTab" type="card">
       <el-tab-pane
         v-for="floor in listFloor"
         :key="floor.label"
@@ -19,56 +19,48 @@
             </template>
           </el-table-column>
           <el-table-column
-            label="Hiện tại"
-            prop="currentValue"
+            label="2023"
+            prop="value"
             align="center"
             width="100"
           >
             <template slot-scope="{row}">
-              <span v-if="['ROAA_TR_AVG5Q', 'ROAE_TR_AVG5Q', 'DIVIDEND_YIELD'].includes(row.title)">
-                {{ row.currentValue * 100 | roundTo2Digits }}
-              </span>
-              <span v-else-if="row.title === 'MARKETCAP'">{{ row.currentValue | formatBillion | roundUp | toThousandFilter }}</span>
-              <span v-else>{{ row.currentValue | roundTo2Digits }}</span>
+              <span v-if="row.title === 'MaketCap'">{{ row.value | formatBillion | round | toThousandFilter }}</span>
+              <span v-else>{{ row.value | roundTo2Digits }}</span>
             </template>
           </el-table-column>
           <el-table-column
             label="2022"
-            prop="lastYearValue"
+            prop="oldValue"
             align="center"
             width="100"
           >
             <template slot-scope="{row}">
-              <span v-if="['ROAA_TR_AVG5Q', 'ROAE_TR_AVG5Q', 'DIVIDEND_YIELD'].includes(row.title)">
-                {{ row.lastYearValue * 100 | roundTo2Digits }}
-              </span>
-              <span v-else-if="row.title === 'MARKETCAP'">{{ row.lastYearValue | formatBillion | roundUp | toThousandFilter }}</span>
-              <span v-else>{{ row.lastYearValue | roundTo2Digits }}</span>
+              <span v-if="row.title === 'MaketCap'">{{ row.oldValue | formatBillion | round | toThousandFilter }}</span>
+              <span v-else>{{ row.oldValue | roundTo2Digits }}</span>
             </template>
           </el-table-column>
         </el-table>
-        <!-- <div id="chart-container" /> -->
+        <div id="chart-container-valuation" />
       </el-tab-pane>
     </el-tabs>
   </el-card>
 </template>
 
 <script>
-import { getListValuation, getListValuationLastYear } from '@/api/stock'
-const names = ['AAPL', 'GOOG']
+import { getValuation } from '@/api/stock'
 
 export default {
   filters: {
     formatNameTableValuation(value) {
       if (!value) return
       switch (value) {
-        case 'PRICE_TO_EARNINGS': return 'P/E'
-        case 'PRICE_TO_BOOK': return 'P/B'
-        case 'PRICE_TO_SALES': return 'P/S'
-        case 'ROAA_TR_AVG5Q': return 'ROAA (%)'
-        case 'ROAE_TR_AVG5Q': return 'ROAE (%)'
-        case 'DIVIDEND_YIELD': return 'Lợi tức cổ phần (%)'
-        case 'MARKETCAP': return 'Vốn hoá TT (tỷ đồng)'
+        case 'PE': return 'P/E'
+        case 'PB': return 'P/B'
+        case 'ROA': return 'ROA(%)'
+        case 'ROE': return 'ROE(%)'
+        // case 'DIVIDEND_YIELD': return 'Lợi tức cổ phần (%)'
+        case 'MaketCap': return 'Vốn hoá thị trường (tỷ đồng)'
       }
     }
   },
@@ -76,64 +68,48 @@ export default {
     return {
       activeTab: 'VNIndex',
       listFloor: [
-        { label: 'VNINDEX', name: 'VNIndex' },
-        { label: 'VN30', name: 'vn30' },
-        { label: 'HNX', name: 'hnx' },
-        { label: 'UPCOM', name: 'upcom' }
+        { label: 'VNINDEX', name: 'VNIndex' }
       ],
       isLoading: false,
       tableData: []
     }
   },
   mounted() {
-    // this.getData()
-    this.getListValuation(this.activeTab)
+    this.getValuation()
   },
   methods: {
-    changeTab() {
-      this.tableData = []
-      this.getListValuation(this.activeTab)
+    async getValuation() {
+      const response = await getValuation()
+
+      this.tableData = this.getChangeArray(response.data.NowDataFinance, response.data.PastDataFinance)
+
+      // response.data.DataChart.sort((a, b) => {
+      //   return a.Time.substring(a.Time.indexOf('(') + 1, a.Time.indexOf(')')) - b.Time.substring(b.Time.indexOf('(') + 1, b.Time.indexOf(')'))
+      // })
+
+      // let dataPE = response.data.DataChart.map(item => {
+      //   return [item.Time.substring(item.Time.indexOf('(') + 1, item.Time.indexOf(')')), item.Pe]
+      // })
+      // let dataIndex = response.data.DataChart.map(item => {
+      //   return [item.Time.substring(item.Time.indexOf('(') + 1, item.Time.indexOf(')')), item.Index]
+      // })
+
+      // dataPE = dataPE.slice(0, 1000)
+      // dataIndex = dataIndex.slice(0, 1000)
+      // this.createChart(dataPE, dataIndex)
     },
-    async getListValuation(floor) {
-      const response = await getListValuation({ floor })
-      const response2 = await getListValuationLastYear({
-        floor: this.activeTab
-      })
-      const array = [...response.data, ...response2.data]
-      const convertedArray = Object.values(
-        array.reduce((acc, item) => {
-          acc[item.ratioCode]
-            ? acc[item.ratioCode].cells.push({
-              reportDate: item.reportDate,
-              value: item.value
-            })
-            : (acc[item.ratioCode] = {
-              ratioCode: item.ratioCode,
-              cells: [{ reportDate: item.reportDate, value: item.value }]
-            })
-          return acc
-        }, {})
-      )
-      convertedArray.forEach((item) => {
-        const obj = {
-          title: item.ratioCode
+    getChangeArray(obj1, obj2) {
+      return Object.entries(obj1).reduce((acc, [key, value]) => {
+        if (obj2[key] !== value) {
+          acc.push({ title: key, value, oldValue: obj2[key] })
         }
-        item.cells.forEach((item2) => {
-          const currentYear = new Date().getFullYear()
-          const lastYear = new Date().getFullYear() - 1
-          if (item2.reportDate.includes(currentYear)) {
-            obj.currentValue = item2.value
-          } else if (item2.reportDate.includes(lastYear)) {
-            obj.lastYearValue = item2.value
-          }
-        })
-        this.tableData.push(obj)
-      })
+        return acc
+      }, [])
     },
 
-    createChart(series) {
+    createChart(dataPE, dataIndex) {
       // eslint-disable-next-line no-undef
-      Highcharts.stockChart('chart-container', {
+      Highcharts.stockChart('chart-container-valuation', {
         rangeSelector: {
           selected: 4
         },
@@ -161,27 +137,17 @@ export default {
           valueDecimals: 2,
           split: true
         },
-        series
+        series: [
+          {
+            name: 'PE',
+            data: dataPE
+          },
+          {
+            name: 'Index',
+            data: dataIndex
+          }
+        ]
       })
-    },
-    async getData() {
-      const promises = names.map(
-        (name) =>
-          new Promise((resolve) => {
-            (async() => {
-              const data = await fetch(
-                'https://cdn.jsdelivr.net/gh/highcharts/highcharts@v7.0.0/' +
-                  'samples/data/' +
-                  name.toLowerCase() +
-                  '-c.json'
-              ).then((response) => response.json())
-              resolve({ name, data })
-            })()
-          })
-      )
-
-      const series = await Promise.all(promises)
-      this.createChart(series)
     }
   }
 }
@@ -197,7 +163,7 @@ export default {
       width: 100%;
     }
     .el-tabs__item {
-      width: 25%;
+      width: 100%;
       text-align: center;
     }
   }

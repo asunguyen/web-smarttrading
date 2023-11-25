@@ -16,6 +16,10 @@
     </el-row>
     <!-- <h2>Tự doanh</h2> -->
     <el-row :gutter="10" class="mt-4">
+      <el-col :xs="24" :sm="12" :md="16" :lg="16" :xl="16"><PropTrading /></el-col>
+      <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="8"><TopPropTrading /></el-col>
+    </el-row>
+    <el-row :gutter="10" class="mt-4">
       <el-col :xs="24" :sm="12" :md="16" :lg="16" :xl="16"><MarketLiquidity /></el-col>
       <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="8"><MarketData /></el-col>
     </el-row>
@@ -36,6 +40,8 @@ import ForeignChart from './components/foreign-chart.vue'
 import MarketLiquidity from './components/market-liquidity.vue'
 import MarketData from './components/market-data.vue'
 import MarketWidth from './components/market-width.vue'
+import PropTrading from './components/prop-trading.vue'
+import TopPropTrading from './components/top-prop-trading.vue'
 
 export default {
   components: {
@@ -48,7 +54,9 @@ export default {
     ForeignChart,
     MarketLiquidity,
     MarketData,
-    MarketWidth
+    MarketWidth,
+    PropTrading,
+    TopPropTrading
   }
 }
 </script>

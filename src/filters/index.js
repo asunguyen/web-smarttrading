@@ -83,6 +83,6 @@ export function roundTo2Digits(num) {
   return +(+num || 0).toFixed(2)
 }
 
-export function roundUp(num) {
-  return Math.ceil((+num || 0))
+export function round(num) {
+  return Math.round((+num || 0))
 }

@@ -1,19 +1,19 @@
 <template>
-  <el-card class="foreign-chart">
-    <h2 class="foreign-chart__title mt-0">Diễn biến giao dịch khối ngoại</h2>
+  <el-card class="prop-trading">
+    <h2 class="prop-trading__title mt-0">Giao dịch tự doanh</h2>
     <el-tabs v-model="activeTab" v-loading="isLoading" type="card">
       <el-tab-pane label="Giá trị" name="value">
-        <div id="chart-container-foreign-value" class="mt-4" />
+        <div id="chart-container-prop-trading-value" class="mt-4" />
       </el-tab-pane>
       <el-tab-pane label="Khối lượng" name="volume">
-        <div id="chart-container-foreign-volume" class="mt-4" />
+        <div id="chart-container-prop-trading-volume" class="mt-4" />
       </el-tab-pane>
     </el-tabs>
   </el-card>
 </template>
 
 <script>
-import { getForeignChart } from '@/api/stock'
+import { getPropTradingChart, getMapMarket } from '@/api/stock'
 
 export default {
   data() {
@@ -25,21 +25,22 @@ export default {
   watch: {
     activeTab(value) {
       if (value === 'value') {
-        this.getForeign('chart-container-foreign-value')
+        this.getPropTradingChart('chart-container-prop-trading-value')
       } else if (value === 'volume') {
-        this.getForeign('chart-container-foreign-volume')
+        this.getPropTradingChart('chart-container-prop-trading-volume')
       }
     }
   },
   mounted() {
-    this.getForeign()
+    getMapMarket()
+    this.getPropTradingChart()
   },
   methods: {
-    async getForeign(chartId) {
+    async getPropTradingChart(chartId) {
       try {
         this.isLoading = true
-        const response = await getForeignChart()
-        const reversedData = response.data.reverse()
+        const response = await getPropTradingChart({ symbol: 'VNINDEX' })
+        const reversedData = response.data.overView.reverse()
 
         const dataTime = reversedData.map(item => {
           return new Date(item.date).getTime()
@@ -60,28 +61,14 @@ export default {
         this.isLoading = false
       }
     },
-    createChart(dataTime, dataBuy, dataSell, chartId = 'chart-container-foreign-value') {
-      // function redrawColumns(chart) {
-      //   chart.series[0].data.forEach(item => {
-      //     if (item.y < 0) {
-      //       item.update({
-      //         color: '#C32022'
-      //       })
-      //     }
-      //   })
-      // }
+    createChart(dataTime, dataBuy, dataSell, chartId = 'chart-container-prop-trading-value') {
       // eslint-disable-next-line no-undef
       Highcharts.chart(chartId, {
         chart: {
           type: 'column'
-          // events: {
-          //   load: function() {
-          //     redrawColumns(this)
-          //   }
-          // }
         },
         title: {
-          text: ''
+          text: 'Chi tiết giao dịch mua và bán'
         },
         xAxis: {
           type: 'datetime',
@@ -112,12 +99,12 @@ export default {
         },
         series: [
           {
-            name: 'Giá trị mua',
+            name: 'Tự doanh mua',
             data: dataBuy,
             color: '#004370'
           },
           {
-            name: 'Giá trị bán',
+            name: 'Tự doanh bán',
             data: dataSell,
             color: '#C32022'
           }
@@ -129,7 +116,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.foreign-chart {
+.prop-trading {
   &__title {
     position: relative;
     top: 50px;

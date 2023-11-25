@@ -2,8 +2,8 @@
   <el-card class="market-width">
     <h2 class="market-width__title mt-0">Độ rộng thị trường</h2>
     <el-tabs v-model="activeTab" v-loading="isLoading" type="card">
-      <el-tab-pane label="HOSE" name="VNINDEX">
-        <div id="chart-container-market-width-vnindex" class="mt-4" />
+      <el-tab-pane label="HOSE" name="HOSE">
+        <div id="chart-container-market-width-hose" class="mt-4" />
       </el-tab-pane>
       <el-tab-pane label="HNX" name="HNX">
         <div id="chart-container-market-width-hnx" class="mt-4" />
@@ -18,14 +18,14 @@ import { getMarketWidth } from '@/api/stock'
 export default {
   data() {
     return {
-      activeTab: 'VNINDEX',
+      activeTab: 'HOSE',
       isLoading: false
     }
   },
   watch: {
     activeTab(value) {
-      if (value === 'VNINDEX') {
-        this.getMarketWidth(value, 'chart-container-market-width-vnindex')
+      if (value === 'HOSE') {
+        this.getMarketWidth(value, 'chart-container-market-width-hose')
       } else if (value === 'HNX') {
         this.getMarketWidth(value, 'chart-container-market-width-hnx')
       }
@@ -38,37 +38,40 @@ export default {
     async getMarketWidth(floor, chartId) {
       try {
         this.isLoading = true
-        const response = await getMarketWidth(floor)
+        const response = await getMarketWidth({ centerID: floor })
         const toMilliseconds = (hrs, min, sec) => (hrs * 60 * 60 + min * 60 + sec) * 1000
+
         const dataNoChange = response.data.map(item => {
-          const d = new Date(`2023-11-09 ${item.time}`)
+          const d = new Date(`2023-11-09 ${item.Time}`)
           const hour = d.getHours()
           const minute = d.getMinutes()
           const second = d.getSeconds()
-          return [toMilliseconds(hour, minute, second), item.noChange]
+          return [toMilliseconds(hour, minute, second), item.PercentStockNochange, item.TotalStockNochange]
         })
-        const dataAdvance = response.data.map(item => {
-          const d = new Date(`2023-11-09 ${item.time}`)
+
+        const dataUp = response.data.map(item => {
+          const d = new Date(`2023-11-09 ${item.Time}`)
           const hour = d.getHours()
           const minute = d.getMinutes()
           const second = d.getSeconds()
-          return [toMilliseconds(hour, minute, second), item.advance]
+          return [toMilliseconds(hour, minute, second), item.PercentStockUp, item.TotalStockUp]
         })
-        const dataDecline = response.data.map(item => {
-          const d = new Date(`2023-11-09 ${item.time}`)
+
+        const dataDown = response.data.map(item => {
+          const d = new Date(`2023-11-09 ${item.Time}`)
           const hour = d.getHours()
           const minute = d.getMinutes()
           const second = d.getSeconds()
-          return [toMilliseconds(hour, minute, second), item.decline]
+          return [toMilliseconds(hour, minute, second), item.PercentStockDown, item.TotalStockDown]
         })
-        this.createChart(dataDecline, dataNoChange, dataAdvance, chartId)
+        this.createChart(dataDown, dataNoChange, dataUp, chartId)
       } catch (error) {
         console.log(error)
       } finally {
         this.isLoading = false
       }
     },
-    createChart(dataDecline, dataNoChange, dataAdvance, chartId = 'chart-container-market-width-vnindex') {
+    createChart(dataDown, dataNoChange, dataUp, chartId = 'chart-container-market-width-hose') {
       // eslint-disable-next-line no-undef
       Highcharts.chart(chartId, {
         chart: {
@@ -107,7 +110,7 @@ export default {
         series: [
           {
             name: 'Tăng giá',
-            data: dataAdvance,
+            data: dataUp,
             color: '#5AB55C'
           },
           {
@@ -117,7 +120,7 @@ export default {
           },
           {
             name: 'Giảm giá',
-            data: dataDecline,
+            data: dataDown,
             color: '#BC3A36'
           }
         ]
