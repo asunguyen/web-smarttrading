@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { getIndexIntradayHistories, getIndexIntradayLastest } from '@/api/stock'
+import { getMarketLiquidity, getIndexIntradayHistories, getIndexIntradayLastest } from '@/api/stock'
 
 export default {
   data() {
@@ -35,6 +35,7 @@ export default {
   },
   mounted() {
     this.getIndexIntraday(this.activeTab)
+    getMarketLiquidity()
   },
   methods: {
     async getIndexIntraday(floor, chartId) {
