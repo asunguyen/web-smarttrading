@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { getForeign, test } from '@/api/stock'
+import { getForeign, getForeignChart } from '@/api/stock'
 
 export default {
   data() {
@@ -33,7 +33,7 @@ export default {
   },
   mounted() {
     this.getForeign()
-    test()
+    getForeignChart()
   },
   methods: {
     async getForeign(chartId) {

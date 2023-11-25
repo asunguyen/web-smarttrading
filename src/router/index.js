@@ -89,7 +89,7 @@ export const constantRoutes = [
     children: [
       {
         path: '',
-        component: () => import('@/views/market/index2'),
+        component: () => import('@/views/market/index'),
         name: 'Thị trường',
         meta: { title: 'Thị trường', icon: 'international', affix: true }
       }
