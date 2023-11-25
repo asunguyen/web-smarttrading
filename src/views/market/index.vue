@@ -2,14 +2,14 @@
   <div class="app-container">
     <h2 class="mt-0">Toàn cảnh thị trường</h2>
     <el-row :gutter="10" class="mb-3">
-      <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="8"><Period /></el-col>
+      <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="8"><MarketIndex /></el-col>
       <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="8"><TopStocks /></el-col>
       <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="8"><Valuation /></el-col>
     </el-row>
     <el-row :gutter="10">
       <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="8"><Foreign /></el-col>
-      <!-- <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="8"><TopAccess /></el-col> -->
       <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="8"><StockLeader /></el-col>
+      <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="8"><TopAccess /></el-col>
     </el-row>
     <el-row class="mt-4">
       <ForeignChart />
@@ -26,10 +26,10 @@
 </template>
 
 <script>
-import Period from './components/period.vue'
+import MarketIndex from './components/market-index.vue'
 import TopStocks from './components/top-stocks.vue'
 import Foreign from './components/foreign.vue'
-// import TopAccess from './components/top-access.vue'
+import TopAccess from './components/top-access.vue'
 import StockLeader from './components/stock-leader.vue'
 import Valuation from './components/valuation.vue'
 import ForeignChart from './components/foreign-chart.vue'
@@ -39,11 +39,11 @@ import MarketWidth from './components/market-width.vue'
 
 export default {
   components: {
-    Period,
+    MarketIndex,
     TopStocks,
     Foreign,
-    // TopAccess,
     StockLeader,
+    TopAccess,
     Valuation,
     ForeignChart,
     MarketLiquidity,

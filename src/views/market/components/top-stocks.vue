@@ -16,36 +16,36 @@
               style="width: 100%"
             >
               <el-table-column label="STT" type="index" align="center" width="50" />
-              <el-table-column label="Mã CK" prop="code">
+              <el-table-column label="Mã CK" prop="Symbol">
                 <template slot-scope="{row}">
-                  <span><b>{{ row.code || '-' }}</b></span>
+                  <span><b>{{ row.Symbol || '-' }}</b></span>
                 </template>
               </el-table-column>
-              <el-table-column label="Giá" prop="lastPrice" align="center">
+              <el-table-column label="KL mua ròng" prop="Volume" align="center" width="130">
                 <template slot-scope="{row}">
-                  <span :class="{'text-success': row.priceChgCr1D > 0, 'text-danger': row.priceChgCr1D < 0, 'text-warning': row.priceChgCr1D === 0}">
-                    {{ row.lastPrice || '-' }}
+                  <span v-if="row.Volume">{{ row.Volume | toThousandFilter }}</span>
+                  <span v-else>-</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="Giá" prop="CurrentPrice" align="center">
+                <template slot-scope="{row}">
+                  <span :class="{'text-success': row.ChangePricePercent > 0, 'text-danger': row.ChangePricePercent < 0, 'text-warning': row.ChangePricePercent === 0}">
+                    {{ row.CurrentPrice || '-' }}
                   </span>
                 </template>
               </el-table-column>
               <el-table-column label="Thay đổi" align="center" width="130">
                 <template slot-scope="{row}">
                   <span
-                    v-if="row.priceChgCr1D"
+                    v-if="row.ChangePricePercent !== null || row.ChangePricePercent !==''"
                     :class="{
-                      'text-success': row.priceChgCr1D > 0,
-                      'text-danger': row.priceChgCr1D < 0,
-                      'text-warning': row.priceChgCr1D === 0
+                      'text-success': row.ChangePricePercent > 0,
+                      'text-danger': row.ChangePricePercent < 0,
+                      'text-warning': row.ChangePricePercent === 0
                     }"
                   >
-                    {{ row.priceChgCr1D | roundTo2Digits }} ({{ row.priceChgPctCr1D | roundTo2Digits }}%)
+                    {{ row.ChangePrice > 0 ? '+' : '' }}{{ row.ChangePrice }} ({{ row.ChangePricePercent > 0 ? '+' : '' }}{{ row.ChangePricePercent }}%)
                   </span>
-                  <span v-else>-</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="Giá trị (tỷ đồng)" prop="accumulatedVal" align="center" width="130">
-                <template slot-scope="{row}">
-                  <span v-if="row.accumulatedVal">{{ row.accumulatedVal | formatBillion | roundTo2Digits }}</span>
                   <span v-else>-</span>
                 </template>
               </el-table-column>
@@ -63,24 +63,23 @@ import { getListTopStocks } from '@/api/stock'
 export default {
   data() {
     return {
-      activeTab: 'VNIndex',
-      activeTabChild: 'increase',
+      activeTab: 'HOSE',
+      activeTabChild: 'UP',
       listFloor: [
-        { label: 'VNINDEX', name: 'VNIndex' },
-        { label: 'VN30', name: 'vn30' },
-        { label: 'HNX', name: 'hnx' }
+        { label: 'HOSE', name: 'HOSE' },
+        { label: 'VN30', name: 'VN30' },
+        { label: 'HNX', name: 'HNX' }
       ],
       listType: [
-        { label: 'Tăng giá', name: 'increase' },
-        { label: 'Giảm giá', name: 'decrease' },
-        { label: 'GTGD lớn nhất', name: 'tradingValue' }
+        { label: 'Tăng giá', name: 'UP' },
+        { label: 'Giảm giá', name: 'DOWN' },
+        { label: 'KLGD', name: 'VOLUME' }
       ],
       isLoading: false,
       tableData: [],
       query: {
-        floor: 'VNIndex',
-        type: 'gt',
-        sort: 'priceChgPctCr1D'
+        centerID: 'HOSE',
+        type: 'UP'
       }
     }
   },
@@ -89,18 +88,9 @@ export default {
   },
   methods: {
     changeTab() {
-      if (this.activeTabChild === 'tradingValue') {
-        this.query = {
-          ...this.query,
-          name: 'accumulatedVal',
-          floor: this.activeTab
-        }
-      } else {
-        this.query = {
-          floor: this.activeTab,
-          type: this.activeTabChild === 'increase' ? 'gt' : 'lt',
-          sort: this.activeTabChild === 'increase' ? 'priceChgPctCr1D' : 'priceChgPctCr1D:asc'
-        }
+      this.query = {
+        centerID: this.activeTab,
+        type: this.activeTabChild
       }
       this.getListTopStocks(this.query)
     },
@@ -113,10 +103,10 @@ export default {
           const length = 10 - this.tableData.length
           for (let i = 0; i < length; i++) {
             this.tableData.push({
-              code: null,
-              lastPrice: null,
-              priceChgCr1D: null,
-              accumulatedVal: null
+              Symbol: null,
+              Volume: null,
+              CurrentPrice: null,
+              ChangePricePercent: null
             })
           }
         }

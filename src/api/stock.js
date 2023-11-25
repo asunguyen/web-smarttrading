@@ -3,12 +3,27 @@ import moment from 'moment'
 
 // const baseURL = process.env.VUE_APP_BASE_API_STOCK
 
+export function getIndexVietnam(query) {
+  return request({
+    url: 'vimo/chiso-index-vn',
+    methods: 'get',
+    params: query
+  })
+}
+
 export function getListTopStocks(query) {
   return request({
-    url: query.name === 'accumulatedVal'
-      ? `https://finfo-api.vndirect.com.vn/v4/top_stocks?q=index:${query.floor}~accumulatedVal:gt:0&size=10&sort=accumulatedVal`
-      : `https://finfo-api.vndirect.com.vn/v4/top_stocks?q=index:${query.floor}~nmVolumeAvgCr20D:gte:10000~priceChgPctCr1D:${query.type}:0&size=10&sort=${query.sort}`,
-    methods: 'get'
+    url: 'vimo/top-10-cophieu',
+    methods: 'get',
+    params: query
+  })
+}
+
+export function getListTopAccess(query) {
+  return request({
+    url: 'vimo/top-10-truycap',
+    methods: 'get',
+    params: query
   })
 }
 
@@ -27,13 +42,11 @@ export function getListValuationLastYear(query) {
   })
 }
 
-export function getListForeigns(typeForeign) {
-  const date = moment(new Date()).format('YYYY-MM-DD')
-  const type = typeForeign === 'buy' ? 'gt' : 'lt'
-  const sort = typeForeign === 'buy' ? 'desc' : 'asc'
+export function getListForeigns(query) {
   return request({
-    url: `https://finfo-api.vndirect.com.vn/v4/foreigns?q=type:STOCK,IFC,ETF~netVal:${type}:0~tradingDate:${date}&sort=tradingDate~netVal:${sort}&size=10&fields=code,netVal,tradingDate`,
-    method: 'get'
+    url: 'vimo/khoi-ngoai',
+    method: 'get',
+    params: query
   })
 }
 
@@ -121,10 +134,12 @@ export function getIndexIntradayLastest(floor) {
   })
 }
 
-export function getGoods() {
+export function getGoods(query) {
   return request({
-    url: `https://finfo-api.vndirect.com.vn/v4/indexes?q=code:SPOT_GOLDS,GEN1ST_BRENT_OIL,GEN1ST_COTTON2,GEN1ST_RUB_TCM,GEN1ST_SUGAR11,FW3M_COPPER,SPOT_IRON_QINGDAO,HRC_3MM_EXPORT`,
-    method: 'get'
+    url: 'vimo/hang-hoa',
+    // url: `https://finfo-api.vndirect.com.vn/v4/indexes?q=code:SPOT_GOLDS,GEN1ST_BRENT_OIL,GEN1ST_COTTON2,GEN1ST_RUB_TCM,GEN1ST_SUGAR11,FW3M_COPPER,SPOT_IRON_QINGDAO,HRC_3MM_EXPORT`,
+    method: 'get',
+    params: query
   })
 }
 
@@ -149,10 +164,11 @@ export function getMarketWidth(floor) {
   })
 }
 
-export function getLeaderLarger(floor) {
+export function getMarketLeader(query) {
   return request({
-    url: `https://mkw-socket-v2.vndirect.com.vn/mkwsocketv2/leaderlarger?index=${floor}`,
-    method: 'get'
+    url: 'vimo/dan-dat-thi-truong',
+    method: 'get',
+    params: query
   })
 }
 
@@ -163,13 +179,10 @@ export function getForeign() {
   })
 }
 
-export function test() {
+export function getForeignChart() {
   return request({
-    url: `https://vietstock.vn/_Partials/NewsNewUpdatePaging`,
-    method: 'post',
-    data: {
-      item: 15,
-      row: 1
-    }
+    url: 'vimo/dienbien-khoingoai',
+    method: 'get'
   })
 }
+

@@ -13,37 +13,78 @@
           style="width: 100%"
         >
           <el-table-column label="STT" type="index" align="center" width="50" />
-          <!-- Second column -->
-          <el-table-column v-if="activeTab === 'goods'" label="Hàng hoá" prop="vnFullName" width="200">
+          <el-table-column label="Mã" width="200">
             <template slot-scope="{row}">
-              <span><b>{{ row.code | formatNameGoods }}</b></span>
+              <span v-if="activeTab === '1'"><b>{{ row.goods }}</b></span>
+              <span v-if="activeTab === '2'"><b>{{ row.ProductName }}</b></span>
+              <span v-if="activeTab === '3'"><b>{{ row.symbol }}</b></span>
             </template>
           </el-table-column>
-          <el-table-column v-else-if="activeTab === 'currencies'" label="" prop="codeName" width="200">
+          <el-table-column label="Giá" prop="price">
             <template slot-scope="{row}">
-              <span><b>{{ row.codeName }}</b></span>
-            </template>
-          </el-table-column>
-          <!-- Third column -->
-          <el-table-column v-if="activeTab === 'goods'" label="Giá" prop="price">
-            <template slot-scope="{row}">
-              <span :class="{'text-success': row.changePct > 0, 'text-danger': row.changePct < 0, 'text-warning': row.changePct === 0 || !row.changePct}">
-                {{ row.price | roundTo2Digits | toThousandFilter }}
+              <span
+                v-if="activeTab === '1'"
+                :class="{
+                  'text-success': row.change > 0,
+                  'text-danger': row.change < 0,
+                  'text-warning': row.change === 0
+                }"
+              >
+                {{ row.last | toThousandFilter }}
+              </span>
+              <span
+                v-if="activeTab === '2'"
+                :class="{
+                  'text-success': row.CurrentPrice > row.PrevPrice,
+                  'text-danger': row.CurrentPrice < row.PrevPrice,
+                  'text-warning': row.CurrentPrice === row.PrevPrice
+                }"
+              >
+                {{ row.CurrentPrice | toThousandFilter }}
+              </span>
+              <span
+                v-if="activeTab === '3'"
+                :class="{
+                  'text-success': row.change24H > 0,
+                  'text-danger': row.change24H < 0,
+                  'text-warning': row.change24H === 0
+                }"
+              >
+                {{ row.price | toThousandFilter }}
               </span>
             </template>
           </el-table-column>
-          <el-table-column v-else-if="activeTab === 'currencies'" label="Giá trị" prop="closePrice">
-            <template slot-scope="{row}">
-              <span :class="{'text-success': row.changePct > 0, 'text-danger': row.changePct < 0, 'text-warning': row.changePct === 0 || !row.changePct}">
-                {{ row.closePrice | roundTo2Digits | toThousandFilter }}
-              </span>
-            </template>
-          </el-table-column>
-          <!-- Fourth column -->
           <el-table-column label="Thay đổi" prop="changePct">
             <template slot-scope="{row}">
-              <span :class="{'text-success': row.changePct > 0, 'text-danger': row.changePct < 0, 'text-warning': row.changePct === 0 || !row.changePct}">
-                {{ row.changePct | roundTo2Digits }}%
+              <span
+                v-if="activeTab === '1'"
+                :class="{
+                  'text-success': row.change > 0,
+                  'text-danger': row.change < 0,
+                  'text-warning': row.change === 0
+                }"
+              >
+                {{ row.change | roundTo2Digits }} ({{ row.changePercent }}%)
+              </span>
+              <span
+                v-if="activeTab === '2'"
+                :class="{
+                  'text-success': row.CurrentPrice > row.PrevPrice,
+                  'text-danger': row.CurrentPrice < row.PrevPrice,
+                  'text-warning': row.CurrentPrice === row.PrevPrice
+                }"
+              >
+                {{ row.CurrentPrice - row.PrevPrice | roundTo2Digits }} ({{ Math.abs(row.CurrentPrice - row.PrevPrice) / row.CurrentPrice * 100 | roundTo2Digits }}%)
+              </span>
+              <span
+                v-if="activeTab === '3'"
+                :class="{
+                  'text-success': row.change24H > 0,
+                  'text-danger': row.change24H < 0,
+                  'text-warning': row.change24H === 0
+                }"
+              >
+                {{ (row.price * row.change24H / 100) | roundTo2Digits }} ({{ row.change24H | roundTo2Digits }}%)
               </span>
             </template>
           </el-table-column>
@@ -54,30 +95,16 @@
 </template>
 
 <script>
-import { getGoods, getChangePricesGoods, getCurrenciesRate } from '@/api/stock'
+import { getGoods } from '@/api/stock'
 
 export default {
-  filters: {
-    formatNameGoods(value) {
-      if (!value) return
-      switch (value) {
-        case 'SPOT_GOLDS': return 'Vàng (USD/oz)'
-        case 'GEN1ST_BRENT_OIL': return 'Dầu Brent (USD/thùng)'
-        case 'GEN1ST_COTTON2': return 'Bông (UScent/pound)'
-        case 'GEN1ST_RUB_TCM': return 'Cao su (USD/kg)'
-        case 'GEN1ST_SUGAR11': return 'Đường (UScent/pound)'
-        case 'FW3M_COPPER': return 'Đồng (USD/tấn)'
-        case 'SPOT_IRON_QINGDAO': return 'Quặng Sắt 62% (USD/tấn)'
-        case 'HRC_3MM_EXPORT': return 'Thép HRC (USD/tấn)'
-      }
-    }
-  },
   data() {
     return {
-      activeTab: 'goods',
+      activeTab: '1',
       listType: [
-        { label: 'Hàng hoá', name: 'goods' },
-        { label: 'Tỷ giá', name: 'currencies' }
+        { label: 'Hàng hoá', name: '1' },
+        { label: 'Tỷ giá', name: '2' },
+        { label: 'Tiền mã hoá', name: '3' }
       ],
       isLoading: false,
       tableData: []
@@ -85,33 +112,41 @@ export default {
   },
   watch: {
     activeTab(value) {
-      if (value === 'goods') {
-        this.getGoods()
-      } else if (value === 'currencies') {
-        this.getCurrenciesRate()
-      }
+      this.getGoods(value)
     }
   },
   mounted() {
-    this.getGoods()
+    this.getGoods(this.activeTab)
   },
   methods: {
-    async getGoods() {
-      const response = await getGoods()
-      const response2 = await getChangePricesGoods()
-      response.data.forEach(item1 => {
-        response2.data.forEach(item2 => {
-          if (item1.code === item2.code) {
-            item1.price = item2.price
-            item1.changePct = item2.changePct
-          }
-        })
-      })
-      this.tableData = response.data
-    },
-    async getCurrenciesRate() {
-      const response = await getCurrenciesRate()
-      this.tableData = response.data
+    async getGoods(type) {
+      try {
+        this.isLoading = true
+        const response = await getGoods({ type })
+        const goods = [
+          'Vàng SJC Hà Nội Mua',
+          'Bạc',
+          'Kẽm',
+          'Đồng',
+          'Cà phê London',
+          'Dầu Thô WTI',
+          'Dầu Nhiên liệu',
+          'Copper',
+          'Đường Hoa Kỳ loại 11',
+          'Yến mạch'
+        ]
+        if (this.activeTab === '1') {
+          this.tableData = response.data.filter(item => goods.includes(item.goods))
+        } else if (this.activeTab === '2') {
+          this.tableData = response.data
+        } else if (this.activeTab === '3') {
+          this.tableData = response.data.slice(0, 10)
+        }
+      } catch (error) {
+        console.log(error)
+      } finally {
+        this.isLoading = false
+      }
     }
   }
 }
@@ -135,7 +170,7 @@ export default {
       width: 100%;
     }
     .el-tabs__item {
-      width: 50%;
+      width: 33.33%;
       text-align: center;
     }
   }

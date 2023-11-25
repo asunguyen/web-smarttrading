@@ -80,7 +80,7 @@ export function formatBillion(num) {
  * @param {num} num
  */
 export function roundTo2Digits(num) {
-  return (+num || 0).toFixed(2)
+  return +(+num || 0).toFixed(2)
 }
 
 export function roundUp(num) {
