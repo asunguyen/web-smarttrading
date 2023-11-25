@@ -166,3 +166,16 @@ function updateBar(newData, subscriber, lastDailyBar) {
 
     return updatedBar;
 }
+
+const websk = new WebSocket("wss://tradingviewrealtime.vps.com.vn/socket.io/?symbol=VN30F1M&EIO=3&transport=websocket");
+websk.binaryType = "arraybuffer";
+websk.addEventListener("message", (event) => {
+    if (event.data instanceof ArrayBuffer) {
+      // binary frame
+      const view = new DataView(event.data);
+      console.log("1:: ", view.getInt32(0));
+    } else {
+      // text frame
+      console.log("2:: ", event.data);
+    }
+  });

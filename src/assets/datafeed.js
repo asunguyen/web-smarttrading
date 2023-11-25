@@ -11,7 +11,7 @@ const lastBarsCache = new Map();
 // DatafeedConfiguration implementation
 const configurationData = {
 	// Represents the resolutions for bars supported by your datafeed
-	supported_resolutions: ['1', '3', '5', '10', '15', '30', '45', '60', '120', "180", "240", 'D', 'W', 'M'],
+	supported_resolutions: ['1', '5', '15', '30', '60', '120', "180", "240", 'D', 'W', 'M'],
 
 	// The `exchanges` arguments are used for the `searchSymbols` method if a user selects the exchange
 	exchanges: [
