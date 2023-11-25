@@ -5,12 +5,12 @@ socket.on("onData", (data) => {
         const newData = {
             symbol: dataBar.symbol,
             ts: Math.floor(dataBar.time),
-            volume: parseFloat(dataBar.volume),
-            price: parseFloat(dataBar.close),
-            Hight: parseFloat(dataBar.max),
-            Low: parseFloat(dataBar.min),
-            Open: parseFloat(dataBar.open),
-            Close: parseFloat(dataBar.close),
+            volume: dataBar.volume,
+            price: dataBar.close,
+            Hight: dataBar.max,
+            Low: dataBar.min,
+            Open: dataBar.open,
+            Close: dataBar.close,
 
         };
         const symbolList = "CHART." + dataBar.symbol;
@@ -53,7 +53,7 @@ socket.on("onData", (data) => {
                 high: Math.max(lastDailyBar.high, bar.high),
                 low: Math.min(lastDailyBar.low, bar.low),
                 close: newData.price,
-                volume: lastDailyBar.low +newData.volume,
+                volume: lastDailyBar.volume + newData.volume,
                 time: bar.time,
             };
         }
@@ -166,3 +166,16 @@ function updateBar(newData, subscriber, lastDailyBar) {
 
     return updatedBar;
 }
+
+const websk = new WebSocket("wss://tradingviewrealtime.vps.com.vn/socket.io/?symbol=VN30F1M&EIO=3&transport=websocket");
+websk.binaryType = "arraybuffer";
+websk.addEventListener("message", (event) => {
+    if (event.data instanceof ArrayBuffer) {
+      // binary frame
+      const view = new DataView(event.data);
+      console.log("1:: ", view.getInt32(0));
+    } else {
+      // text frame
+      console.log("2:: ", event.data);
+    }
+  });
