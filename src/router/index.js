@@ -261,24 +261,24 @@ export const asyncRoutes = [
       }
     ]
   },
-  {
-    path: '/profile',
-    component: Layout,
-    redirect: 'noRedirect',
-    name: 'Thông tin',
-    meta: {
-      title: 'Thông tin',
-      icon: 'component'
-    },
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/customer/index'),
-        name: 'Thông tin',
-        meta: { title: 'Thông tin', icon: 'user', affix: true }
-      }
-    ]
-  },
+  // {
+  //   path: '/profile',
+  //   component: Layout,
+  //   redirect: 'noRedirect',
+  //   name: 'Thông tin',
+  //   meta: {
+  //     title: 'Thông tin',
+  //     icon: 'component'
+  //   },
+  //   children: [
+  //     {
+  //       path: '',
+  //       component: () => import('@/views/customer/index'),
+  //       name: 'Thông tin',
+  //       meta: { title: 'Thông tin', icon: 'user', affix: true }
+  //     }
+  //   ]
+  // },
   {
     path: '/ext-chrome-guide',
     component: Layout,
