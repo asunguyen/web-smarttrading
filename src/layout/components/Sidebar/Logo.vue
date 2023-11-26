@@ -39,7 +39,8 @@ export default {
   height: 50px;
   line-height: 50px;
   /* background: #2b2f3a; */
-  background: white;
+  /* background: white; */
+  background: linear-gradient(#c899ff, #f1e6ff);
   text-align: center;
   overflow: hidden;
 
