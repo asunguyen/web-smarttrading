@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { getPropTradingChart, getMapMarket } from '@/api/stock'
+import { getPropTradingChart } from '@/api/stock'
 
 export default {
   data() {
@@ -32,7 +32,6 @@ export default {
     }
   },
   mounted() {
-    getMapMarket()
     this.getPropTradingChart()
   },
   methods: {
