@@ -26,6 +26,9 @@
     <el-row class="mt-4">
       <MarketWidth />
     </el-row>
+    <el-row class="mt-4">
+      <MapMarket />
+    </el-row>
   </div>
 </template>
 
@@ -42,6 +45,7 @@ import MarketData from './components/market-data.vue'
 import MarketWidth from './components/market-width.vue'
 import PropTrading from './components/prop-trading.vue'
 import TopPropTrading from './components/top-prop-trading.vue'
+import MapMarket from './components/map-market.vue'
 
 export default {
   components: {
@@ -56,7 +60,8 @@ export default {
     MarketData,
     MarketWidth,
     PropTrading,
-    TopPropTrading
+    TopPropTrading,
+    MapMarket
   }
 }
 </script>

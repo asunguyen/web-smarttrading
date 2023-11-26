@@ -10,19 +10,19 @@
       </template>
 
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
-        <div class="avatar-wrapper">
+        <!-- <div class="avatar-wrapper">
           <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
           <i class="el-icon-caret-bottom" />
-        </div>
-        <el-dropdown-menu slot="dropdown">
-          <!-- <router-link to="/profile/index">
-            <el-dropdown-item>Profile</el-dropdown-item>
-          </router-link> -->
+        </div> -->
+        <span v-if="name" class="el-dropdown-link">
+          {{ name }} <i class="el-icon-caret-bottom el-icon--right" />
+        </span>
+        <el-dropdown-menu v-if="name" slot="dropdown">
           <router-link to="/">
             <el-dropdown-item>Dashboard</el-dropdown-item>
           </router-link>
           <el-dropdown-item divided @click.native="logout">
-            <span>Log Out</span>
+            <span>Đăng xuất</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -44,7 +44,8 @@ export default {
     ...mapGetters([
       'sidebar',
       'avatar',
-      'device'
+      'device',
+      'name'
     ])
   },
   methods: {
@@ -64,7 +65,8 @@ export default {
   height: 50px;
   overflow: hidden;
   position: relative;
-  background: #fff;
+  /* background: #fff; */
+  background: linear-gradient(#c899ff, #f1e6ff);
   box-shadow: 0 1px 4px rgba(0,21,41,.08);
 
   .hamburger-container {
