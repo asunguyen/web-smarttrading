@@ -15,9 +15,9 @@
           <el-table-column label="STT" type="index" align="center" width="50" />
           <el-table-column label="Mã" width="200">
             <template slot-scope="{row}">
-              <span v-if="activeTab === '1'"><b>{{ row.goods }}</b></span>
-              <span v-if="activeTab === '2'"><b>{{ row.ProductName }}</b></span>
-              <span v-if="activeTab === '3'"><b>{{ row.symbol }}</b></span>
+              <span v-if="activeTab === '1'" class="text-004370"><b>{{ row.goods }}</b></span>
+              <span v-if="activeTab === '2'" class="text-004370"><b>{{ row.ProductName }}</b></span>
+              <span v-if="activeTab === '3'" class="text-004370"><b>{{ row.symbol }}</b></span>
             </template>
           </el-table-column>
           <el-table-column label="Giá" prop="price">

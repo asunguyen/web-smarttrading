@@ -15,7 +15,7 @@
         >
           <el-table-column label="Chỉ tiêu" prop="title">
             <template slot-scope="{row}">
-              <span><b>{{ row.title | formatNameTableValuation }}</b></span>
+              <span class="text-004370"><b>{{ row.title | formatNameTableValuation }}</b></span>
             </template>
           </el-table-column>
           <el-table-column
