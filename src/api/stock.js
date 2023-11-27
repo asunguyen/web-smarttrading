@@ -11,6 +11,14 @@ export function getIndexVietnam(query) {
   })
 }
 
+export function getIndexWorld(query) {
+  return request({
+    url: 'vimo/chiso-thegioi',
+    methods: 'get',
+    params: query
+  })
+}
+
 export function getListTopStocks(query) {
   return request({
     url: 'vimo/top-10-cophieu',

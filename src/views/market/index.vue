@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container market">
     <h2 class="mt-0">Toàn cảnh thị trường</h2>
     <el-row :gutter="10" class="mb-3">
       <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="8"><MarketIndex /></el-col>
@@ -65,3 +65,19 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.market {
+  ::v-deep {
+    .el-tabs--card > .el-tabs__header .el-tabs__nav {
+      border: 1px solid #004370;
+    }
+    .el-tabs--card > .el-tabs__header .el-tabs__item.is-active {
+      background-color: #004370;
+      color: #fff;
+      font-weight: bold;
+      border-bottom: 1px solid #004370;
+    }
+  }
+}
+</style>

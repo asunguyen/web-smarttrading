@@ -16,7 +16,7 @@
           <el-table-column label="STT" type="index" align="center" width="50" />
           <el-table-column label="Mã CK" prop="Symbol" align="center">
             <template slot-scope="{row}">
-              <span><b>{{ row.Symbol }}</b></span>
+              <span class="text-004370"><b>{{ row.Symbol }}</b></span>
             </template>
           </el-table-column>
           <el-table-column label="KL mua ròng" prop="Volume" align="center" width="130">

@@ -58,18 +58,25 @@ export default {
   },
   methods: {
     async getMapMarket(type, category, centerId, chartId = 'container-map-market-1') {
-      const response = await getMapMarket({ type, category, centerId })
+      try {
+        this.isLoading = true
+        const response = await getMapMarket({ type, category, centerId })
 
-      const data = response.data.map(item => {
-        return {
-          name: item.Symbol,
-          value: item.TotalVolume,
-          changePercent: item.ChangePercent,
-          price: item.Price,
-          fill: this.getColor(item.Color)
-        }
-      })
-      this.drawChart(data.slice(0, 100), chartId)
+        const data = response.data.map(item => {
+          return {
+            name: item.Symbol,
+            value: item.TotalVolume,
+            changePercent: item.ChangePercent,
+            price: item.Price,
+            fill: this.getColor(item.Color)
+          }
+        })
+        this.drawChart(data.slice(0, 100), chartId)
+      } catch (error) {
+        console.log(error)
+      } finally {
+        this.isLoading = false
+      }
     },
     drawChart(data, chartId) {
       const dataChart = [
@@ -94,7 +101,8 @@ export default {
       chart.draw()
     },
     getColor(color) {
-      if (color === -1) return '#D23133'
+      if (color === -2) return '#1F9FFC'
+      else if (color === -1) return '#D23133'
       else if (color === 0) return '#FFB800'
       else if (color === 1) return '#33A42E'
       else if (color === 2) return '#6743CD'
