@@ -7,6 +7,9 @@ import {
 	unsubscribeFromStream,
 } from './streaming.js';
 
+import {
+	updateBar1
+} from "./streamingps.js"
 const lastBarsCache = new Map();
 // DatafeedConfiguration implementation
 const configurationData = {
