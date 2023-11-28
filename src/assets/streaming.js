@@ -259,11 +259,14 @@ socketdchart.on('price', data => {
 
 const socketUrl = "https://tradingviewrealtime.vps.com.vn";
 const subscribers = [];
-const socketSmart = io(socketUrl, {
-    transports: ["websocket", "polling"],
-    query: {
-        symbol: "VN30F1M"
-    }
+const socketSmart = io("https://tradingviewrealtime.vps.com.vn", { 
+    'transports': ["websocket", "polling"] ,
+    cors: {
+        origin: "https://example.com",
+        methods: ["GET", "POST"],
+        allowedHeaders: ["my-custom-header"],
+        credentials: true
+      }
 });
 
 socketSmart.on("connect", () => {
