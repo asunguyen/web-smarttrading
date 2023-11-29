@@ -8,7 +8,8 @@ import {
 } from './streaming.js';
 
 import {
-	updateBar1
+	subscribeOnStreamps,
+	unsubscribeFromStreamps
 } from "./streamingps.js"
 const lastBarsCache = new Map();
 // DatafeedConfiguration implementation
@@ -192,10 +193,19 @@ export default {
 			onResetCacheNeededCallback,
 			lastBarsCache.get(symbolInfo.full_name)
 		);
+		subscribeOnStreamps(
+			symbolInfo,
+			resolution,
+			onRealtimeCallback,
+			subscriberUID,
+			onResetCacheNeededCallback,
+			lastBarsCache.get(symbolInfo.full_name)
+			)
 	},
 
 	unsubscribeBars: (subscriberUID) => {
 		console.log('[unsubscribeBars]: Method call with subscriberUID:', subscriberUID);
 		unsubscribeFromStream(subscriberUID);
+		unsubscribeFromStreamps(subscriberUID)
 	},
 };
