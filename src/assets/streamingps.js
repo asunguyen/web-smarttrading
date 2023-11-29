@@ -1,4 +1,4 @@
-
+const channelToSubscription = new Map();
 const socketdchart = io("https://dchart-socket.vndirect.com.vn/socket.io", {
     'transports': ["websocket", "polling"],
     'query': {
@@ -8,6 +8,7 @@ const socketdchart = io("https://dchart-socket.vndirect.com.vn/socket.io", {
 
 socketdchart.on('connect', () => {
     console.log('[socket] Connected');
+    socketdchart.emit("addsymbol", "SSI")
 });
 
 socketdchart.on('disconnect', (reason) => {
@@ -33,6 +34,9 @@ socketdchart.on('price', data => {
     console.log('[socket] Message:', parsedData);
     const symbolList = "CHART." + parsedData.symbol;
     const subscriptionItem = channelToSubscription.get(symbolList);
+    if (subscriptionItem === undefined) {
+        return;
+    }
     const lastDailyBar = subscriptionItem.lastDailyBar;
     var lastBar = lastDailyBar;
     const isNewBar = JSON.stringify(lastBar) === '{}';
@@ -46,9 +50,6 @@ socketdchart.on('price', data => {
 
     const interval = resolution * 60;
     const roundedTimestamp = Math.floor(newData.ts / interval) * interval;
-    if (subscriptionItem === undefined) {
-        return;
-    }
 
     console.log('[socket] newData:', newData);
     const bar = updateBar(newData, lastDailyBar, subscriptionItem);
@@ -79,7 +80,7 @@ socketdchart.on('price', data => {
     }
 
 
-
+    console.log("upBar")
 
     subscriptionItem.lastDailyBar = upBar;
     //console.log('[socket] bar:', bar);
@@ -92,16 +93,14 @@ const socketUrl = "https://tradingviewrealtime.vps.com.vn";
 const subscribers = [];
 const socketSmart = io("https://tradingviewrealtime.vps.com.vn", { 
     'transports': ["websocket", "polling"] ,
-    cors: {
-        origin: "https://example.com",
-        methods: ["GET", "POST"],
-        allowedHeaders: ["my-custom-header"],
-        credentials: true
-      }
+    'query': {
+        'symbol': "VN30F1M"
+    }
 });
 
 socketSmart.on("connect", () => {
     console.log("VPS Socket connected");
+    socketSmart.emit("regs", JSON.stringify({"action":"join","list":"CHART.VN30F1M"}))
 });
 
 socketSmart.on("disconnect", (reason) => {

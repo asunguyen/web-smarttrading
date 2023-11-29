@@ -20,6 +20,7 @@ socket.on("onData", (data) => {
             Close: dataBar.close,
 
         };
+        console.log("newData:: ", newData);
         const symbolList = "CHART." + dataBar.symbol;
         const subscriptionItem = channelToSubscription.get(symbolList);
         if (subscriptionItem === undefined) {
