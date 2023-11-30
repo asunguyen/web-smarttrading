@@ -28,7 +28,11 @@ socketdchart.on('price', data => {
         symbol: parsedData.symbol,
         ts: Math.floor(parsedData.time / 1000),
         volume: parseFloat(parsedData.volume),
-        price: parseFloat(parsedData.price*1000)
+        price: parseFloat(parsedData.price*1000),
+        Hight: parseFloat(parsedData.price*1000),
+        Low: parseFloat(parsedData.price*1000),
+        Open: parseFloat(parsedData.price*1000),
+        Close: parseFloat(parsedData.price*1000),
     };
 
     console.log('[socket] Message:', parsedData);
@@ -52,7 +56,6 @@ socketdchart.on('price', data => {
     const interval = resolution * 60;
     const roundedTimestamp = Math.floor(newData.ts / interval) * interval;
 
-    console.log('[socket] newData:', newData);
     const bar = updateBar(newData, lastDailyBar, subscriptionItem);
     var upBar;
 
@@ -79,9 +82,6 @@ socketdchart.on('price', data => {
             time: bar.time,
         };
     }
-
-
-    console.log("upBar")
 
     subscriptionItem.lastDailyBar = upBar;
     //console.log('[socket] bar:', bar);
