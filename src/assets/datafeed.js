@@ -143,14 +143,17 @@ export default {
 			let dataBar = [];
 			if (data.nextTime || data.nextTime >= 0) {
 				for (var i = 0; i < data.t.length; i++) {
-                    dataBar = [...dataBar, {
-                        close: data.c[i] * 1000,
-                        max: data.h[i] * 1000,
-                        min: data.l[i] * 1000,
-                        open: data.o[i] * 1000,
-                        time: data.t[i] * 1000,
-                        volume: data.v[i]
-                    }]
+					if (from <= data.t[i] && data.t[i] <= to) {
+						dataBar = [...dataBar, {
+							close: data.c[i] * 1000,
+							max: data.h[i] * 1000,
+							min: data.l[i] * 1000,
+							open: data.o[i] * 1000,
+							time: data.t[i] * 1000,
+							volume: data.v[i]
+						}]
+					}
+                    
                 }
 			} else {
 				dataBar = data;
@@ -159,7 +162,7 @@ export default {
 			if (dataBar.length == 0) {
 				// "noData" should be set if there is no data in the requested period
 				onHistoryCallback([], {
-					noData: false,
+					noData: true,
 				});
 				console.log('[getBars]: No data');
 			}
