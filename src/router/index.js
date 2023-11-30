@@ -70,6 +70,70 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/market',
+    component: Layout,
+    name: 'Tổng quan thị trường',
+    meta: {
+      title: 'Tổng quan thị trường',
+      icon: 'el-icon-s-home'
+    },
+    children: [
+      {
+        path: 'overview',
+        component: () => import('@/views/market/index'),
+        name: 'Toàn cảnh thị trường',
+        meta: { title: 'Toàn cảnh thị trường', icon: 'international', affix: true }
+      },
+      {
+        path: 'map',
+        component: () => import('@/views/market/index'),
+        name: 'Bản đồ thị trường',
+        meta: { title: 'Bản đồ thị trường', icon: 'international', affix: true }
+      },
+      {
+        path: 'macro',
+        component: () => import('@/views/market/index'),
+        name: 'Tổng quan vĩ mô',
+        meta: { title: 'Tổng quan vĩ mô', icon: 'international', affix: true }
+      },
+      {
+        path: 'industry',
+        component: () => import('@/views/market/index'),
+        name: 'Tổng quan ngành',
+        meta: { title: 'Tổng quan ngành', icon: 'international', affix: true }
+      },
+      {
+        path: 'analysis-report',
+        component: () => import('@/views/market/index'),
+        name: 'Báo cáo phân tích',
+        meta: { title: 'Báo cáo phân tích', icon: 'international', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/chart',
+    component: Layout,
+    name: 'Biểu đồ',
+    meta: {
+      title: 'Biểu đồ',
+      icon: 'el-icon-s-data'
+    },
+    children: [
+      {
+        path: 'vietnam',
+        component: () => import('@/views/market/index'),
+        name: 'Thị trường Việt Nam',
+        meta: { title: 'Thị trường Việt Nam', icon: 'international', affix: true }
+      },
+      {
+        path: 'world',
+        component: () => import('@/views/market/index'),
+        name: 'Thị trường quốc tế',
+        meta: { title: 'Thị trường quốc tế', icon: 'international', affix: true }
+      }
+    ]
+  },
+  {
     path: '/',
     component: Layout,
     redirect: '/dashboard',
@@ -78,20 +142,7 @@ export const constantRoutes = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
-        meta: { title: 'Dashboard', icon: 'dashboard', affix: true }
-      }
-    ]
-  },
-  {
-    path: '/market',
-    component: Layout,
-    // redirect: '/dashboard',
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/market/index'),
-        name: 'Thị trường',
-        meta: { title: 'Thị trường', icon: 'international', affix: true }
+        meta: { title: 'Dashboard', icon: 'handle', affix: true }
       }
     ]
   }
@@ -120,10 +171,10 @@ export const asyncRoutes = [
     path: '/ai-trading',
     component: Layout,
     redirect: 'noRedirect',
-    name: 'AI Trading Robot',
+    name: 'BOT trade SMT',
     meta: {
-      title: 'AI Trading Robot',
-      icon: 'el-icon-s-data'
+      title: 'BOT trade SMT',
+      icon: 'robot'
     },
     children: [
       {
@@ -165,12 +216,25 @@ export const asyncRoutes = [
     ]
   },
   {
+    path: '/news',
+    component: Layout,
+    redirect: 'noRedirect',
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/products/robot-integrate-vps/index'),
+        name: 'Tin tức và Sự kiện',
+        meta: { title: 'Tin tức và Sự kiện', icon: 'newspaper', affix: true }
+      }
+    ]
+  },
+  {
     path: '/products',
     component: Layout,
     redirect: 'noRedirect',
-    name: 'Sản phẩm',
+    name: 'Sản phẩm SMT',
     meta: {
-      title: 'Sản phẩm',
+      title: 'Sản phẩm SMT',
       icon: 'el-icon-goods'
     },
     children: [
@@ -179,6 +243,18 @@ export const asyncRoutes = [
         component: () => import('@/views/products/robot-integrate-vps/index'),
         name: 'Robot tích hợp VPS',
         meta: { title: 'Robot tích hợp VPS', icon: 'el-icon-cpu', affix: true }
+      },
+      {
+        path: 'robot-integrate-entrade',
+        component: () => import('@/views/products/robot-integrate-vps/index'),
+        name: 'Robot tích hợp Entrade',
+        meta: { title: 'Robot tích hợp Entrade', icon: 'el-icon-cpu', affix: true }
+      },
+      {
+        path: 'robot-integrate-vnd',
+        component: () => import('@/views/products/robot-integrate-vps/index'),
+        name: 'Robot tích hợp VND',
+        meta: { title: 'Robot tích hợp VND', icon: 'el-icon-cpu', affix: true }
       },
       {
         path: 'copytrade',
@@ -195,38 +271,67 @@ export const asyncRoutes = [
     ]
   },
   {
-    path: '/services',
+    path: '/training',
     component: Layout,
     redirect: 'noRedirect',
-    name: 'Dịch vụ',
-    meta: {
-      title: 'Dịch vụ',
-      icon: 'example'
-    },
     children: [
       {
-        path: 'training',
+        path: '',
         component: () => import('@/views/services/training/index'),
         name: 'Đào tạo chứng khoán',
-        meta: { title: 'Đào tạo chứng khoán', icon: 'el-icon-notebook-2', affix: true }
-      },
+        meta: { title: 'Đào tạo chứng khoán', icon: 'book', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/market-news',
+    component: Layout,
+    redirect: 'noRedirect',
+    children: [
       {
-        path: 'advice',
+        path: '',
+        component: () => import('@/views/services/training/index'),
+        name: 'Tin tức thị trường',
+        meta: { title: 'Tin tức thị trường', icon: 'peoples', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/advice',
+    component: Layout,
+    redirect: 'noRedirect',
+    children: [
+      {
+        path: '',
         component: () => import('@/views/services/training/index'),
         name: 'Tư vấn đầu tư',
-        meta: { title: 'Tư vấn đầu tư', icon: 'money', affix: true }
-      },
+        meta: { title: 'Tư vấn đầu tư', icon: 'handshake', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/prices',
+    component: Layout,
+    redirect: 'noRedirect',
+    children: [
       {
-        path: 'prices',
+        path: '',
         component: () => import('@/views/services/prices/index'),
         name: 'Bảng giá',
-        meta: { title: 'Bảng giá', icon: 'documentation', affix: true }
-      },
+        meta: { title: 'Bảng giá', icon: 'tooltip', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/contact',
+    component: Layout,
+    redirect: 'noRedirect',
+    children: [
       {
-        path: 'contact',
+        path: '',
         component: () => import('@/views/services/contact/index'),
         name: 'Liên hệ',
-        meta: { title: 'Liên hệ', icon: 'el-icon-phone', affix: true }
+        meta: { title: 'Liên hệ', icon: 'contact', affix: true }
       }
     ]
   },
