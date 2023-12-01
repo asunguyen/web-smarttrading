@@ -122,10 +122,10 @@ export default {
 		const { from, to, firstDataRequest } = periodParams;
 		console.log('[getBars]: Method call:: ',);
 		var resol = resolution;
-		// try {
-		// 	if (resolution == "60" || resolution == "120" || resolution == "180" || resolution == "240") resol = "1H";
-		// }
-		// catch (e) { }
+		try {
+			if (resolution == "60" || resolution == "120" || resolution == "180" || resolution == "240") resol = "1H";
+		}
+		catch (e) { }
 		const urlParameters = {
 			symbol: symbolInfo.name,
 			exchange: symbolInfo.exchange,
@@ -142,53 +142,70 @@ export default {
 			const data = response.data;
 			let dataBar = [];
 			if (data.nextTime || data.nextTime >= 0) {
+				console.log(1);
+				let bars = [];
 				for (var i = 0; i < data.t.length; i++) {
-					if (from <= data.t[i] && data.t[i] <= to) {
-						dataBar = [...dataBar, {
-							close: data.c[i] * 1000,
-							max: data.h[i] * 1000,
-							min: data.l[i] * 1000,
-							open: data.o[i] * 1000,
-							time: data.t[i] * 1000,
-							volume: data.v[i]
-						}]
-					}
-                    
-                }
+					bars = [...bars, {
+						close: data.c[i] * 1000,
+						high: data.h[i] * 1000,
+						low: data.l[i] * 1000,
+						open: data.o[i] * 1000,
+						time: data.t[i] * 1000,
+						volume: data.v[i]
+					}]
+				}
+				if (firstDataRequest) {
+					lastBarsCache.set(symbolInfo.full_name, {
+						...bars[bars.length - 1],
+					});
+				}
+				if (bars && bars.length > 0) {
+					onHistoryCallback(bars, {
+						noData: true
+					});
+				} else {
+					onHistoryCallback([], {
+						noData: false
+					});
+				}
+				
+				
 			} else {
 				dataBar = data;
-			}
-			//console.log(data);
-			if (dataBar.length == 0) {
-				// "noData" should be set if there is no data in the requested period
-				onHistoryCallback([], {
-					noData: true,
-				});
-				console.log('[getBars]: No data');
-			}
-			else {
-				let bars = [];
-				for (let i = 0; i < dataBar.length; i++) {
-					bars = [...bars, {
-						time: dataBar[i].time * 1000,
-						low: dataBar[i].min,
-						high: dataBar[i].max,
-						open: dataBar[i].open,
-						close: dataBar[i].close,
-						volume: dataBar[i].volume,
-					}];
-					if (i == dataBar.length -1) {
-						if (firstDataRequest) {
-							lastBarsCache.set(symbolInfo.full_name, {
-								...bars[bars.length - 1],
+				if (dataBar.length == 0) {
+					// "noData" should be set if there is no data in the requested period
+					onHistoryCallback([], {
+						noData: true,
+					});
+					console.log('[getBars]: No data');
+				}
+				else {
+					let bars = [];
+					for (let i = 0; i < dataBar.length; i++) {
+						bars = [...bars, {
+							time: dataBar[i].time * 1000,
+							low: dataBar[i].min,
+							high: dataBar[i].max,
+							open: dataBar[i].open,
+							close: dataBar[i].close,
+							volume: dataBar[i].volume,
+						}];
+						if (i == dataBar.length -1) {
+							if (firstDataRequest) {
+								lastBarsCache.set(symbolInfo.full_name, {
+									...bars[bars.length - 1],
+								});
+							}
+							onHistoryCallback(bars, {
+								noData: true,
 							});
 						}
-						onHistoryCallback(bars, {
-							noData: true,
-						});
 					}
+					console.log("bars2:: ", bars);
 				}
 			}
+			//console.log(data);
+			
 		} catch (error) {
 			console.log('[getBars]: Get error', error);
 			onErrorCallback(error);

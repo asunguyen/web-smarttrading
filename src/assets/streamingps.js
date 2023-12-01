@@ -78,11 +78,11 @@ socketdchart.on('price', data => {
             high: Math.max(lastDailyBar.high, bar.high),
             low: Math.min(lastDailyBar.low, bar.low),
             close: newData.price,
-            volume: lastDailyBar.low + newData.volume,
+            volume: lastDailyBar.volume + newData.volume,
             time: bar.time,
         };
     }
-
+    console.log("upBar:: ", upBar)
     subscriptionItem.lastDailyBar = upBar;
     //console.log('[socket] bar:', bar);
     // Send data to every subscriber of that symbol
