@@ -142,14 +142,13 @@ export default {
 			const data = response.data;
 			let dataBar = [];
 			if (data.nextTime || data.nextTime >= 0) {
-				console.log(1);
 				let bars = [];
 				for (var i = 0; i < data.t.length; i++) {
 					bars = [...bars, {
-						close: data.c[i] * 1000,
-						high: data.h[i] * 1000,
-						low: data.l[i] * 1000,
-						open: data.o[i] * 1000,
+						close: data.c[i],
+						high: data.h[i],
+						low: data.l[i],
+						open: data.o[i],
 						time: data.t[i] * 1000,
 						volume: data.v[i]
 					}]
@@ -201,7 +200,6 @@ export default {
 							});
 						}
 					}
-					console.log("bars2:: ", bars);
 				}
 			}
 			//console.log(data);
