@@ -1,15 +1,15 @@
 <template>
   <div class="dashboard-container">
-    <TVChartContainer />
+    <TVChartContainerCoso/>
   </div>
 </template>
 
 <script>
-import TVChartContainer from '@/components/TVChartContainer/index.vue'
+import TVChartContainerCoso from '@/components/BotCoSo/index.vue';
 
 export default {
   components: {
-    TVChartContainer
+    TVChartContainerCoso
   }
 }
 </script>

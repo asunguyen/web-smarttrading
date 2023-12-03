@@ -32,6 +32,11 @@ const configurationData = {
 			'value': 'Tất cả'
 		}
 	],
+	"supports_search": true,
+	"supports_group_request": false,
+	"supports_marks": true,
+	"supports_timescale_marks": true,
+	"supports_time": true,
 };
 
 // Obtains all symbols for all exchanges supported by CryptoCompare API
@@ -167,8 +172,8 @@ export default {
 						noData: false
 					});
 				}
-				
-				
+
+
 			} else {
 				dataBar = data;
 				if (dataBar.length == 0) {
@@ -189,7 +194,7 @@ export default {
 							close: dataBar[i].close,
 							volume: dataBar[i].volume,
 						}];
-						if (i == dataBar.length -1) {
+						if (i == dataBar.length - 1) {
 							if (firstDataRequest) {
 								lastBarsCache.set(symbolInfo.full_name, {
 									...bars[bars.length - 1],
@@ -203,7 +208,7 @@ export default {
 				}
 			}
 			//console.log(data);
-			
+
 		} catch (error) {
 			console.log('[getBars]: Get error', error);
 			onErrorCallback(error);
@@ -233,7 +238,7 @@ export default {
 			subscriberUID,
 			onResetCacheNeededCallback,
 			lastBarsCache.get(symbolInfo.full_name)
-			)
+		)
 	},
 
 	unsubscribeBars: (subscriberUID) => {
