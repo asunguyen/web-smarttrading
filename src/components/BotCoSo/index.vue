@@ -210,15 +210,15 @@ export default {
                   isHidden: false,
                   // location: 'Bottom',
                   size: 'normal', // size of the shape, possible values are 'auto', 'tiny', 'small', 'normal', 'large', 'huge'
-                  text: 'SHORT',
-                  title: 'SHORT'
+                  text: 'BÁN',
+                  title: 'BÁN'
                 },
                 plot_1: {
                   isHidden: false,
                   // location: 'Bottom',
                   size: 'normal', // size of the shape, possible values are 'auto', 'tiny', 'small', 'normal', 'large', 'huge'
-                  text: 'LONG',
-                  title: 'LONG'
+                  text: 'MUA',
+                  title: 'MUA'
                 },
                 plot_2: {
                   linestyle: 0,
@@ -474,15 +474,15 @@ export default {
                   isHidden: false,
                   // location: 'Bottom',
                   size: 'normal', // size of the shape, possible values are 'auto', 'tiny', 'small', 'normal', 'large', 'huge'
-                  text: 'SHORT',
-                  title: 'SHORT'
+                  text: 'BÁN',
+                  title: 'BÁN'
                 },
                 plot_1: {
                   isHidden: false,
                   // location: 'Bottom',
                   size: 'normal', // size of the shape, possible values are 'auto', 'tiny', 'small', 'normal', 'large', 'huge'
-                  text: 'LONG',
-                  title: 'LONG'
+                  text: 'MUA',
+                  title: 'MUA'
                 },
                 plot_2: {
                   linestyle: 0,
@@ -675,15 +675,15 @@ export default {
                   isHidden: false,
                   location: 'Bottom',
                   size: 'normal', // size of the shape, possible values are 'auto', 'tiny', 'small', 'normal', 'large', 'huge'
-                  text: 'SHORT',
-                  title: 'SHORT'
+                  text: 'BÁN',
+                  title: 'BÁN'
                 },
                 plot_1: {
                   isHidden: false,
                   location: 'Bottom',
                   size: 'normal', // size of the shape, possible values are 'auto', 'tiny', 'small', 'normal', 'large', 'huge'
-                  text: 'LONG',
-                  title: 'LONG'
+                  text: 'MUA',
+                  title: 'MUA'
                 }
               },
               defaults: {
