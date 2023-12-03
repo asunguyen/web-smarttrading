@@ -8,6 +8,10 @@ const socket = io("http://api.smtchart.vn", {
 });
 socket.on("onData", (data) => {
     let dataBar = data.chart;
+    console.log("data: ", data);
+    if (data.infos.type == "stock" && data.infos.country == "VN") {
+        return;
+    }
     try {
         const newData = {
             symbol: dataBar.symbol,
@@ -20,6 +24,7 @@ socket.on("onData", (data) => {
             Close: dataBar.close,
 
         };
+        console.log("newData:: ", newData);
         const symbolList = "CHART." + dataBar.symbol;
         const subscriptionItem = channelToSubscription.get(symbolList);
         if (subscriptionItem === undefined) {

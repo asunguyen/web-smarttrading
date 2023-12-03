@@ -8,13 +8,14 @@ import {
 } from './streaming.js';
 
 import {
-	updateBar1
+	subscribeOnStreamps,
+	unsubscribeFromStreamps
 } from "./streamingps.js"
 const lastBarsCache = new Map();
 // DatafeedConfiguration implementation
 const configurationData = {
 	// Represents the resolutions for bars supported by your datafeed
-	supported_resolutions: ['1', '5', '15', '30', '60', '120', "180", "240", 'D', 'W', 'M'],
+	supported_resolutions: ['1', "3", '5', "10", '15', "20", '30', "45", '60', "90", '120', "180", "240", 'D', "3D", 'W', "2W", 'M', "3M", "6M", "12M"],
 
 	// The `exchanges` arguments are used for the `searchSymbols` method if a user selects the exchange
 	exchanges: [
@@ -121,10 +122,10 @@ export default {
 		const { from, to, firstDataRequest } = periodParams;
 		console.log('[getBars]: Method call:: ',);
 		var resol = resolution;
-		// try {
-		// 	if (resolution == "60" || resolution == "120" || resolution == "180" || resolution == "240") resol = "1H";
-		// }
-		// catch (e) { }
+		try {
+			if (resolution == "60" || resolution == "120" || resolution == "180" || resolution == "240") resol = "1H";
+		}
+		catch (e) { }
 		const urlParameters = {
 			symbol: symbolInfo.name,
 			exchange: symbolInfo.exchange,
@@ -139,37 +140,70 @@ export default {
 		try {
 			const response = await makeApiRequest(`history?${query}`);
 			const data = response.data;
-			//console.log(data);
-			if (data.length == 0) {
-				// "noData" should be set if there is no data in the requested period
-				onHistoryCallback([], {
-					noData: false,
-				});
-				console.log('[getBars]: No data');
-			}
-			else {
+			let dataBar = [];
+			if (data.nextTime || data.nextTime >= 0) {
 				let bars = [];
-				for (let i = 0; i < data.length; i++) {
+				for (var i = 0; i < data.t.length; i++) {
 					bars = [...bars, {
-						time: data[i].time * 1000,
-						low: data[i].min,
-						high: data[i].max,
-						open: data[i].open,
-						close: data[i].close,
-						volume: data[i].volume,
-					}];
-					if (i == data.length -1) {
-						if (firstDataRequest) {
-							lastBarsCache.set(symbolInfo.full_name, {
-								...bars[bars.length - 1],
+						close: data.c[i],
+						high: data.h[i],
+						low: data.l[i],
+						open: data.o[i],
+						time: data.t[i] * 1000,
+						volume: data.v[i]
+					}]
+				}
+				if (firstDataRequest) {
+					lastBarsCache.set(symbolInfo.full_name, {
+						...bars[bars.length - 1],
+					});
+				}
+				if (bars && bars.length > 0) {
+					onHistoryCallback(bars, {
+						noData: true
+					});
+				} else {
+					onHistoryCallback([], {
+						noData: false
+					});
+				}
+				
+				
+			} else {
+				dataBar = data;
+				if (dataBar.length == 0) {
+					// "noData" should be set if there is no data in the requested period
+					onHistoryCallback([], {
+						noData: true,
+					});
+					console.log('[getBars]: No data');
+				}
+				else {
+					let bars = [];
+					for (let i = 0; i < dataBar.length; i++) {
+						bars = [...bars, {
+							time: dataBar[i].time * 1000,
+							low: dataBar[i].min,
+							high: dataBar[i].max,
+							open: dataBar[i].open,
+							close: dataBar[i].close,
+							volume: dataBar[i].volume,
+						}];
+						if (i == dataBar.length -1) {
+							if (firstDataRequest) {
+								lastBarsCache.set(symbolInfo.full_name, {
+									...bars[bars.length - 1],
+								});
+							}
+							onHistoryCallback(bars, {
+								noData: true,
 							});
 						}
-						onHistoryCallback(bars, {
-							noData: true,
-						});
 					}
 				}
 			}
+			//console.log(data);
+			
 		} catch (error) {
 			console.log('[getBars]: Get error', error);
 			onErrorCallback(error);
@@ -192,10 +226,19 @@ export default {
 			onResetCacheNeededCallback,
 			lastBarsCache.get(symbolInfo.full_name)
 		);
+		subscribeOnStreamps(
+			symbolInfo,
+			resolution,
+			onRealtimeCallback,
+			subscriberUID,
+			onResetCacheNeededCallback,
+			lastBarsCache.get(symbolInfo.full_name)
+			)
 	},
 
 	unsubscribeBars: (subscriberUID) => {
 		console.log('[unsubscribeBars]: Method call with subscriberUID:', subscriberUID);
 		unsubscribeFromStream(subscriberUID);
+		unsubscribeFromStreamps(subscriberUID)
 	},
 };
