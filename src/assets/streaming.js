@@ -3,7 +3,7 @@ const { io } = require("socket.io-client");
 const socket = io("http://api.smtchart.vn", { 
     'transports': ["websocket", "polling"] ,
     'query': {
-        'symbol': "SSI"
+        'symbol': "VNINDEX"
     }
 });
 socket.on("onData", (data) => {

@@ -2,13 +2,13 @@ const channelToSubscription = new Map();
 const socketdchart = io("https://dchart-socket.vndirect.com.vn/socket.io", {
     'transports': ["websocket", "polling"],
     'query': {
-        'symbol': "VN30F1M"
+        'symbol': "VNINDEX"
     }
 });
 
 socketdchart.on('connect', () => {
     console.log('[socket] Connected');
-    socketdchart.emit("addsymbol", "SSI")
+    socketdchart.emit("addsymbol", "VNINDEX")
 });
 
 socketdchart.on('disconnect', (reason) => {

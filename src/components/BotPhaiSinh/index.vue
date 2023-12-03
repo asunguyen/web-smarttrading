@@ -14,10 +14,10 @@ import Datafeed from '@/assets/datafeed.js'
 //     : decodeURIComponent(results[1].replace(/\+/g, ' '))
 // }
 export default {
-  name: 'TVChartContainer',
+  name: 'TVChartContainerPhaiSinh',
   props: {
     symbol: {
-      default: 'SSI',
+      default: 'VN30F1M',
       type: String
     },
     interval: {
@@ -86,24 +86,6 @@ export default {
       trendDerivativeIndicators: [
         {
           name: 'SMT Trend+',
-          visible: true
-        }
-      ],
-      freeBaseIndicators: [
-        {
-          name: 'SMT Free',
-          visible: true
-        }
-      ],
-      tBaseIndicators: [
-        {
-          name: 'SMT T+',
-          visible: true
-        }
-      ],
-      trendBaseIndicators: [
-        {
-          name: 'SMT Trend',
           visible: true
         }
       ]
@@ -385,20 +367,20 @@ export default {
                   : lowerBandS.get(1)
 
                 lowerBand =
-                  lowerBand > prevLowerBand
-                    ? lowerBand
-                    : close1 < prevLowerBand
+                    lowerBand > prevLowerBand
                       ? lowerBand
-                      : prevLowerBand
+                      : close1 < prevLowerBand
+                        ? lowerBand
+                        : prevLowerBand
                 lowerBandS.set(lowerBand)
                 lowerBand = PineJS.Std.highest(lowerBandS, 10, this._context)
 
                 upperBand =
-                  upperBand < prevUpperBand
-                    ? upperBand
-                    : close1 > prevUpperBand
+                    upperBand < prevUpperBand
                       ? upperBand
-                      : prevUpperBand
+                      : close1 > prevUpperBand
+                        ? upperBand
+                        : prevUpperBand
                 upperBandS.set(upperBand)
                 upperBand = PineJS.Std.lowest(upperBandS, 10, this._context)
 
@@ -425,17 +407,17 @@ export default {
                   : signalS.get(0)
                 if (
                   currMacd > 0 &&
-                  color == 1 &&
-                  high > sma &&
-                  signalS.get(1) != 1
+                    color == 1 &&
+                    high > sma &&
+                    signalS.get(1) != 1
                 ) {
                   long = 1
                   signal = 1
                 } else if (
                   currMacd < 0 &&
-                  color == 0 &&
-                  high < sma &&
-                  signalS.get(1) != 0
+                    color == 0 &&
+                    high < sma &&
+                    signalS.get(1) != 0
                 ) {
                   short = 1
                   signal = 0
@@ -623,19 +605,19 @@ export default {
                   : lowerBandS.get(1)
 
                 lowerBand =
-                  lowerBand > prevLowerBand
-                    ? lowerBand
-                    : close1 < prevLowerBand
+                    lowerBand > prevLowerBand
                       ? lowerBand
-                      : prevLowerBand
+                      : close1 < prevLowerBand
+                        ? lowerBand
+                        : prevLowerBand
                 lowerBandS.set(lowerBand)
 
                 upperBand =
-                  upperBand < prevUpperBand
-                    ? upperBand
-                    : close1 > prevUpperBand
+                    upperBand < prevUpperBand
                       ? upperBand
-                      : prevUpperBand
+                      : close1 > prevUpperBand
+                        ? upperBand
+                        : prevUpperBand
                 upperBandS.set(upperBand)
 
                 var direction = NaN
@@ -931,16 +913,16 @@ export default {
                 var trueRange = Math.max(Math.max(tr1, tr2), tr3)
                 var trueRangeS = this._context.new_var(trueRange)
                 var plusDI =
-                  (PineJS.Std.sma(plusDMS, PR, this._context) /
-                    PineJS.Std.sma(trueRangeS, PR, this._context)) *
-                  100
+                    (PineJS.Std.sma(plusDMS, PR, this._context) /
+                      PineJS.Std.sma(trueRangeS, PR, this._context)) *
+                    100
                 var minusDI =
-                  (PineJS.Std.sma(minusDMS, PR, this._context) /
-                    PineJS.Std.sma(trueRangeS, PR, this._context)) *
-                  100
+                    (PineJS.Std.sma(minusDMS, PR, this._context) /
+                      PineJS.Std.sma(trueRangeS, PR, this._context)) *
+                    100
 
                 var DX =
-                  (Math.abs(plusDI - minusDI) / (plusDI + minusDI)) * 100
+                    (Math.abs(plusDI - minusDI) / (plusDI + minusDI)) * 100
                 var DXS = this._context.new_var(DX)
                 var ADX = PineJS.Std.sma(DXS, PR, this._context)
 
@@ -1202,26 +1184,26 @@ export default {
                 var pvsra_high = this._context.new_var(h)
                 var pvsra_low = this._context.new_var(l)
                 var av =
-                  PineJS.Std.sum(
-                    this._context.new_var(pvsra_volume.get(1)),
-                    10,
-                    this._context
-                  ) / 10
+                    PineJS.Std.sum(
+                      this._context.new_var(pvsra_volume.get(1)),
+                      10,
+                      this._context
+                    ) / 10
                 var value2 =
-                  pvsra_volume.get(1) * (pvsra_high.get(1) - pvsra_low.get(1))
+                    pvsra_volume.get(1) * (pvsra_high.get(1) - pvsra_low.get(1))
                 var value2S = this._context.new_var(value2)
                 var hivalue2 = PineJS.Std.highest(value2S, 10, this._context)
                 var va =
-                  pvsra_volume.get(1) >= av * 2 || value2 >= hivalue2
-                    ? 1
-                    : pvsra_volume.get(1) >= av * 1.5
-                      ? 2
-                      : 0
+                    pvsra_volume.get(1) >= av * 2 || value2 >= hivalue2
+                      ? 1
+                      : pvsra_volume.get(1) >= av * 1.5
+                        ? 2
+                        : 0
                 var hl2 = (h + l) / 2
                 var hl2S = this._context.new_var(hl2)
                 var ao =
-                  PineJS.Std.sma(hl2S, 5, this._context) -
-                  PineJS.Std.sma(hl2S, 34, this._context)
+                    PineJS.Std.sma(hl2S, 5, this._context) -
+                    PineJS.Std.sma(hl2S, 34, this._context)
                 var aoS = this._context.new_var(ao)
                 var diff = ao - aoS.get(1)
                 var hashc = (o + h + l + c) / 4
@@ -1229,78 +1211,78 @@ export default {
                 var hasho = (o + c) / 2
                 var hashoS = this._context.new_var(hasho)
                 hasho =
-                  (PineJS.Std.nz(hashoS.get(1), 0) +
-                    PineJS.Std.nz(hashcS.get(1), 0)) /
-                  2
+                    (PineJS.Std.nz(hashoS.get(1), 0) +
+                      PineJS.Std.nz(hashcS.get(1), 0)) /
+                    2
                 hashoS = this._context.new_var(hasho)
                 hasho =
-                  (PineJS.Std.nz(hashoS.get(1), 0) +
-                    PineJS.Std.nz(hashcS.get(1), 0)) /
-                  2
+                    (PineJS.Std.nz(hashoS.get(1), 0) +
+                      PineJS.Std.nz(hashcS.get(1), 0)) /
+                    2
                 hashoS = this._context.new_var(hasho)
                 var hashc1 =
-                  hashoS.get(0) < hashc
-                    ? hashc - Math.abs(hashc - hashoS.get(0)) / 2
-                    : hashc + Math.abs(hashc - hashoS.get(0)) / 2
+                    hashoS.get(0) < hashc
+                      ? hashc - Math.abs(hashc - hashoS.get(0)) / 2
+                      : hashc + Math.abs(hashc - hashoS.get(0)) / 2
                 var hashh = Math.max(h, Math.max(hashoS.get(0), hashc))
                 var hashl = Math.min(l, Math.min(hashoS.get(0), hashc))
 
                 var color1 =
-                  ao >= 0 &&
-                  diff >= 0 &&
-                  ao > aoS.get(1) &&
-                  hashc1 >= hashoS.get(0)
-                    ? 0
-                    : 0 // ao xanh, nến tăng(ao dương)
+                    ao >= 0 &&
+                    diff >= 0 &&
+                    ao > aoS.get(1) &&
+                    hashc1 >= hashoS.get(0)
+                      ? 0
+                      : 0 // ao xanh, nến tăng(ao dương)
                 var color2 =
-                  ao >= 0 &&
-                  diff < 0 &&
-                  ao < aoS.get(1) &&
-                  hashc1 <= hashoS.get(0)
-                    ? 1
-                    : 0 // ao giảm, nến giảm (ao dương)
+                    ao >= 0 &&
+                    diff < 0 &&
+                    ao < aoS.get(1) &&
+                    hashc1 <= hashoS.get(0)
+                      ? 1
+                      : 0 // ao giảm, nến giảm (ao dương)
                 var color3 =
-                  ao >= 0 &&
-                  diff >= 0 &&
-                  ao > aoS.get(1) &&
-                  hashc1 <= hashoS.get(0)
-                    ? 2
-                    : 0 // ao tăng, nến tăng(ao dương)
+                    ao >= 0 &&
+                    diff >= 0 &&
+                    ao > aoS.get(1) &&
+                    hashc1 <= hashoS.get(0)
+                      ? 2
+                      : 0 // ao tăng, nến tăng(ao dương)
                 var color4 =
-                  ao >= 0 &&
-                  diff < 0 &&
-                  ao < aoS.get(1) &&
-                  hashc1 >= hashoS.get(0)
-                    ? 3
-                    : 0 // ao giảm, nến giảm(ao dương)
+                    ao >= 0 &&
+                    diff < 0 &&
+                    ao < aoS.get(1) &&
+                    hashc1 >= hashoS.get(0)
+                      ? 3
+                      : 0 // ao giảm, nến giảm(ao dương)
                 var color5 =
-                  ao < 0 &&
-                  diff < 0 &&
-                  ao < aoS.get(1) &&
-                  hashc1 >= hashoS.get(0)
-                    ? 4
-                    : 0 // ao giảm, nến tăng(ao âm)
+                    ao < 0 &&
+                    diff < 0 &&
+                    ao < aoS.get(1) &&
+                    hashc1 >= hashoS.get(0)
+                      ? 4
+                      : 0 // ao giảm, nến tăng(ao âm)
                 var color6 =
-                  ao < 0 &&
-                  diff < 0 &&
-                  ao < aoS.get(1) &&
-                  hashc1 <= hashoS.get(0)
-                    ? 5
-                    : 0 // ao giảm, nến giảm
+                    ao < 0 &&
+                    diff < 0 &&
+                    ao < aoS.get(1) &&
+                    hashc1 <= hashoS.get(0)
+                      ? 5
+                      : 0 // ao giảm, nến giảm
                 var color7 =
-                  ao < 0 &&
-                  diff >= 0 &&
-                  ao > aoS.get(1) &&
-                  hashc1 <= hashoS.get(0)
-                    ? 6
-                    : 0 // ao tăng, nến giảm
+                    ao < 0 &&
+                    diff >= 0 &&
+                    ao > aoS.get(1) &&
+                    hashc1 <= hashoS.get(0)
+                      ? 6
+                      : 0 // ao tăng, nến giảm
                 var color8 =
-                  ao < 0 &&
-                  diff >= 0 &&
-                  ao > aoS.get(1) &&
-                  hashc1 >= hashoS.get(0)
-                    ? 7
-                    : 0 // ao tăng, nến tăng
+                    ao < 0 &&
+                    diff >= 0 &&
+                    ao > aoS.get(1) &&
+                    hashc1 >= hashoS.get(0)
+                      ? 7
+                      : 0 // ao tăng, nến tăng
                 var color9 = va == 2 && va == 1.5 ? 8 : 0
                 var color = Math.max(
                   color1,
@@ -1457,12 +1439,12 @@ export default {
                 var buy = false
                 if (
                   max50 < gap50 * min50 &&
-                  max20 < gap20 * min20 &&
-                  max10 < gap10 * min10
+                    max20 < gap20 * min20 &&
+                    max10 < gap10 * min10
                 ) {
                   if (
                     PineJS.Std.sma(closeS, 10, this._context) >
-                    PineJS.Std.sma(closeS, 50, this._context)
+                      PineJS.Std.sma(closeS, 50, this._context)
                   ) {
                     var volume = PineJS.Std.low(this._context)
                     var volumeS = this._context.new_var(volume)
@@ -1474,8 +1456,8 @@ export default {
                     )
                     if (
                       max4Vol * gapVol < volume &&
-                      max4Vol > maxVol &&
-                      close > ma50
+                        max4Vol > maxVol &&
+                        close > ma50
                     ) {
                       buy = true
                     }
@@ -1608,16 +1590,16 @@ export default {
                 var trueRange = Math.max(Math.max(tr1, tr2), tr3)
                 var trueRangeS = this._context.new_var(trueRange)
                 var plusDI =
-                  (PineJS.Std.sma(plusDMS, PR, this._context) /
-                    PineJS.Std.sma(trueRangeS, PR, this._context)) *
-                  100
+                    (PineJS.Std.sma(plusDMS, PR, this._context) /
+                      PineJS.Std.sma(trueRangeS, PR, this._context)) *
+                    100
                 var minusDI =
-                  (PineJS.Std.sma(minusDMS, PR, this._context) /
-                    PineJS.Std.sma(trueRangeS, PR, this._context)) *
-                  100
+                    (PineJS.Std.sma(minusDMS, PR, this._context) /
+                      PineJS.Std.sma(trueRangeS, PR, this._context)) *
+                    100
 
                 var DX =
-                  (Math.abs(plusDI - minusDI) / (plusDI + minusDI)) * 100
+                    (Math.abs(plusDI - minusDI) / (plusDI + minusDI)) * 100
                 var DXS = this._context.new_var(DX)
                 var ADX = PineJS.Std.sma(DXS, PR, this._context)
 
@@ -1840,15 +1822,15 @@ export default {
                 var hl2 = PineJS.Std.hl2(this._context)
                 var hl2S = this._context.new_var(hl2)
                 var rsi_fast =
-                  PineJS.Std.rsi(
-                    this.f_1(hl2S, fast_rsi_period, this._context),
-                    this.f_2(hl2S, fast_rsi_period, this._context)
-                  ) - 50
+                    PineJS.Std.rsi(
+                      this.f_1(hl2S, fast_rsi_period, this._context),
+                      this.f_2(hl2S, fast_rsi_period, this._context)
+                    ) - 50
                 var rsi_slow =
-                  PineJS.Std.rsi(
-                    this.f_1(hl2S, slow_rsi_period, this._context),
-                    this.f_2(hl2S, slow_rsi_period, this._context)
-                  ) - 50
+                    PineJS.Std.rsi(
+                      this.f_1(hl2S, slow_rsi_period, this._context),
+                      this.f_2(hl2S, slow_rsi_period, this._context)
+                    ) - 50
                 var rsi_fast_series = this._context.new_var(rsi_fast)
                 var rsi_slow_series = this._context.new_var(rsi_slow)
                 var slowX = PineJS.Std.wma(
@@ -1876,20 +1858,20 @@ export default {
                 var weak_long = false
                 if (
                   (fast[0] < fast[1] && slow[0] > slow[1] && fast[0] > 0) ||
-                  (fast[0] > fast[1] &&
-                    slow[0] > slow[1] &&
-                    fast[0] < 0 &&
-                    fast[0] > slow[0])
+                    (fast[0] > fast[1] &&
+                      slow[0] > slow[1] &&
+                      fast[0] < 0 &&
+                      fast[0] > slow[0])
                 ) {
                   weak_long = true
                 }
                 var weak_short = false
                 if (
                   (fast[0] > fast[1] && fast[0] < 0 && fast[0] < slow[0]) ||
-                  (fast[0] < fast[1] &&
-                    slow[0] < slow[1] &&
-                    fast[0] > 0 &&
-                    fast[0] < slow[0])
+                    (fast[0] < fast[1] &&
+                      slow[0] < slow[1] &&
+                      fast[0] > 0 &&
+                      fast[0] < slow[0])
                 ) {
                   weak_short = true
                 }
@@ -2108,15 +2090,15 @@ export default {
                 var accdistS = this._context.new_var(accdistV)
 
                 var rsi_fast =
-                  PineJS.Std.rsi(
-                    this.f_1(accdistS, fast_rsi_period, this._context),
-                    this.f_2(accdistS, fast_rsi_period, this._context)
-                  ) - 50
+                    PineJS.Std.rsi(
+                      this.f_1(accdistS, fast_rsi_period, this._context),
+                      this.f_2(accdistS, fast_rsi_period, this._context)
+                    ) - 50
                 var rsi_slow =
-                  PineJS.Std.rsi(
-                    this.f_1(accdistS, slow_rsi_period, this._context),
-                    this.f_2(accdistS, slow_rsi_period, this._context)
-                  ) - 50
+                    PineJS.Std.rsi(
+                      this.f_1(accdistS, slow_rsi_period, this._context),
+                      this.f_2(accdistS, slow_rsi_period, this._context)
+                    ) - 50
                 var rsi_fast_series = this._context.new_var(rsi_fast)
                 var rsi_slow_series = this._context.new_var(rsi_slow)
                 var slowX = PineJS.Std.wma(
@@ -2144,20 +2126,20 @@ export default {
                 var weak_long = false
                 if (
                   (fast[0] < fast[1] && slow[0] > slow[1] && fast[0] > 0) ||
-                  (fast[0] > fast[1] &&
-                    slow[0] > slow[1] &&
-                    fast[0] < 0 &&
-                    fast[0] > slow[0])
+                    (fast[0] > fast[1] &&
+                      slow[0] > slow[1] &&
+                      fast[0] < 0 &&
+                      fast[0] > slow[0])
                 ) {
                   weak_long = true
                 }
                 var weak_short = false
                 if (
                   (fast[0] > fast[1] && fast[0] < 0 && fast[0] < slow[0]) ||
-                  (fast[0] < fast[1] &&
-                    slow[0] < slow[1] &&
-                    fast[0] > 0 &&
-                    fast[0] < slow[0])
+                    (fast[0] < fast[1] &&
+                      slow[0] < slow[1] &&
+                      fast[0] > 0 &&
+                      fast[0] < slow[0])
                 ) {
                   weak_short = true
                 }
@@ -2366,21 +2348,6 @@ export default {
           thisVue.trendDerivativeIndicators,
           tvWidget.activeChart()
         )
-      } else if (pathName === '/ai-trading/robot-base/free') {
-        thisVue.restoreUserIndicators(
-          thisVue.freeBaseIndicators,
-          tvWidget.activeChart()
-        )
-      } else if (pathName === '/ai-trading/robot-base/t-plus') {
-        thisVue.restoreUserIndicators(
-          thisVue.tBaseIndicators,
-          tvWidget.activeChart()
-        )
-      } else if (pathName === '/ai-trading/robot-base/trend') {
-        thisVue.restoreUserIndicators(
-          thisVue.trendBaseIndicators,
-          tvWidget.activeChart()
-        )
       }
     })
   },
@@ -2433,8 +2400,8 @@ export default {
 }
 </script>
 
-<style scoped>
-.TVChartContainer {
-  height: calc(100vh - 50px);
-}
-</style>
+  <style scoped>
+  .TVChartContainer {
+    height: calc(100vh - 50px);
+  }
+  </style>
