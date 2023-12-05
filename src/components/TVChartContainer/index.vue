@@ -1481,7 +1481,7 @@ export default {
                     }
                   }
                 }
-                var plotValue = buy ? 1 : NaN
+                var plotValue = buy ? 1 : 0
                 return [ma50, plotValue]
               }
             }
