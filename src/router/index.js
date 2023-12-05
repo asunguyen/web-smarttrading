@@ -80,31 +80,31 @@ export const constantRoutes = [
     children: [
       {
         path: 'overview',
-        component: () => import('@/views/market/index'),
+        component: () => import('@/views/market/overview-market/index'),
         name: 'Toàn cảnh thị trường',
         meta: { title: 'Toàn cảnh thị trường', icon: 'international', affix: true }
       },
       {
         path: 'map',
-        component: () => import('@/views/market/index'),
+        component: () => import('@/views/market/map-market/index'),
         name: 'Bản đồ thị trường',
         meta: { title: 'Bản đồ thị trường', icon: 'international', affix: true }
       },
       {
         path: 'macro',
-        component: () => import('@/views/market/index'),
+        component: () => import('@/views/market/overview-macro/index'),
         name: 'Tổng quan vĩ mô',
         meta: { title: 'Tổng quan vĩ mô', icon: 'international', affix: true }
       },
       {
         path: 'industry',
-        component: () => import('@/views/market/index'),
+        component: () => import('@/views/market/overview-industry/index'),
         name: 'Tổng quan ngành',
         meta: { title: 'Tổng quan ngành', icon: 'international', affix: true }
       },
       {
         path: 'analysis-report',
-        component: () => import('@/views/market/index'),
+        component: () => import('@/views/market/analysis-report/index'),
         name: 'Báo cáo phân tích',
         meta: { title: 'Báo cáo phân tích', icon: 'international', affix: true }
       }
@@ -221,10 +221,8 @@ export const asyncRoutes = [
     redirect: 'noRedirect',
     children: [
       {
-        path: '',
-        component: () => import('@/views/products/robot-integrate-vps/index'),
-        name: 'Tin tức và Sự kiện',
-        meta: { title: 'Tin tức và Sự kiện', icon: 'newspaper', affix: true }
+        'path': 'https://smtfx.vn/tin-tuc-su-kien/',
+        'meta': { 'title': 'Tin tức và Sự kiện', 'icon': 'newspaper' }
       }
     ]
   },
@@ -275,11 +273,15 @@ export const asyncRoutes = [
     component: Layout,
     redirect: 'noRedirect',
     children: [
+      // {
+      //   path: '',
+      //   component: () => import('@/views/services/training/index'),
+      //   name: 'Đào tạo chứng khoán',
+      //   meta: { title: 'Đào tạo chứng khoán', icon: 'book', affix: true }
+      // }
       {
-        path: '',
-        component: () => import('@/views/services/training/index'),
-        name: 'Đào tạo chứng khoán',
-        meta: { title: 'Đào tạo chứng khoán', icon: 'book', affix: true }
+        'path': 'https://smtfx.vn',
+        'meta': { 'title': 'Đào tạo chứng khoán', 'icon': 'book' }
       }
     ]
   },
