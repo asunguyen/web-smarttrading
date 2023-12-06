@@ -37,5 +37,6 @@ export default {
   color: currentColor;
   width: 1em;
   height: 1em;
+  font-size: 20px;
 }
 </style>
