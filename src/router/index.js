@@ -292,7 +292,7 @@ export const asyncRoutes = [
     children: [
       {
         path: '',
-        component: () => import('@/views/services/training/index'),
+        component: () => import('@/views/news-market/index'),
         name: 'Tin tức thị trường',
         meta: { title: 'Tin tức thị trường', icon: 'peoples', affix: true }
       }

@@ -136,3 +136,19 @@ export function getMapMarket(query) {
     params: query
   })
 }
+
+export function getDataMacro(query) {
+  return request({
+    url: 'vimo/vietstock/dulieu-vimo',
+    method: 'get',
+    params: query
+  })
+}
+
+export function getFinancialIndex(query) {
+  return request({
+    url: 'vimo/vietstock/dulieu-tigia',
+    method: 'get',
+    params: query
+  })
+}
