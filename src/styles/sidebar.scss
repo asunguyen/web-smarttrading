@@ -58,7 +58,7 @@
     }
 
     .sub-el-icon {
-      margin-right: 12px;
+      margin-right: 16px;
       margin-left: -2px;
     }
 
@@ -68,9 +68,18 @@
       width: 100% !important;
     }
 
+    .el-menu-item {
+      display: flex;
+      align-items: center;
+      font-size: 16px;
+    }
+
     // menu hover
     .submenu-title-noDropdown,
     .el-submenu__title {
+      display: flex;
+      align-items: center;
+      font-size: 16px;
       &:hover {
         background-color: $menuHover !important;
       }
