@@ -15,7 +15,7 @@
       </el-col>
       <el-col :span="6">
         <div class="mb-2">Mã CK/Index</div>
-        <el-select v-model="searchParams.stockID" filterable placeholder="Mã CK/Index">
+        <el-select v-model="searchParams.stockID" filterable clearable placeholder="Mã CK/Index">
           <el-option
             v-for="item in optionsStockID"
             :key="item.value"
@@ -409,6 +409,7 @@ export default {
           }
         })
 
+        this.isShowTableOverview = true
         this.tableDataOverview = [dataTT, dataStock, dataBond]
 
         this.tableDataFull = response.data[2]
