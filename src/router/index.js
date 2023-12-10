@@ -121,13 +121,13 @@ export const constantRoutes = [
     children: [
       {
         path: 'vietnam',
-        component: () => import('@/views/market/index'),
+        component: () => import('@/views/dashboard/index'),
         name: 'Thị trường Việt Nam',
         meta: { title: 'Thị trường Việt Nam', icon: 'international', affix: true }
       },
       {
         path: 'world',
-        component: () => import('@/views/market/index'),
+        component: () => import('@/views/dashboard/index'),
         name: 'Thị trường quốc tế',
         meta: { title: 'Thị trường quốc tế', icon: 'international', affix: true }
       }
