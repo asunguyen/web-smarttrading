@@ -25,7 +25,7 @@ socketdchart.on('price', data => {
         parsedData = JSON.parse(data);
     } catch (error) { }
     let newData;
-    if (parsedData.symbol == "VN30F1M" || parsedData.symbol == "VN30F1Q" || parsedData.symbol == "VN30F2M" || parsedData.symbol == "VN30F2Q") {
+    if (parsedData.symbol == "VNINDEX" || parsedData.symbol == "VN30F1M" || parsedData.symbol == "VN30F1Q" || parsedData.symbol == "VN30F2M" || parsedData.symbol == "VN30F2Q") {
         newData = {
             symbol: parsedData.symbol,
             ts: Math.floor(parsedData.time / 1000),
