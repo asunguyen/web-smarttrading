@@ -88,25 +88,25 @@ export const constantRoutes = [
         path: 'map',
         component: () => import('@/views/market/map-market/index'),
         name: 'Bản đồ thị trường',
-        meta: { title: 'Bản đồ thị trường', icon: 'international', affix: true }
+        meta: { title: 'Bản đồ thị trường', icon: 'map', affix: true }
       },
       {
         path: 'macro',
         component: () => import('@/views/market/overview-macro/index'),
         name: 'Tổng quan vĩ mô',
-        meta: { title: 'Tổng quan vĩ mô', icon: 'international', affix: true }
+        meta: { title: 'Tổng quan vĩ mô', icon: 'tree', affix: true }
       },
       {
         path: 'industry',
         component: () => import('@/views/market/overview-industry/index'),
         name: 'Tổng quan ngành',
-        meta: { title: 'Tổng quan ngành', icon: 'international', affix: true }
+        meta: { title: 'Tổng quan ngành', icon: 'industry', affix: true }
       },
       {
         path: 'analysis-report',
         component: () => import('@/views/market/analysis-report/index'),
         name: 'Báo cáo phân tích',
-        meta: { title: 'Báo cáo phân tích', icon: 'international', affix: true }
+        meta: { title: 'Báo cáo phân tích', icon: 'report', affix: true }
       }
     ]
   },
