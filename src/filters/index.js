@@ -75,6 +75,10 @@ export function formatBillion(num) {
   return ((+num || 0) / 1000000000)
 }
 
+export function formatThousand(num) {
+  return ((+num || 0) / 1000)
+}
+
 /**
  * round to 2 digits after the comma
  * @param {num} num

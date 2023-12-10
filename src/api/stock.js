@@ -136,3 +136,75 @@ export function getMapMarket(query) {
     params: query
   })
 }
+
+export function getDataMacro(query) {
+  return request({
+    url: 'vimo/vietstock/dulieu-vimo',
+    method: 'get',
+    params: query
+  })
+}
+
+export function getFinancialIndex(query) {
+  return request({
+    url: 'vimo/vietstock/dulieu-tigia',
+    method: 'get',
+    params: query
+  })
+}
+
+export function getIndustryIndex(query) {
+  return request({
+    url: 'vimo/vietstock/chi-so-nganh',
+    method: 'get',
+    params: query
+  })
+}
+
+export function getTradingResult(query) {
+  return request({
+    url: 'vimo/vietstock/thong-ke-gia',
+    method: 'get',
+    params: query
+  })
+}
+
+export function getTradingResultStock(query) {
+  return request({
+    url: 'vimo/vietstock/KQGDThongKeGiaStockPaging',
+    method: 'get',
+    params: query
+  })
+}
+
+export function getListStock(query) {
+  return request({
+    url: 'vimo/vietstock/stocklist',
+    method: 'get',
+    params: query
+  })
+}
+
+export function getBusinessResult(query) {
+  return request({
+    url: 'vimo/vietstock/ketqua-kinhdoanh',
+    method: 'get',
+    params: query
+  })
+}
+
+export function getTradingInternal(query) {
+  return request({
+    url: 'vimo/vietstock/giao-dich-noi-bo',
+    method: 'get',
+    params: query
+  })
+}
+
+export function getNews(query) {
+  return request({
+    url: 'vimo/vietstock/moi-cap-nhat',
+    method: 'get',
+    params: query
+  })
+}

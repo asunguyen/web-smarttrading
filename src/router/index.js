@@ -88,25 +88,25 @@ export const constantRoutes = [
         path: 'map',
         component: () => import('@/views/market/map-market/index'),
         name: 'Bản đồ thị trường',
-        meta: { title: 'Bản đồ thị trường', icon: 'international', affix: true }
+        meta: { title: 'Bản đồ thị trường', icon: 'map', affix: true }
       },
       {
         path: 'macro',
         component: () => import('@/views/market/overview-macro/index'),
         name: 'Tổng quan vĩ mô',
-        meta: { title: 'Tổng quan vĩ mô', icon: 'international', affix: true }
+        meta: { title: 'Tổng quan vĩ mô', icon: 'tree', affix: true }
       },
       {
         path: 'industry',
         component: () => import('@/views/market/overview-industry/index'),
         name: 'Tổng quan ngành',
-        meta: { title: 'Tổng quan ngành', icon: 'international', affix: true }
+        meta: { title: 'Tổng quan ngành', icon: 'industry', affix: true }
       },
       {
         path: 'analysis-report',
         component: () => import('@/views/market/analysis-report/index'),
         name: 'Báo cáo phân tích',
-        meta: { title: 'Báo cáo phân tích', icon: 'international', affix: true }
+        meta: { title: 'Báo cáo phân tích', icon: 'report', affix: true }
       }
     ]
   },
@@ -121,13 +121,13 @@ export const constantRoutes = [
     children: [
       {
         path: 'vietnam',
-        component: () => import('@/views/market/index'),
+        component: () => import('@/views/dashboard/index'),
         name: 'Thị trường Việt Nam',
         meta: { title: 'Thị trường Việt Nam', icon: 'international', affix: true }
       },
       {
         path: 'world',
-        component: () => import('@/views/market/index'),
+        component: () => import('@/views/dashboard/index'),
         name: 'Thị trường quốc tế',
         meta: { title: 'Thị trường quốc tế', icon: 'international', affix: true }
       }
@@ -292,7 +292,7 @@ export const asyncRoutes = [
     children: [
       {
         path: '',
-        component: () => import('@/views/services/training/index'),
+        component: () => import('@/views/news-market/index'),
         name: 'Tin tức thị trường',
         meta: { title: 'Tin tức thị trường', icon: 'peoples', affix: true }
       }
