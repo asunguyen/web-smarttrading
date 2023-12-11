@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import TVChartContainerCoso from '@/components/BotCoSo/index.vue'
+import TVChartContainerCoso from '@/components/BotCoSo/free.vue'
 
 export default {
   components: {

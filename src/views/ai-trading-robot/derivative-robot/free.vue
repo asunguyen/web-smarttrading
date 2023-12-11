@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import TVChartContainerPhaiSinh from '@/components/BotPhaiSinh/index.vue'
+import TVChartContainerPhaiSinh from '@/components/BotPhaiSinh/free.vue'
 
 export default {
   components: {

@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import TVChartContainerPhaiSinh from '@/components/BotPhaiSinh/index.vue'
+import TVChartContainerPhaiSinh from '@/components/BotPhaiSinh/trend.vue'
 
 export default {
   components: {
