@@ -145,6 +145,14 @@ export function getDataMacro(query) {
   })
 }
 
+export function getMacroOverviewChart(query) {
+  return request({
+    url: 'vimo/vietstock/macrooverviewchart',
+    method: 'get',
+    params: query
+  })
+}
+
 export function getFinancialIndex(query) {
   return request({
     url: 'vimo/vietstock/dulieu-tigia',

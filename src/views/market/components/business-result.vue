@@ -103,7 +103,7 @@
         align="center"
       />
     </el-table>
-    <!-- <el-pagination
+    <el-pagination
       :total="pagination.total"
       :current-page.sync="pagination.page"
       :page-size.sync="pagination.pageSize"
@@ -113,7 +113,7 @@
       hide-on-single-page
       @size-change="handleSizeChange"
       @current-change="getBusinessResult"
-    /> -->
+    />
   </div>
 </template>
 
@@ -236,7 +236,13 @@ export default {
     async getBusinessResult() {
       try {
         this.isLoading = true
-        const response = await getBusinessResult(this.searchParams)
+        const response = await getBusinessResult({
+          catID: this.searchParams.catID,
+          industryID: this.searchParams.industryID,
+          code: this.searchParams.code,
+          page: this.pagination.page,
+          pageSize: this.pagination.pageSize
+        })
         this.tableData = response.data
       } catch (error) {
         console.log(error)
