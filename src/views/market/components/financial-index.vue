@@ -24,14 +24,15 @@ export default {
         const response = await getFinancialIndex()
         const dataXAxis = response.data.map(item => item.ReportTerm)
         const data = response.data.map(item => item.Giá_trị)
-        this.createChart(dataXAxis, data)
+        const minValue = Math.min(...data)
+        this.createChart(dataXAxis, data, minValue)
       } catch (error) {
         console.log(error)
       } finally {
         this.isLoading = false
       }
     },
-    createChart(dataXAxis, data) {
+    createChart(dataXAxis, data, minValue) {
       // eslint-disable-next-line no-undef
       Highcharts.chart('chart-container-financial-index', {
         chart: {
@@ -45,7 +46,7 @@ export default {
           crosshair: true
         },
         yAxis: {
-          min: 0,
+          min: minValue,
           title: {
             text: 'Đơn vị tính: VND/USD'
           }
