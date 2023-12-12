@@ -398,7 +398,7 @@ export default {
                 },
                 inputs: {
                   atrPeriod: 34,
-                  factor: 2
+                  factor: 3
                 },
                 precision: 2,
               },
