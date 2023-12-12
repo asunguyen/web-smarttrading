@@ -407,10 +407,11 @@ export default {
                 this._context = context
                 this._input = inputCallback
 
-                const emafast = this._input(1)/10;
-                const emalow = this._input(0)/10;
+                const emafast = this._input(1);
+                const emalow = this._input(0);
                 const ma = this._input(2);
                 const high = PineJS.Std.high(this._context)
+                const low = PineJS.Std.low(this._context);
                 const close = PineJS.Std.close(this._context)
                 const closeS = this._context.new_var(close);
 
@@ -426,14 +427,14 @@ export default {
                   ? signalS.get(1)
                   : signalS.get(0)
                 if (
-                  currMacd > 0 &&
+                  currMacd >= 0 &&
                   close > sma &&
                       signalS.get(1) != 1
                 ) {
                   long = 1
                   signal = 1
                 } else if (
-                  currMacd < 0 &&
+                  currMacd <= 0 &&
                   close < sma &&
                       signalS.get(1) != 0
                 ) {
