@@ -302,7 +302,7 @@ export default {
                 const emafast = this._input(1);
                 const emalow = this._input(0);
                 const ma = this._input(2);
-
+                const ema9 = 9 * Math.round(emalow / 12);
                 const atrPeriod = 10
                 const factor = 3
                 const low = PineJS.Std.low(this._context)
@@ -310,10 +310,11 @@ export default {
                 const close = PineJS.Std.close(this._context)
                 const closeS = this._context.new_var(close)
                 const close1 = closeS.get(1)
-
-
                 const sma = PineJS.Std.sma(closeS, ma, this._context);
                 const currMacd = this.macd(closeS, emafast, emalow);
+                const sgnalLine9 = PineJS.Std.ema(this._context.new_var(currMacd), ema9 , this._context);
+                const histogram = currMacd - sgnalLine9;
+
 
                 const hl2 = (high + low) / 2
                 const atr = PineJS.Std.atr(atrPeriod, this._context)
@@ -370,7 +371,7 @@ export default {
                   ? signalS.get(1)
                   : signalS.get(0)
                 if (
-                  currMacd > 0 &&
+                  histogram > 0 &&
                       color == 1 &&
                       high > sma &&
                       signalS.get(1) != 1
@@ -378,7 +379,7 @@ export default {
                   long = 1
                   signal = 1
                 } else if (
-                  currMacd < 0 &&
+                  histogram < 0 &&
                       color == 0 &&
                       high < sma &&
                       signalS.get(1) != 0

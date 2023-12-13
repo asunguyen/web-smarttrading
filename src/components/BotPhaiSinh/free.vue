@@ -420,20 +420,12 @@ export default {
                   emafast = closeS._hits.length;
                 }
                 const ema9 = 9 * Math.round(emalow / 12);
-                console.log("ema9:: ", ema9)
                 const fast = PineJS.Std.ema(closeS, emafast, this._context);
                 const slow = PineJS.Std.ema(closeS2, emalow, this._context);
-                const sgnalLine9 = PineJS.Std.ema(closeS3, ema9 , this._context);
                 const sma = PineJS.Std.sma(closeS, ma, this._context);
                 const currMacd = slow - fast;
+                const sgnalLine9 = PineJS.Std.ema(this._context.new_var(currMacd), ema9 , this._context);
                 const histogram = currMacd - sgnalLine9;
-                console.log("==============================================")
-                console.log("sgnalLine9:: ", sgnalLine9);
-                console.log("currMacd:: ", currMacd);
-                console.log("histogram:: ", histogram);
-                console.log("fast:: ", fast);
-                console.log("slow:: ", slow);
-                console.log("dijjjjjj::: ", PineJS.Std.ema(currMacd, ema9, this._context))
                 var long = NaN;
                 var short = NaN;
                 var signal = NaN;
@@ -441,10 +433,10 @@ export default {
                 signal = isNaN(signalS.get(0))
                   ? signalS.get(1)
                   : signalS.get(0);
-                if (currMacd >= 0 && close > sma && signalS.get(1) != 1) {
+                if (histogram > 0 && close > sma && signalS.get(1) != 1) {
                   long = 1;
                   signal = 1;
-                } else if (currMacd <= 0 && close < sma && signalS.get(1) != 0) {
+                } else if (histogram < 0 && close < sma && signalS.get(1) != 0) {
                   short = 1;
                   signal = 0;
                 }
