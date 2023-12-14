@@ -59,30 +59,6 @@ export default {
   },
   data: function() {
     return {
-      freeDerivativeIndicators: [
-        {
-          name: 'SMT Free+',
-          visible: true
-        },
-        {
-          name: 'VOLUME',
-          visible: true
-        }
-      ],
-      scrapeDerivativeIndicators: [
-        {
-          name: 'ST POWER',
-          visible: true
-        },
-        {
-          name: 'ST VOLUME',
-          visible: true
-        },
-        {
-          name: 'ZO SIGNAL',
-          visible: true
-        }
-      ],
       trendDerivativeIndicators: [
         {
           name: 'SMT Trend+',
@@ -311,10 +287,13 @@ export default {
                 const closeS = this._context.new_var(close)
                 const close1 = closeS.get(1)
                 const sma = PineJS.Std.sma(closeS, ma, this._context);
+                const sma1 = this._context.new_var(sma)
                 const currMacd = this.macd(closeS, emafast, emalow);
-                const sgnalLine9 = PineJS.Std.ema(this._context.new_var(currMacd), ema9 , this._context);
-                const histogram = currMacd - sgnalLine9;
 
+                const sgnalLine9 = PineJS.Std.ema(this._context.new_var(currMacd), ema9 , this._context);
+
+                const histogram = currMacd - sgnalLine9;
+                const histogram1 = this._context.new_var(histogram).get(1)
 
                 const hl2 = (high + low) / 2
                 const atr = PineJS.Std.atr(atrPeriod, this._context)
@@ -371,17 +350,17 @@ export default {
                   ? signalS.get(1)
                   : signalS.get(0)
                 if (
-                  histogram > 0 &&
+                  histogram1 > 0 &&
                       color == 1 &&
-                      high > sma &&
+                      high > sma1 &&
                       signalS.get(1) != 1
                 ) {
                   long = 1
                   signal = 1
                 } else if (
-                  histogram < 0 &&
+                  histogram1 < 0 &&
                       color == 0 &&
-                      high < sma &&
+                      high < sma1 &&
                       signalS.get(1) != 0
                 ) {
                   short = 1

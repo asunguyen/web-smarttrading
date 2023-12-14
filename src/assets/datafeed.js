@@ -97,27 +97,53 @@ export default {
 			onResolveErrorCallback('cannot resolve symbol');
 			return;
 		}
-		const symbolInfo = {
-			name: symbolItem.symbol,
-			full_name: symbolItem.full_name,
-			description: symbolItem.description,
-			listed_exchange: '',
-			type: symbolItem.type,
-			ticker: symbolItem.symbol,
-			exchange: symbolItem.exchange,
-			format: 'price',
-			supported_resolutions: configurationData.supported_resolutions,
-			timezone: 'Asia/Ho_Chi_Minh',
-			session: "24x7",
-			minmov: 1,
-			pricescale: 100,
-			has_intraday: true,
-			intraday_multipliers: ['1', '60'],
-			volume_precision: 8,
-			data_status: 'streaming',
-			pathRq: symbolItem.pathRq,
-			id: symbolItem.id
-		};
+		let symbolInfo;
+		if (symbolItem.exchange == "HOSE" || symbolItem.exchange == "HNX" || symbolItem.exchange == "UPCOM") {
+			symbolInfo = {
+				name: symbolItem.symbol,
+				full_name: symbolItem.full_name,
+				description: symbolItem.description,
+				listed_exchange: '',
+				type: symbolItem.type,
+				ticker: symbolItem.symbol,
+				exchange: symbolItem.exchange,
+				format: 'price',
+				supported_resolutions: configurationData.supported_resolutions,
+				timezone: 'Asia/Ho_Chi_Minh',
+				session: '0900-1445',
+				minmov: 1,
+				pricescale: 100,
+				has_intraday: true,
+				intraday_multipliers: ['1', '60'],
+				volume_precision: 8,
+				data_status: 'streaming',
+				pathRq: symbolItem.pathRq,
+				id: symbolItem.id
+			};
+		} else {
+			symbolInfo = {
+				name: symbolItem.symbol,
+				full_name: symbolItem.full_name,
+				description: symbolItem.description,
+				listed_exchange: '',
+				type: symbolItem.type,
+				ticker: symbolItem.symbol,
+				exchange: symbolItem.exchange,
+				format: 'price',
+				supported_resolutions: configurationData.supported_resolutions,
+				timezone: 'Asia/Ho_Chi_Minh',
+				session: "24x7",
+				minmov: 100,
+				pricescale: 1,
+				has_intraday: true,
+				intraday_multipliers: ['1', '60'],
+				volume_precision: 8,
+				data_status: 'streaming',
+				pathRq: symbolItem.pathRq,
+				id: symbolItem.id
+			};
+		}
+		
 
 		console.log('[resolveSymbol]: Symbol resolved', symbolInfo);
 		onSymbolResolvedCallback(symbolInfo);

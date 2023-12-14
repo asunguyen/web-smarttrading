@@ -140,134 +140,6 @@ export default {
       ],
       custom_indicators_getter: function (PineJS) {
         return Promise.resolve([
-          // {
-          //   name: 'SMT Free+',
-          //   metainfo: {
-          //     _metainfoVersion: 51,
-          //     description: 'SMT Free+',
-          //     shortDescription: 'SMT Free+',
-          //     is_hidden_study: false,
-          //     is_price_study: true,
-          //     isCustomIndicator: true,
-          //     linkedToSeries: true,
-          //     isTVScript: false,
-          //     id: 'SMT Free+@tv-basicstudies-1',
-
-          //     format: {
-          //       type: 'price',
-          //       precision: 2
-          //     },
-          //     plots: [
-          //       {
-          //         id: 'plot_0',
-          //         type: 'shapes'
-          //       },
-          //       {
-          //         id: 'plot_1',
-          //         type: 'shapes'
-          //       }
-          //     ],
-          //     styles: {
-          //       plot_0: {
-          //         isHidden: false,
-          //         location: 'Bottom',
-          //         size: 'normal', // size of the shape, possible values are 'auto', 'tiny', 'small', 'normal', 'large', 'huge'
-          //         text: 'BÁN',
-          //         title: 'BÁN'
-          //       },
-          //       plot_1: {
-          //         isHidden: false,
-          //         location: 'Bottom',
-          //         size: 'normal', // size of the shape, possible values are 'auto', 'tiny', 'small', 'normal', 'large', 'huge'
-          //         text: 'MUA',
-          //         title: 'MUA'
-          //       }
-          //     },
-          //     defaults: {
-          //       styles: {
-          //         plot_0: {
-          //           color: '#B22222',
-          //           textColor: '#FFFFFF',
-          //           plottype: 'shape_label_down',
-          //           location: 'AboveBar',
-          //           visible: true,
-          //           transparency: 0
-          //         },
-          //         plot_1: {
-          //           color: '#32CD32',
-          //           textColor: '#FFFFFF',
-          //           plottype: 'shape_label_up',
-          //           location: 'BelowBar',
-          //           visible: true,
-          //           transparency: 0
-          //         }
-          //       },
-          //       inputs: {
-          //         start: 0.002,
-          //         increment: 0.004,
-          //         maximum: 0.2
-          //       },
-          //       precision: 2
-          //     },
-          //     inputs: [
-          //       {
-          //         id: 'start',
-          //         name: 'Start',
-          //         type: 'float',
-          //         min: 0,
-          //         max: 2e3
-          //       },
-          //       {
-          //         id: 'increment',
-          //         name: 'Increment',
-          //         type: 'float',
-          //         min: 0,
-          //         max: 2e3
-          //       },
-          //       {
-          //         id: 'maximum',
-          //         name: 'Maximum',
-          //         type: 'float',
-          //         min: 0,
-          //         max: 2e3
-          //       }
-          //     ]
-          //   },
-          //   constructor: function() {
-          //     this.main = function(context, inputCallback) {
-          //       this._context = context
-          //       this._input = inputCallback
-          //       var start = this._input(0)
-          //       var increment = this._input(1)
-          //       var maximum = this._input(2)
-          //       var low = PineJS.Std.low(this._context)
-          //       var lowS = this._context.new_var(low)
-          //       var high = PineJS.Std.high(this._context)
-          //       var highS = this._context.new_var(high)
-          //       var sar = PineJS.Std.sar(
-          //         start,
-          //         increment,
-          //         maximum,
-          //         this._context
-          //       )
-          //       var sarS = this._context.new_var(sar)
-          //       var sell = false
-          //       var buy = false
-          //       var sar1 = sarS.get(1)
-          //       var low1 = lowS.get(1)
-          //       var high1 = highS.get(1)
-          //       if (sar > high && sar1 < low1) {
-          //         sell = true
-          //       }
-          //       if (sar < low && sar1 > high1) {
-          //         buy = true
-          //       }
-          //       var plotSellValue = sell ? 1 : NaN
-          //       var plotBuyValue = buy ? 1 : NaN
-          //       return [plotSellValue, plotBuyValue]
-          //     }
-          //   }
-          // },
           {
             name: "SMT Free+",
             metainfo: {
@@ -416,14 +288,18 @@ export default {
                 const closeS = this._context.new_var(close);
                 const closeS2 = this._context.new_var(close);
                 const closeS3 = this._context.new_var(close);
-                if (closeS._hist && emafast > closeS._hist.length) {
-                  emafast = closeS._hits.length;
-                }
+
                 const ema9 = 9 * Math.round(emalow / 12);
                 const fast = PineJS.Std.ema(closeS, emafast, this._context);
                 const slow = PineJS.Std.ema(closeS2, emalow, this._context);
-                const sma = PineJS.Std.sma(closeS, ma, this._context);
-                const currMacd = slow - fast;
+                const sma = PineJS.Std.ema(closeS3, ma, this._context);
+
+                var currMacd = slow - fast;
+                var preMacd = this._context.new_var(currMacd).get(1);
+
+                console.log("===================================")
+                console.log("currMacd:: ", currMacd);
+                console.log("preMacd:: ", preMacd);
                 const sgnalLine9 = PineJS.Std.ema(this._context.new_var(currMacd), ema9 , this._context);
                 const histogram = currMacd - sgnalLine9;
                 var long = NaN;
@@ -433,10 +309,10 @@ export default {
                 signal = isNaN(signalS.get(0))
                   ? signalS.get(1)
                   : signalS.get(0);
-                if (histogram > 0 && close > sma && signalS.get(1) != 1) {
+                if (preMacd < 0 && currMacd >= 0 && close > sma && signalS.get(1) != 1) {
                   long = 1;
                   signal = 1;
-                } else if (histogram < 0 && close < sma && signalS.get(1) != 0) {
+                } else if (preMacd > 0 && currMacd <= 0 && close < sma && signalS.get(1) != 0) {
                   short = 1;
                   signal = 0;
                 }

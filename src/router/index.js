@@ -196,6 +196,12 @@ export const asyncRoutes = [
         meta: { title: 'Robot phái sinh Trend', icon: 'el-icon-cpu', affix: true }
       },
       {
+        path: 'robot-derivative/bot3m',
+        component: () => import('@/views/ai-trading-robot/derivative-robot/bot3m'),
+        name: 'Robot phái sinh 3M',
+        meta: { title: 'Robot phái sinh 3M', icon: 'el-icon-cpu', affix: true }
+      },
+      {
         path: 'robot-base/free',
         component: () => import('@/views/ai-trading-robot/base-robot/free'),
         name: 'Robot cơ sở Free',
