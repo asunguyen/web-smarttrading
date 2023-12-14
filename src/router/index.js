@@ -179,37 +179,43 @@ export const asyncRoutes = [
     children: [
       {
         path: 'robot-derivative/free',
-        component: () => import('@/views/ai-trading-robot/derivative-robot/index'),
+        component: () => import('@/views/ai-trading-robot/derivative-robot/free'),
         name: 'Robot phái sinh Free',
         meta: { title: 'Robot phái sinh Free', icon: 'el-icon-cpu', affix: true }
       },
       {
         path: 'robot-derivative/scrape',
-        component: () => import('@/views/ai-trading-robot/derivative-robot/index'),
+        component: () => import('@/views/ai-trading-robot/derivative-robot/scrape'),
         name: 'Robot phái sinh Scrape',
         meta: { title: 'Robot phái sinh Scrape', icon: 'el-icon-cpu', affix: true }
       },
       {
         path: 'robot-derivative/trend',
-        component: () => import('@/views/ai-trading-robot/derivative-robot/index'),
+        component: () => import('@/views/ai-trading-robot/derivative-robot/trend'),
         name: 'Robot phái sinh Trend',
         meta: { title: 'Robot phái sinh Trend', icon: 'el-icon-cpu', affix: true }
       },
       {
+        path: 'robot-derivative/bot3m',
+        component: () => import('@/views/ai-trading-robot/derivative-robot/bot3m'),
+        name: 'Robot phái sinh 3M',
+        meta: { title: 'Robot phái sinh 3M', icon: 'el-icon-cpu', affix: true }
+      },
+      {
         path: 'robot-base/free',
-        component: () => import('@/views/ai-trading-robot/base-robot/index'),
+        component: () => import('@/views/ai-trading-robot/base-robot/free'),
         name: 'Robot cơ sở Free',
         meta: { title: 'Robot cơ sở Free', icon: 'bug', affix: true }
       },
       {
         path: 'robot-base/t-plus',
-        component: () => import('@/views/ai-trading-robot/base-robot/index'),
+        component: () => import('@/views/ai-trading-robot/base-robot/tplus'),
         name: 'Robot cơ sở T+',
         meta: { title: 'Robot cơ sở T+', icon: 'bug', affix: true }
       },
       {
         path: 'robot-base/trend',
-        component: () => import('@/views/ai-trading-robot/base-robot/index'),
+        component: () => import('@/views/ai-trading-robot/base-robot/trend'),
         name: 'Robot cơ sở Trend',
         meta: { title: 'Robot cơ sở Trend', icon: 'bug', affix: true }
       }

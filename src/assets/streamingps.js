@@ -25,30 +25,16 @@ socketdchart.on('price', data => {
         parsedData = JSON.parse(data);
     } catch (error) { }
     let newData;
-    if (parsedData.symbol == "VNINDEX" || parsedData.symbol == "VN30F1M" || parsedData.symbol == "VN30F1Q" || parsedData.symbol == "VN30F2M" || parsedData.symbol == "VN30F2Q") {
-        newData = {
-            symbol: parsedData.symbol,
-            ts: Math.floor(parsedData.time / 1000),
-            volume: parseFloat(parsedData.volume),
-            price: parseFloat(parsedData.price),
-            Hight: parseFloat(parsedData.price),
-            Low: parseFloat(parsedData.price),
-            Open: parseFloat(parsedData.price),
-            Close: parseFloat(parsedData.price),
-        };
-    } else {
-        newData = {
-            symbol: parsedData.symbol,
-            ts: Math.floor(parsedData.time / 1000),
-            volume: parseFloat(parsedData.volume),
-            price: parseFloat(parsedData.price*1000),
-            Hight: parseFloat(parsedData.price*1000),
-            Low: parseFloat(parsedData.price*1000),
-            Open: parseFloat(parsedData.price*1000),
-            Close: parseFloat(parsedData.price*1000),
-        };
-    }
-    
+    newData = {
+        symbol: parsedData.symbol,
+        ts: Math.floor(parsedData.time / 1000),
+        volume: parseFloat(parsedData.volume),
+        price: parseFloat(parsedData.price),
+        Hight: parseFloat(parsedData.price),
+        Low: parseFloat(parsedData.price),
+        Open: parseFloat(parsedData.price),
+        Close: parseFloat(parsedData.price),
+    };
 
     console.log('[socket] Message:', parsedData);
     const symbolList = "CHART." + parsedData.symbol;
