@@ -2340,7 +2340,8 @@ export default {
         )
       } else if (pathName === '/ai-trading/robot-derivative/scrape') {
         thisVue.restoreUserIndicators(
-          thisVue.scrapeDerivativeIndicators,
+          //thisVue.scrapeDerivativeIndicators,
+          thisVue.freeDerivativeIndicators,
           tvWidget.activeChart()
         )
       } else if (pathName === '/ai-trading/robot-derivative/trend') {

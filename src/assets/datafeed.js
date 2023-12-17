@@ -112,9 +112,9 @@ export default {
 				timezone: 'Asia/Ho_Chi_Minh',
 				session: '0900-1445',
 				minmov: 1,
-				pricescale: 100,
+				pricescale: 1000,
 				has_intraday: true,
-				intraday_multipliers: ['1', '60'],
+				intraday_multipliers: ['1', '600'],
 				volume_precision: 8,
 				data_status: 'streaming',
 				pathRq: symbolItem.pathRq,
@@ -133,10 +133,10 @@ export default {
 				supported_resolutions: configurationData.supported_resolutions,
 				timezone: 'Asia/Ho_Chi_Minh',
 				session: "24x7",
-				minmov: 100,
-				pricescale: 1,
+				minmov: 1,
+				pricescale: 1000,
 				has_intraday: true,
-				intraday_multipliers: ['1', '60'],
+				intraday_multipliers: ['1', '600'],
 				volume_precision: 8,
 				data_status: 'streaming',
 				pathRq: symbolItem.pathRq,
@@ -154,6 +154,7 @@ export default {
 		console.log('[getBars]: Method call:: ');
 		if (to - from < 76800) {
 			from = to - 76800;
+			console.log("chạy vào đây");
 		}
 		var resol = resolution;
 		try {
@@ -236,8 +237,7 @@ export default {
 					}
 				}
 			}
-			//console.log(data);
-
+			
 		} catch (error) {
 			console.log('[getBars]: Get error', error);
 			onErrorCallback(error);
