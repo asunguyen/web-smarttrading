@@ -52,15 +52,21 @@
       />
       <el-table-column label="Người thực hiện" align="center">
         <el-table-column
-          prop="DTTHLQ"
           label="Họ và tên"
           align="center"
-        />
+        >
+          <template slot-scope="{row}">
+            <span>{{ row.DTTHLQ || row.DTTHCD }}</span>
+          </template>
+        </el-table-column>
         <el-table-column
-          prop="PositionCD"
           label="Chức vụ"
           align="center"
-        />
+        >
+          <template slot-scope="{row}">
+            <span>{{ row.PositionCD }}<span v-if="row.PositionCDEx">,</span> {{ row.PositionCDEx }}</span>
+          </template>
+        </el-table-column>
       </el-table-column>
       <el-table-column label="Người liên quan tại tổ chức NY" align="center">
         <el-table-column
@@ -84,19 +90,33 @@
           prop="RegisterVolumeBefore"
           label="KL"
           align="center"
-        />
+          width="100px"
+        >
+          <template slot-scope="{row}">
+            <span>{{ row.RegisterVolumeBefore | toThousandFilter }}</span>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="RegisterVolumeBeforePercent"
           label="%"
           align="center"
-        />
+        >
+          <template slot-scope="{row}">
+            <span v-if="row.RegisterVolumeBeforePercent">{{ row.RegisterVolumeBeforePercent }}</span>
+          </template>
+        </el-table-column>
       </el-table-column>
       <el-table-column label="Đăng ký" align="center">
         <el-table-column
-          prop="RegisterSellVolume"
+          prop="RegisterBuyVolume"
           label="KLGD"
           align="center"
-        />
+          width="100px"
+        >
+          <template slot-scope="{row}">
+            <span>{{ row.RegisterBuyVolume | toThousandFilter }}</span>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="DateBuyExpected"
           label="Từ ngày"
@@ -120,10 +140,15 @@
       </el-table-column>
       <el-table-column label="Thực hiện" align="center">
         <el-table-column
-          prop="PE"
           label="KLGD"
           align="center"
-        />
+          width="100px"
+        >
+          <template slot-scope="{row}">
+            <span v-if="row.BuyVolume">{{ row.BuyVolume | toThousandFilter }}</span>
+            <span v-if="row.SellVolume">-{{ row.SellVolume | toThousandFilter }}</span>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="DateActionFrom"
           label="Từ ngày"
@@ -150,12 +175,21 @@
           prop="VolumeAfter"
           label="KL"
           align="center"
-        />
+          width="100px"
+        >
+          <template slot-scope="{row}">
+            <span>{{ row.VolumeAfter | toThousandFilter }}</span>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="VolumeAfterPercent"
           label="%"
           align="center"
-        />
+        >
+          <template slot-scope="{row}">
+            <span v-if="row.VolumeAfterPercent">{{ row.VolumeAfterPercent }}</span>
+          </template>
+        </el-table-column>
       </el-table-column>
     </el-table>
     <el-pagination
@@ -192,6 +226,11 @@ export default {
         pageSize: 20
       }
     }
+  },
+  created() {
+    const date = new Date()
+    this.searchParams.fromDate = moment(date).subtract(1, 'month').format('YYYY-MM-DD')
+    this.searchParams.toDate = moment(date).add(1, 'month').format('YYYY-MM-DD')
   },
   mounted() {
     this.getTradingInternal()

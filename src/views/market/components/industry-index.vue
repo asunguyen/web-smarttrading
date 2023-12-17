@@ -72,14 +72,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/styles/element-variables.scss';
-
 .industry-index {
   .text-success {
-    background-color: $--color-success;
+    background-color: #33A42E;
   }
   .text-danger {
-    background-color: $--color-danger;
+    background-color: #D23133;
   }
   &-item {
     display: flex;
