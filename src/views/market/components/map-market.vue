@@ -105,7 +105,7 @@ export default {
       else if (color === -1) return '#D23133'
       else if (color === 0) return '#FFB800'
       else if (color === 1) return '#33A42E'
-      else if (color === 2) return '#6743CD'
+      else if (color === 2) return '#714D9F'
     }
   }
 }

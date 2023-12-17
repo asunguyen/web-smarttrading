@@ -361,6 +361,11 @@ export default {
       }
     }
   },
+  created() {
+    const date = new Date()
+    this.searchParams.fromDate = moment(date).subtract(1, 'month').format('YYYY-MM-DD')
+    this.searchParams.toDate = moment(date).format('YYYY-MM-DD')
+  },
   mounted() {
     this.getListStock()
     this.getTradingResult()

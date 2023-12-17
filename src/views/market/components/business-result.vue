@@ -56,7 +56,11 @@
           prop="NetProfit"
           label="Q3 2023"
           align="center"
-        />
+        >
+          <template slot-scope="{row}">
+            <span>{{ row.NetProfit | toThousandFilter | roundTo2Digits }}</span>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="Profit_DiffPreviousTerm"
           label="+/- kỳ trước (%)"
@@ -71,12 +75,20 @@
           prop="Profit_Accumulated"
           label="Luỹ kế 2023"
           align="center"
-        />
+        >
+          <template slot-scope="{row}">
+            <span>{{ row.Profit_Accumulated | toThousandFilter | roundTo2Digits }}</span>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="Profit_Percent"
           label="% KH"
           align="center"
-        />
+        >
+          <template slot-scope="{row}">
+            <span>{{ row.Profit_Percent }}%</span>
+          </template>
+        </el-table-column>
       </el-table-column>
       <el-table-column label="EPS" align="center">
         <el-table-column
