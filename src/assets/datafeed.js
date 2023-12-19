@@ -15,7 +15,7 @@ const lastBarsCache = new Map();
 // DatafeedConfiguration implementation
 const configurationData = {
 	// Represents the resolutions for bars supported by your datafeed
-	supported_resolutions: ['1', "3", '5', "10", '15', "20", '30', "45", '60', "90", '120', "180", "240", 'D', "3D", 'W', "2W", 'M', "3M", "6M", "12M"],
+	supported_resolutions: ['1', "3", '5', "10", '15', "20", '30', "45", '1H','2H', "3H", "4H", 'D', "3D", 'W', "2W", 'M', "3M", "6M", "12M"],
 
 	// The `exchanges` arguments are used for the `searchSymbols` method if a user selects the exchange
 	exchanges: [
@@ -114,11 +114,11 @@ export default {
 				minmov: 1,
 				pricescale: 1000,
 				has_intraday: true,
-				intraday_multipliers: ['1', '600'],
+				intraday_multipliers: ['1'],
 				volume_precision: 8,
 				data_status: 'streaming',
 				pathRq: symbolItem.pathRq,
-				id: symbolItem.id
+				id: symbolItem.id,
 			};
 		} else {
 			symbolInfo = {
@@ -136,11 +136,11 @@ export default {
 				minmov: 1,
 				pricescale: 1000,
 				has_intraday: true,
-				intraday_multipliers: ['1', '600'],
+				intraday_multipliers: ['1'],
 				volume_precision: 8,
 				data_status: 'streaming',
 				pathRq: symbolItem.pathRq,
-				id: symbolItem.id
+				id: symbolItem.id,
 			};
 		}
 		
@@ -151,16 +151,19 @@ export default {
 
 	getBars: async (symbolInfo, resolution, periodParams, onHistoryCallback, onErrorCallback) => {
 		let { from, to, firstDataRequest } = periodParams;
-		console.log('[getBars]: Method call:: ');
+		console.log('[getBars]: Method call:: ', periodParams);
+		console.log("resolution:: ", resolution);
 		var resol = resolution;
-		try {
-			if (resolution == "60" || resolution == "120" || resolution == "180" || resolution == "240") resol = "1H";
+		if (resolution == "60" || resolution == "90" || resolution == "120" || resolution == "180" || resolution == "240") {
+			resol = "H";
 		}
-		catch (e) { }
+		if (from > 1103051358) {
+			from = 1103051358;
+		}
 		const urlParameters = {
 			symbol: symbolInfo.name,
 			exchange: symbolInfo.exchange,
-			from: 1103051358,
+			from: from,
 			to: to,
 			resolution: resol,
 			firstDataRequest: firstDataRequest
