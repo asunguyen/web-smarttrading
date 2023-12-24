@@ -15,7 +15,7 @@ const lastBarsCache = new Map();
 // DatafeedConfiguration implementation
 const configurationData = {
 	// Represents the resolutions for bars supported by your datafeed
-	supported_resolutions: ['1', "3", '5', "10", '15', "20", '30', "45", '60', "90", '120', "180", "240", 'D', "3D", 'W', "2W", 'M', "3M", "6M", "12M"],
+	supported_resolutions: ['1', "3", '5', "10", '15', "20", '30', "45", '1H','2H', "3H", "4H", 'D', "3D", 'W', "2W", 'M', "3M", "6M", "12M"],
 
 	// The `exchanges` arguments are used for the `searchSymbols` method if a user selects the exchange
 	exchanges: [
@@ -112,13 +112,13 @@ export default {
 				timezone: 'Asia/Ho_Chi_Minh',
 				session: '0900-1445',
 				minmov: 1,
-				pricescale: 100,
+				pricescale: 1000,
 				has_intraday: true,
-				intraday_multipliers: ['1', '60'],
+				intraday_multipliers: ['1'],
 				volume_precision: 8,
 				data_status: 'streaming',
 				pathRq: symbolItem.pathRq,
-				id: symbolItem.id
+				id: symbolItem.id,
 			};
 		} else {
 			symbolInfo = {
@@ -133,14 +133,14 @@ export default {
 				supported_resolutions: configurationData.supported_resolutions,
 				timezone: 'Asia/Ho_Chi_Minh',
 				session: "24x7",
-				minmov: 100,
-				pricescale: 1,
+				minmov: 1,
+				pricescale: 1000,
 				has_intraday: true,
-				intraday_multipliers: ['1', '60'],
+				intraday_multipliers: ['1'],
 				volume_precision: 8,
 				data_status: 'streaming',
 				pathRq: symbolItem.pathRq,
-				id: symbolItem.id
+				id: symbolItem.id,
 			};
 		}
 		
@@ -151,21 +151,20 @@ export default {
 
 	getBars: async (symbolInfo, resolution, periodParams, onHistoryCallback, onErrorCallback) => {
 		let { from, to, firstDataRequest } = periodParams;
-		console.log('[getBars]: Method call:: ');
-		if (to - from < 76800) {
-			from = to - 76800;
-		}
 		var resol = resolution;
-		try {
-			if (resolution == "60" || resolution == "120" || resolution == "180" || resolution == "240") resol = "1H";
+		if (resolution == "60" || resolution == "90" || resolution == "120" || resolution == "180" || resolution == "240") {
+			resol = "H";
 		}
-		catch (e) { }
+		if (from > 1103051358) {
+			from = 1103051358;
+		}
 		const urlParameters = {
 			symbol: symbolInfo.name,
 			exchange: symbolInfo.exchange,
 			from: from,
 			to: to,
 			resolution: resol,
+			firstDataRequest: firstDataRequest
 		};
 		//console.log("OK:",symbolInfo);
 		const query = Object.keys(urlParameters)
@@ -236,8 +235,7 @@ export default {
 					}
 				}
 			}
-			//console.log(data);
-
+			
 		} catch (error) {
 			console.log('[getBars]: Get error', error);
 			onErrorCallback(error);

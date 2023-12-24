@@ -180,14 +180,14 @@ export const asyncRoutes = [
       {
         path: 'robot-derivative/free',
         component: () => import('@/views/ai-trading-robot/derivative-robot/free'),
-        name: 'Robot phái sinh Free',
-        meta: { title: 'Robot phái sinh Free', icon: 'el-icon-cpu', affix: true }
+        name: 'Robot phái sinh 1M',
+        meta: { title: 'Robot phái sinh 1M', icon: 'el-icon-cpu', affix: true }
       },
       {
         path: 'robot-derivative/scrape',
         component: () => import('@/views/ai-trading-robot/derivative-robot/scrape'),
-        name: 'Robot phái sinh Scrape',
-        meta: { title: 'Robot phái sinh Scrape', icon: 'el-icon-cpu', affix: true }
+        name: 'BOT AI',
+        meta: { title: 'BOT AI', icon: 'el-icon-cpu', affix: true }
       },
       {
         path: 'robot-derivative/trend',

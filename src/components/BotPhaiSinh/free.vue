@@ -3,6 +3,8 @@
 </template>
 
 <script>
+var signal = NaN;
+var dataCurrMACD;
 import { widget } from "../../assets/charting_library";
 // import { UDFCompatibleDatafeed } from '../../assets/datafeeds/udf/lib/udf-compatible-datafeed'
 import Datafeed from "@/assets/datafeed.js";
@@ -220,7 +222,7 @@ export default {
                 },
                 inputs: {
                   emalow: 120,
-                  emafast: 260,
+                  emafast: 1000,
                   ma: 100,
                 },
                 precision: 2,
@@ -278,45 +280,26 @@ export default {
               this.main = function (context, inputCallback) {
                 this._context = context;
                 this._input = inputCallback;
-
                 const emafast = this._input(1);
                 const emalow = this._input(0);
                 const ma = this._input(2);
-                const high = PineJS.Std.high(this._context);
-                const low = PineJS.Std.low(this._context);
                 const close = PineJS.Std.close(this._context);
-                const closeS = this._context.new_var(close);
-                const closeS2 = this._context.new_var(close);
-                const closeS3 = this._context.new_var(close);
-
-                const ema9 = 9 * Math.round(emalow / 12);
-                const fast = PineJS.Std.ema(closeS, emafast, this._context);
-                const slow = PineJS.Std.ema(closeS2, emalow, this._context);
-                const sma = PineJS.Std.ema(closeS3, ma, this._context);
-
-                var currMacd = slow - fast;
-                var preMacd = this._context.new_var(currMacd).get(1);
-
-                console.log("===================================")
-                console.log("currMacd:: ", currMacd);
-                console.log("preMacd:: ", preMacd);
-                const sgnalLine9 = PineJS.Std.ema(this._context.new_var(currMacd), ema9 , this._context);
-                const histogram = currMacd - sgnalLine9;
+                var closeS = this._context.new_var(close);
+                const sma = PineJS.Std.ema(closeS, ma, this._context);
+                const ema1000 = PineJS.Std.ema(closeS, 5000, this._context);
+                var currMacd = this.macd(closeS, emafast, emalow);
+                var currMacdS = this._context.new_var(currMacd);
+                var preMacd = isNaN(currMacdS.get(1)) ? 0 : currMacdS.get(1);
                 var long = NaN;
                 var short = NaN;
-                var signal = NaN;
-                var signalS = this._context.new_var();
-                signal = isNaN(signalS.get(0))
-                  ? signalS.get(1)
-                  : signalS.get(0);
-                if (preMacd < 0 && currMacd >= 0 && close > sma && signalS.get(1) != 1) {
+                if ( preMacd < 0 && currMacd >= 0 && close > sma && signal != 1) {
                   long = 1;
                   signal = 1;
-                } else if (preMacd > 0 && currMacd <= 0 && close < sma && signalS.get(1) != 0) {
+                } 
+                if (preMacd > 0 && currMacd <= 0 && close < sma && signal != 0) {
                   short = 1;
                   signal = 0;
                 }
-                signalS.set(signal);
                 return [short, long];
               };
             },
