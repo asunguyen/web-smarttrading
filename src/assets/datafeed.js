@@ -151,8 +151,6 @@ export default {
 
 	getBars: async (symbolInfo, resolution, periodParams, onHistoryCallback, onErrorCallback) => {
 		let { from, to, firstDataRequest } = periodParams;
-		console.log('[getBars]: Method call:: ', periodParams);
-		console.log("resolution:: ", resolution);
 		var resol = resolution;
 		if (resolution == "60" || resolution == "90" || resolution == "120" || resolution == "180" || resolution == "240") {
 			resol = "H";

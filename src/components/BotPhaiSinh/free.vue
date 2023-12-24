@@ -222,7 +222,7 @@ export default {
                 },
                 inputs: {
                   emalow: 120,
-                  emafast: 260,
+                  emafast: 1000,
                   ma: 100,
                 },
                 precision: 2,
@@ -286,27 +286,17 @@ export default {
                 const close = PineJS.Std.close(this._context);
                 var closeS = this._context.new_var(close);
                 const sma = PineJS.Std.ema(closeS, ma, this._context);
+                const ema1000 = PineJS.Std.ema(closeS, 5000, this._context);
                 var currMacd = this.macd(closeS, emafast, emalow);
-
                 var currMacdS = this._context.new_var(currMacd);
                 var preMacd = isNaN(currMacdS.get(1)) ? 0 : currMacdS.get(1);
-
                 var long = NaN;
                 var short = NaN;
-                if (
-                  preMacd < 0 &&
-                  currMacd >= 0 &&
-                  close > sma &&
-                  signal != 1
-                ) {
+                if ( preMacd < 0 && currMacd >= 0 && close > sma && signal != 1) {
                   long = 1;
                   signal = 1;
-                } else if (
-                  preMacd > 0 &&
-                  currMacd <= 0 &&
-                  close < sma &&
-                  signal != 0
-                ) {
+                } 
+                if (preMacd > 0 && currMacd <= 0 && close < sma && signal != 0) {
                   short = 1;
                   signal = 0;
                 }
