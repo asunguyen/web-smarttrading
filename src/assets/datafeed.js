@@ -176,28 +176,31 @@ export default {
 			let dataBar = [];
 			if (data.nextTime || data.nextTime >= 0) {
 				let bars = [];
-				for (var i = 0; i < data.t.length; i++) {
-					bars = [...bars, {
-						close: data.c[i],
-						high: data.h[i],
-						low: data.l[i],
-						open: data.o[i],
-						time: data.t[i] * 1000,
-						volume: data.v[i]
-					}]
+				if (data.t && data.t.length > 0) {
+					for (var i = 0; i < data.t.length; i++) {
+						bars = [...bars, {
+							close: data.c[i],
+							high: data.h[i],
+							low: data.l[i],
+							open: data.o[i],
+							time: data.t[i] * 1000,
+							volume: data.v[i]
+						}]
+					}
+					if (firstDataRequest) {
+						lastBarsCache.set(symbolInfo.full_name, {
+							...bars[bars.length - 1],
+						});
+					}
 				}
-				if (firstDataRequest) {
-					lastBarsCache.set(symbolInfo.full_name, {
-						...bars[bars.length - 1],
-					});
-				}
+				
 				if (bars && bars.length > 0) {
 					onHistoryCallback(bars, {
 						noData: true
 					});
 				} else {
 					onHistoryCallback([], {
-						noData: false
+						noData: true
 					});
 				}
 
