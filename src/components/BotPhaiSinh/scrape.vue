@@ -60,10 +60,10 @@ export default {
   data: function() {
     return {
       scrapeDerivativeIndicators: [
-        {
-          name: 'ST Bot',
-          visible: true
-        },
+        // {
+        //   name: 'ST Bot',
+        //   visible: true
+        // },
         {
           name: 'ZO TREND',
           visible: true
