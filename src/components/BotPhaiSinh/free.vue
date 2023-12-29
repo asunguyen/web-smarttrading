@@ -221,9 +221,7 @@ export default {
                   },
                 },
                 inputs: {
-                  emalow: 120,
-                  emafast: 1000,
-                  ma: 100,
+                  
                 },
                 precision: 2,
                 palettes: {
@@ -280,9 +278,9 @@ export default {
               this.main = function (context, inputCallback) {
                 this._context = context;
                 this._input = inputCallback;
-                const emafast = this._input(1);
-                const emalow = this._input(0);
-                const ma = this._input(2);
+                const emafast = 260;
+                const emalow = 120;
+                const ma = 100;
                 const close = PineJS.Std.close(this._context);
                 var closeS = this._context.new_var(close);
                 const sma = PineJS.Std.ema(closeS, ma, this._context);
