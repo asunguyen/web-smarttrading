@@ -216,9 +216,7 @@ export default {
                   },
                 },
                 inputs: {
-                  emalow: 120,
-                  emafast: 260,
-                  ma: 150,
+                  
                 },
                 precision: 2,
                 palettes: {
@@ -276,9 +274,9 @@ export default {
                 this._context = context;
                 this._input = inputCallback;
 
-                const emafast = this._input(1);
-                const emalow = this._input(0);
-                const ma = this._input(2);
+                const emafast = 260;
+                const emalow = 120;
+                const ma = 150;
                 const ema9 = 9 * Math.round(emalow / 12);
                 const atrPeriod = 10;
                 const factor = 3;

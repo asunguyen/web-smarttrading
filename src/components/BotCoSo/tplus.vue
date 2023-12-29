@@ -208,8 +208,7 @@ export default {
                   }
                 },
                 inputs: {
-                  atrPeriod: 34,
-                  factor: 3
+                  
                 },
                 precision: 2
               },
@@ -240,8 +239,8 @@ export default {
                 this._context = context
                 this._input = inputCallback
 
-                const atrPeriod = this._input(0)
-                const factor = this._input(1)
+                const atrPeriod = 34;
+                const factor = 3;
                 const low = PineJS.Std.low(this._context)
                 const high = PineJS.Std.high(this._context)
                 const close = PineJS.Std.close(this._context)

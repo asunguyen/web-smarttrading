@@ -212,8 +212,7 @@ export default {
                   }
                 },
                 inputs: {
-                  av: 30,
-                  pr: 14
+                  
                 },
                 precision: 2
               },
@@ -238,8 +237,8 @@ export default {
               this.main = function(context, inputCallback) {
                 this._context = context
                 this._input = inputCallback
-                var AV = this._input(0)
-                var PR = this._input(1)
+                var AV = 30;
+                var PR = 14;
                 var high = PineJS.Std.high(this._context)
                 var highS = this._context.new_var(high)
                 var low = PineJS.Std.low(this._context)
