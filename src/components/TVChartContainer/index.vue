@@ -131,11 +131,12 @@ export default {
       ],
       custom_indicators_getter: function(PineJS) {
         return Promise.resolve([])
-      }
+      },
+      //type: ""
     }
 
     // eslint-disable-next-line new-cap
-    const tvWidget = new widget(widgetOptions)
+    let tvWidget = new widget(widgetOptions)
     this.tvWidget = tvWidget
 
     tvWidget.onChartReady(() => {
@@ -145,7 +146,8 @@ export default {
         //     tvWidget.activeChart()
         //   ),
         // });
-      })
+      });
+      console.log("chua biết là gì:: ", tvWidget.chart().setChartType(6));
     })
   },
   destroyed() {
