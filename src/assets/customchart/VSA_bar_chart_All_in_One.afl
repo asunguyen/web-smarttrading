@@ -1,0 +1,131 @@
+//Download from http://kakata.vn
+GfxSetOverlayMode(1);
+GfxSelectFont("Tahoma", Status("pxheight")/32 );
+GfxSetTextAlign(6 );// center alignment
+GfxSetTextColor( ParamColor( "Warna", colorLightGrey ) );
+GfxSetBkMode(0); // transparent
+GfxTextOut( "Youtube: Kakata Chung Khoan", Status("pxwidth")/2, Status("pxheight")/20 );
+SetBarsRequired(sbrAll); 
+
+_SECTION_BEGIN("Price");
+SetChartOptions(0,chartShowArrows|chartShowDates);
+Colorup=ParamColor( "up Color", colorGreen );
+Colordown=ParamColor( "down Color", colorRed );
+_N(Title = StrFormat("Kakata.vn - {{NAME}} - {{INTERVAL}} {{DATE}} Open %g, Hi %g, Lo %g, Close %g (%.1f%%) {{VALUES}}", O, H, L, C, SelectedValue( ROC( C, 1 ) ) ));
+PlotOHLC( Close,  High,  Low,  Close, "", IIf(C>O,Colorup,Colordown), styleBar |styleThick );
+_SECTION_END();
+
+
+///////////////////
+_SECTION_BEGIN("SUPPORT - RESISTANCE");
+Version(5.20);
+ xx=BarIndex();x=xx;Lx=LastValue(x);
+ nbar=Param(" Bars",3,2,30,1); 
+ npiv=Param(" lookback period",1,1,30,1);
+ PivotSymmetry=ParamToggle("Symmetric ","Off|On",1);
+ CleanPivots=ParamToggle("Clean","Off|On",1);
+ srStyle=ParamToggle("S/R Style","Off|On",0);
+ if (PivotSymmetry)
+ {
+    fc=1;
+    pk=H>Ref(HHV(H,nbar*fc),-1) AND Ref(HHV(H,nbar),nbar)<=H;
+    pk=pk AND Lx-ValueWhen(pk,x)>nbar*fc;
+    tr=L<Ref(LLV(L,nbar*fc),-1) AND Ref(LLV(L,nbar),nbar)>=L;
+    tr=tr AND Lx-ValueWhen(tr,x)>nbar*fc;
+}
+else
+{
+    fc=2;
+    pk=H>Ref(HHV(H,nbar*fc),-1) AND Ref(HHV(H,nbar),nbar)<=H;
+    pk=pk AND Lx-ValueWhen(pk,x)>nbar*fc;
+    tr=L<Ref(LLV(L,nbar*fc),-1) AND Ref(LLV(L,nbar),nbar)>=L;
+    tr=tr AND Lx-ValueWhen(tr,x)>nbar*fc;   
+ }
+px0=ValueWhen(pk,x,0); tx0=ValueWhen(tr,x,0);
+px1=ValueWhen(pk,x,1); tx1=ValueWhen(tr,x,1);
+px2=ValueWhen(pk,x,2); tx2=ValueWhen(tr,x,2);
+px3=ValueWhen(pk,x,3); tx3=ValueWhen(tr,x,3);
+ph0=ValueWhen(pk,H,0); tl0=ValueWhen(tr,L,0);
+ph1=ValueWhen(pk,H,1); tl1=ValueWhen(tr,L,1);
+ph2=ValueWhen(pk,H,2); tl2=ValueWhen(tr,L,2);
+ph3=ValueWhen(pk,H,3); tl3=ValueWhen(tr,L,3);
+if (CleanPivots)
+ {
+    pk=IIf(pk AND px0<tx0 AND ph0>ph1,False,pk);
+    tr=IIf(tr AND px0>tx0 AND tl0<tl1,False,tr);
+    pk=IIf(pk AND px2>tx1 AND ph1<=ph2,False,pk);
+    tr=IIf(tr AND tx2>px1 AND tl1>=tl2,False,tr);
+  px0=ValueWhen(pk,x,0); tx0=ValueWhen(tr,x,0);
+    px1=ValueWhen(pk,x,1); tx1=ValueWhen(tr,x,1);
+    px2=ValueWhen(pk,x,2); tx2=ValueWhen(tr,x,2);
+    px3=ValueWhen(pk,x,3); tx3=ValueWhen(tr,x,3);
+    ph0=ValueWhen(pk,H,0); tl0=ValueWhen(tr,L,0);
+    ph1=ValueWhen(pk,H,1); tl1=ValueWhen(tr,L,1);
+    ph2=ValueWhen(pk,H,2); tl2=ValueWhen(tr,L,2);
+    ph3=ValueWhen(pk,H,3); tl3=ValueWhen(tr,L,3);      
+}
+  if(srstyle)
+ {
+ miny=Status("axisminy");
+ maxy=Status("axismaxy");
+ for (i=1;i<=npiv;i++)
+ {
+     rr=Ref(ValueWhen(pk,H,i),-nbar);
+     rr=IIf(rr>maxy OR rr<miny,Null,rr);
+     ss=Ref(ValueWhen(tr,L,i),-nbar);
+     ss=IIf(ss>maxy OR ss<miny,Null,ss);
+     Plot(ss,"",colorRed,styleNoLine|styleDots,0,0,0);
+}
+ }
+ else
+ {
+    rr=ValueWhen(pk,H); 
+    rr1=IIf(rr AND BarsSince(pk)>nbar,rr,Null);
+    rr2=IIf(rr AND BarsSince(pk)<=nbar,rr,Null);
+    ss=ValueWhen(tr,L); 
+    ss1=IIf(ss AND BarsSince(tr)>nbar,ss,Null);
+    ss2=IIf(ss AND BarsSince(tr)<=nbar,ss,Null);
+    Plot(rr1,"",colorCustom14,1);
+    Plot(rr2,"",colorLightGrey,styleDots|styleNoLine);
+    Plot(ss1,"",colorBlueGrey,1);
+    Plot(ss2,"",colorLightGrey,styleDots | styleNoLine);
+ }
+_SECTION_END();
+_SECTION_BEGIN("MOVING AVERAGE");
+//MA
+	PlotMA_ngan = ParamToggle( "Có muon ve MA ngan han?","Off|On",1); 
+	PlotMA_trung = ParamToggle( "Có muon ve MA trung han?","Off|On",1);
+	PlotMA_dai = ParamToggle( "Có muon ve MA dai han?","Off|On",1);
+   ngan = Param("MA ngan han",10,0,200,1);
+	trung = Param("MA trung han",20,0,200,1);
+	dai = Param("MA dài han",40,0,200,1);
+
+	MA_ngan = MA(C,ngan);
+	MA_trung = MA(C,trung);
+	MA_dai = MA(C,dai);
+	a = O;
+	b = H;
+	cc = L;
+	d = C;
+
+	//Ve MA
+if (PlotMA_ngan >0) {Plot(MA_ngan,"MA ngan han",colorRed);}
+if (PlotMA_trung >0) {Plot(MA_trung,"MA trung han",colorBlue);}
+if (PlotMA_dai >0) {Plot(MA_dai,"MA dai han",colorGreen);}
+_SECTION_END();
+_SECTION_BEGIN("VOLUME");
+	//Volume
+	PlotVOL = ParamToggle( "Có muon them Volume ?","Off|On",1); 
+	VolColor = (C>O OR (C==O AND (H-C)<=(C-L)))*ParamColor ("VUpColor" ,colorGreen) +
+           (C<O OR (C==O AND (H-C)>(C-L)))*ParamColor( "VDnColor" ,colorRed) ;
+	VolScale = Param("1/Vol. Height (TimeBar chart)(fraction of window) 5=1/5=20%",5, 2, 100, 1.0) ; // Timebars
+
+ 	//Ve Volume
+if (PlotVOL >0)
+{
+    Vheight = VolScale;
+    Plot(Prec(Volume ,0),"V",VolColor, styleNoTitle| styleOwnScale| styleThick|
+    ParamStyle( "VStyle", styleHistogram, maskHistogram) ,Vheight );
+}
+
+ _SECTION_END();
