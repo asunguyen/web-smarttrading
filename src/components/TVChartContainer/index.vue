@@ -147,7 +147,7 @@ export default {
         //   ),
         // });
       });
-      console.log("chua biết là gì:: ", tvWidget.chart().setChartType(6));
+      //console.log("chua biết là gì:: ", tvWidget.chart().setChartType(6));
     })
   },
   destroyed() {
