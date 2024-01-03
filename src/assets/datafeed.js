@@ -15,7 +15,7 @@ const lastBarsCache = new Map();
 // DatafeedConfiguration implementation
 const configurationData = {
 	// Represents the resolutions for bars supported by your datafeed
-	supported_resolutions: ['1', "3", '5', "10", '15', "20", '30', "45", '1H','2H', "3H", "4H", 'D', "3D", 'W', "2W", 'M', "3M", "6M", "12M"],
+	supported_resolutions: ['1', "3", '5', "10", '15', "20", '30', "45", '1H', '2H', "3H", "4H", 'D', "3D", 'W', "2W", 'M', "3M", "6M", "12M"],
 
 	// The `exchanges` arguments are used for the `searchSymbols` method if a user selects the exchange
 	exchanges: [
@@ -143,7 +143,7 @@ export default {
 				id: symbolItem.id,
 			};
 		}
-		
+
 
 		console.log('[resolveSymbol]: Symbol resolved', symbolInfo);
 		onSymbolResolvedCallback(symbolInfo);
@@ -155,9 +155,12 @@ export default {
 		if (resolution == "60" || resolution == "90" || resolution == "120" || resolution == "180" || resolution == "240") {
 			resol = "H";
 		}
-		if (from > 1103051358) {
-			from = 1103051358;
-		}
+		if ((symbolInfo.name == "VN30F1M" || symbolInfo.name == "VN30F1Q" || symbolInfo.name == "VN30F2M" || symbolInfo.name == "VN30F2Q") || (symbolInfo.exchange == "HNX" || symbolInfo.exchange == "HOSE" || symbolInfo.exchange == "UPCOM")) {
+			if (from > 1103051358) {
+				from = 1103051358;
+			}
+		} 
+
 		const urlParameters = {
 			symbol: symbolInfo.name,
 			exchange: symbolInfo.exchange,
@@ -193,7 +196,7 @@ export default {
 						});
 					}
 				}
-				
+
 				if (bars && bars.length > 0) {
 					onHistoryCallback(bars, {
 						noData: true
@@ -215,30 +218,40 @@ export default {
 					console.log('[getBars]: No data');
 				}
 				else {
+					console.log(2);
 					let bars = [];
 					for (let i = 0; i < dataBar.length; i++) {
-						bars = [...bars, {
-							time: dataBar[i].time * 1000,
-							low: dataBar[i].min,
-							high: dataBar[i].max,
-							open: dataBar[i].open,
-							close: dataBar[i].close,
-							volume: dataBar[i].volume,
-						}];
-						if (i == dataBar.length - 1) {
-							if (firstDataRequest) {
-								lastBarsCache.set(symbolInfo.full_name, {
-									...bars[bars.length - 1],
-								});
-							}
-							onHistoryCallback(bars, {
-								noData: true,
-							});
+						let time = dataBar[i].time;
+						if (time >= from && time <= to) {
+							bars = [...bars, {
+								time: dataBar[i].time * 1000,
+								low: dataBar[i].min,
+								high: dataBar[i].max,
+								open: dataBar[i].open,
+								close: dataBar[i].close,
+								volume: dataBar[i].volume,
+							}];
 						}
+						
 					}
+					if (firstDataRequest) {
+						lastBarsCache.set(symbolInfo.full_name, {
+							...bars[bars.length - 1],
+						});
+					}
+					if (bars.length == 0) {
+						onHistoryCallback([], {
+							noData: true,
+						});
+					} else {
+						onHistoryCallback(bars, {
+							noData: false,
+						});
+					}
+					
 				}
 			}
-			
+
 		} catch (error) {
 			console.log('[getBars]: Get error', error);
 			onErrorCallback(error);

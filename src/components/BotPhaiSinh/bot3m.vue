@@ -103,16 +103,7 @@
           datawindow: true,
           watchlist_settings: {
             default_symbols: [
-              '###STOCKS',
-              'NASDAQ:AAPL',
-              'NASDAQ:MSFT',
-              'NYSE:IBM',
-              '###FOREX',
-              'FX:EURUSD',
-              'FX:GBPUSD',
-              '###CRYPTO',
-              'CRYPTO:BTCUSD',
-              'CRYPTO:ETHUSD'
+              'HOSE:SSI',
             ]
           }
         },
@@ -316,9 +307,8 @@
       }
   
       // eslint-disable-next-line new-cap
-      const tvWidget = new widget(widgetOptions)
+      let tvWidget = new widget(widgetOptions);
       this.tvWidget = tvWidget
-  
       tvWidget.onChartReady(() => {
         tvWidget.subscribe('onAutoSaveNeeded', () => {
           console.log({
@@ -331,7 +321,10 @@
           thisVue.trendBaseIndicators,
           tvWidget.activeChart()
         )
-      })
+      });
+      // setTimeout(function() {
+      //     thisVue.tvWidget.activeChart().setChartType(6);
+      // }, 5000);
     },
     destroyed() {
       if (this.tvWidget !== null) {
@@ -362,7 +355,6 @@
           Promise.all(
             indicators.map(async(indicator) => {
               const visible = indicator.visible
-              console.log('indicator.inputs:: ', indicator.inputs)
               const newStudyID = await activeChart.createStudy(
                 indicator.name,
                 false,
@@ -370,7 +362,6 @@
                 indicator.inputs,
                 { visible }
               )
-              console.log('newStudyID:: ', newStudyID)
               // convert saved styles to overrides format ?
             })
           )
