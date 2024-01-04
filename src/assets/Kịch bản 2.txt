@@ -1,0 +1,224 @@
+const {
+    decodeExtendedSymbol,
+    encodeExtendedSymbolOrGetSimpleSymbolString,
+} = __webpack_require__(/*! ../symbolUtils */ "./.src/tradingview/symbolUtils.js");
+
+const { Interval } = __webpack_require__(/*! ../interval */ "./.src/tradingview/interval.js");
+const { conDebug } = __webpack_require__(/*! ../../common/consts */ "./.src/common/consts.js");
+const { upperbound_int } = __webpack_require__(/*! ../set */ "./.src/tradingview/set.js");
+
+const modSession = __webpack_require__(/*! ../session */ "./.src/tradingview/session.js");
+const modCalendar = __webpack_require__(/*! ../pineJSCalendar */ "./.src/tradingview/pineJSCalendar.js");
+const calendar = modCalendar.PineJsCalendar;
+
+const { Std } = __webpack_require__(/*! ./std */ "./.src/tradingview/studyEngine/std.js");
+const { Series } = __webpack_require__(/*! ./series */ "./.src/tradingview/studyEngine/series.js");
+const { Context } = __webpack_require__(/*! ./context */ "./.src/tradingview/studyEngine/context.js");
+const { Symbol } = __webpack_require__(/*! ./symbol */ "./.src/tradingview/studyEngine/symbol.js");
+
+class ScriptV2 {
+    constructor (study) {
+        const aThis = this;
+        this.study = study;
+
+        // STBog => Đồng pha power
+        if (this.study.metainfo) {
+            this.body = new study.constructor();
+            this.study.metainfo.defaults.inputs.stg = 1;
+
+            this.inputCallback = (i) => {
+                return aThis.getInput(i);
+            };
+        } else {
+            this.body = study;
+        }
+    }
+
+    init (symbol) {
+        this.uninit();
+
+        this.symbol = symbol;
+        this.symbols = [symbol];
+        this.ctx = new Context(symbol);
+
+        var context = this.ctx;
+        var body = this.body;
+        body.init && body.init(context, this.inputCallback);
+        body.main(context, this.inputCallback);
+    }
+
+    uninit () {
+        this.ctx && delete this.ctx;
+        this.ctx = this.symbol = this.barBuilder = null;
+    }
+
+    add_sym (tickerid, period, currencyId, unitId, symbolInfo) {
+        //var symbol = this.runner.add_sym(tickerid, period, currencyCode, unitId, this, symbolInfo);
+        var symbol = new Symbol(
+            tickerid,
+            period,
+            currencyId,
+            unitId,
+            this,
+            symbolInfo
+        );
+        this.symbols.push(symbol);
+        if (symbol.isdwm() && this.symbols.length > 1)
+            symbol.enable_dwm_aligning(this.symbols[0].session, symbol.session);
+        return symbol;
+    }
+
+    get_sym (index) {
+        return this.symbols[index];
+    }
+
+    getInput (i) {
+        const aThis = this;
+        const input = aThis.study.metainfo.inputs[i];
+        const defaults = aThis.study.metainfo.defaults.inputs;
+        //conDebug(`Input ${input.id}: ${defaults[input.id]}`);
+        return defaults[input.id];
+    }
+
+    updateSymbol (symbol, bar) {
+        if (!bar || isNaN(bar.time)) return false;
+
+        var time = bar.time;
+        if (symbol.dwm_aligner) {
+            symbol.dwm_aligner.moveTo(time);
+            time = symbol.dwm_aligner.startOfBar(0);
+        }
+
+        var newTime = symbol.time !== time;
+        if (newTime && symbol.index >= 0 && !symbol.isBarClosed) {
+            symbol.isNewBar = !1;
+            symbol.isBarClosed = !0;
+            // debugger;
+            // this.calc(symbol);
+        }
+
+        symbol.time = time;
+        symbol.open = bar.open;
+        symbol.high = bar.high;
+        symbol.low = bar.low;
+        symbol.close = bar.close;
+        symbol.volume = bar.volume;
+        symbol.updatetime = bar.updatetime;
+        symbol.isNewBar = newTime;
+        symbol.isBarClosed = bar.isBarClosed;
+        symbol.isLastBar = bar.isLastBar;
+        symbol.isNewBar &&
+            (symbol.index++, (symbol.isFirstBar = 0 === symbol.index));
+
+        return true;
+    }
+
+    updateExtraSymbols (barIndex, bar) {
+        if (!bar || isNaN(bar.time)) return;
+
+        var symbols = this.symbols;
+        for (var symbol of symbols) {
+            if (symbol === this.symbol) continue;
+            if (!symbol.barset || !symbol.barset.bars) continue;
+            var bars = symbol.barset.bars;
+            var btime = bar.time;
+            var sbar = bars[barIndex] ?? false;
+            if (!sbar || sbar.time != btime)
+                sbar = bars.find((b) => b.time == btime);
+
+            this.updateSymbol(symbol, sbar);
+        }
+    }
+
+    async processBar (symbol, bar) {
+        var result = null;
+
+        if (!isNaN(bar.time)) {
+            var time = bar.time;
+            if (symbol.dwm_aligner) {
+                symbol.dwm_aligner.moveTo(time);
+                time = symbol.dwm_aligner.startOfBar(0);
+            }
+
+            var newTime = symbol.time !== time;
+            if (newTime && symbol.index >= 0 && !symbol.isBarClosed) {
+                symbol.isNewBar = !1;
+                symbol.isBarClosed = !0;
+                this.calc(symbol);
+            }
+
+            symbol.time = time;
+            symbol.open = bar.open;
+            symbol.high = bar.high;
+            symbol.low = bar.low;
+            symbol.close = bar.close;
+            symbol.volume = bar.volume;
+            symbol.updatetime = bar.updatetime;
+            symbol.isNewBar = newTime;
+            symbol.isBarClosed = bar.isBarClosed;
+            symbol.isLastBar = bar.isLastBar;
+            symbol.isNewBar &&
+                (symbol.index++, (symbol.isFirstBar = 0 === symbol.index));
+
+            result = await this.calc(symbol);
+        }
+
+        return result;
+    }
+
+    async calculate (barset) {
+        var count = barset.count();
+        var result = [];
+
+        // init runner for amibroker study to get barset
+        this.runner = {
+            barsets: [barset],
+        };
+
+        // looping through barsets
+        for (var barIndex = 0; barIndex < count; barIndex++) {
+            var bar = barset.bar(barIndex);
+            bar.isLastBar = barIndex === count - 1;
+            bar.isBarClosed = !bar.isLastBar || barset.isLastBarClosed();
+
+            // calculate single bar
+            var res = (await this.calculateBar(barIndex, bar)) ?? [];
+
+            // save result
+            result.push(res);
+        }
+
+        return result;
+    }
+
+    async calculateBar (barIndex, bar) {
+        var symbolPrimary = this.symbol;
+        // update primary symbol with current bar
+        if (!this.updateSymbol(symbolPrimary, bar)) return null;
+
+        // update secondary symbols by current bar
+        this.updateExtraSymbols(barIndex, bar);
+
+        // calculate script with current symbol values
+        const result = await this.calc(symbolPrimary);
+
+        return result;
+    }
+
+    async calc (symbol) {
+        var ctx = this.ctx;
+        var body = this.body;
+
+        // prepare context of all symbols
+        for (var sym of this.symbols) ctx.prepare(sym);
+
+        // execute study
+        var result = await body.main(ctx, this.inputCallback, symbol);
+
+        return result;
+    }
+}
+
+module.exports = {
+    ScriptV2,
+};
