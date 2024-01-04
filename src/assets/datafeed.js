@@ -249,6 +249,7 @@ export default {
 	},
 
 	getBars: async (symbolInfo, resolution, periodParams, onHistoryCallback, onErrorCallback) => {
+		console.log("symbolInfo:: ", symbolInfo)
 		let { from, to, firstDataRequest } = periodParams;
 		var resol = resolution;
 		if (resolution == "60" || resolution == "90" || resolution == "120" || resolution == "180" || resolution == "240") {
@@ -266,7 +267,8 @@ export default {
 			from: from,
 			to: to,
 			resolution: resol,
-			firstDataRequest: firstDataRequest
+			firstDataRequest: firstDataRequest,
+			type: symbolInfo.type
 		};
 		//console.log("OK:",symbolInfo);
 		const query = Object.keys(urlParameters)
