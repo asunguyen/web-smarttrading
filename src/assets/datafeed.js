@@ -57,6 +57,105 @@ async function getAllSymbols(symbolType) {
 	return allSymbols;
 }
 
+async function loadDataBarCustom(symbolInfo, urlParameters, timeEnd, firstDataRequest, onHistoryCallback, onErrorCallback) {
+	try {
+		countHis++;
+		let urlParametersC = urlParameters;
+		urlParametersC.to = timeEnd;
+		urlParametersC.from = timeEnd - 604800;
+		let from = urlParametersC.from;
+		let to = urlParametersC.to;
+		const query = Object.keys(urlParametersC)
+			.map(name => `${name}=${encodeURIComponent(urlParametersC[name])}`)
+			.join('&');
+		const response = await makeApiRequest(`history?${query}`);
+		const data = response.data;
+		let dataBar = [];
+		let bars = [];
+		if (data.nextTime || data.nextTime >= 0) {
+			if (data.t && data.t.length > 0) {
+				for (var i = 0; i < data.t.length; i++) {
+					bars = [...bars, {
+						close: data.c[i],
+						high: data.h[i],
+						low: data.l[i],
+						open: data.o[i],
+						time: data.t[i] * 1000,
+						volume: data.v[i]
+					}]
+				}
+				if (firstDataRequest) {
+					lastBarsCache.set(symbolInfo.full_name, {
+						...bars[bars.length - 1],
+					});
+				}
+			}
+
+			if (bars && bars.length > 0) {
+				onHistoryCallback(bars, {
+					noData: true
+				});
+			} else {
+				onHistoryCallback([], {
+					noData: true
+				});
+			}
+		} else {
+			dataBar = data;
+			if (dataBar.length == 0) {
+				// "noData" should be set if there is no data in the requested period
+				onHistoryCallback([], {
+					noData: true,
+				});
+				console.log('[getBars]: No data');
+			}
+			else {
+				console.log(2);
+				for (let i = 0; i < dataBar.length; i++) {
+					let time = dataBar[i].time;
+					if (time >= from && time <= to) {
+						bars = [...bars, {
+							time: dataBar[i].time * 1000,
+							low: dataBar[i].min,
+							high: dataBar[i].max,
+							open: dataBar[i].open,
+							close: dataBar[i].close,
+							volume: dataBar[i].volume,
+						}];
+					}
+
+				}
+				if (firstDataRequest) {
+					lastBarsCache.set(symbolInfo.full_name, {
+						...bars[bars.length - 1],
+					});
+				}
+				if (bars.length == 0) {
+					onHistoryCallback([], {
+						noData: true,
+					});
+				} else {
+					onHistoryCallback(bars, {
+						noData: false,
+					});
+				}
+
+			}
+		}
+		if (bars && bars.length > 0) {
+			timeEnd = bars[0].time/1000;
+			console.log("time custom:: ", timeEnd);
+			if (timeEnd > 1103051358 && countHis < 10) {
+				console.log("load custom")
+				loadDataBarCustom(symbolInfo, urlParametersC, timeEnd, firstDataRequest, onHistoryCallback, onErrorCallback);
+			}
+		}
+	} catch (err) {
+		console.log("data bar custom error:: ", err);
+		onErrorCallback(err);
+	}
+}
+
 export default {
 	onReady: (callback) => {
 		console.log('[onReady]: Method call');
@@ -159,9 +258,9 @@ export default {
 			if (from > 1103051358) {
 				from = 1103051358;
 			}
-		} 
+		}
 
-		const urlParameters = {
+		let urlParameters = {
 			symbol: symbolInfo.name,
 			exchange: symbolInfo.exchange,
 			from: from,
@@ -177,8 +276,8 @@ export default {
 			const response = await makeApiRequest(`history?${query}`);
 			const data = response.data;
 			let dataBar = [];
+			let bars = [];
 			if (data.nextTime || data.nextTime >= 0) {
-				let bars = [];
 				if (data.t && data.t.length > 0) {
 					for (var i = 0; i < data.t.length; i++) {
 						bars = [...bars, {
@@ -219,7 +318,6 @@ export default {
 				}
 				else {
 					console.log(2);
-					let bars = [];
 					for (let i = 0; i < dataBar.length; i++) {
 						let time = dataBar[i].time;
 						if (time >= from && time <= to) {
@@ -232,7 +330,7 @@ export default {
 								volume: dataBar[i].volume,
 							}];
 						}
-						
+
 					}
 					if (firstDataRequest) {
 						lastBarsCache.set(symbolInfo.full_name, {
@@ -248,10 +346,19 @@ export default {
 							noData: false,
 						});
 					}
-					
+
 				}
 			}
-
+			//xử lý lấy data history
+			if (bars && bars.length > 0) {
+				timeEnd = bars[0].time/1000;
+				console.log("time custom:: ", timeEnd);
+			} else {
+				if (resolution == "1" && timeEnd > 1103051358) {
+					console.log("load custom")
+					loadDataBarCustom(symbolInfo, urlParameters, timeEnd, firstDataRequest, onHistoryCallback, onErrorCallback);
+				}
+			}
 		} catch (error) {
 			console.log('[getBars]: Get error', error);
 			onErrorCallback(error);
@@ -266,6 +373,7 @@ export default {
 		onResetCacheNeededCallback,
 	) => {
 		console.log('[subscribeBars]: Method call with subscriberUID:', subscriberUID);
+		countHis = 0;
 		subscribeOnStream(
 			symbolInfo,
 			resolution,
