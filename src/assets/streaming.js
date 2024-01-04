@@ -8,7 +8,6 @@ const socket = io("http://api.smtchart.vn", {
 });
 socket.on("onData", (data) => {
     let dataBar = data.chart;
-    console.log("data: ", data);
     if (data.infos.type == "stock" && data.infos.country == "VN") {
         return;
     }
@@ -24,7 +23,6 @@ socket.on("onData", (data) => {
             Close: dataBar.close,
 
         };
-        console.log("newData:: ", newData);
         const symbolList = "CHART." + dataBar.symbol;
         const subscriptionItem = channelToSubscription.get(symbolList);
         if (subscriptionItem === undefined) {
@@ -130,7 +128,6 @@ export function unsubscribeFromStream(subscriberUID) {
 
             if (subscriptionItem.handlers.length === 0) {
                 // Unsubscribe from the channel if it was the last handler
-                console.log('[unsubscribeBars]: Unsubscribe from streaming. Channel:', channelString);
                 channelToSubscription.delete(channelString);
                 break;
             }
