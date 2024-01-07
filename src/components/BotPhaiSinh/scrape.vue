@@ -1208,7 +1208,7 @@ export default {
                   // điều kiện mua/bán
                   var side = 0;
 
-                  var stgMode = 3;
+                  var stgMode = 1;
 
                   // load signal judgement from BAlgo
                   // if (BAlgo.stBotClientSettings) {
@@ -1227,6 +1227,7 @@ export default {
                   const phaseVolume = stgMode == 2;
                   const phasePower = stgMode == 1;
 
+                  //console.log("tren:: ", trend);
                   if (phaseAll) {
                     if (trend < 0 && power < 0 && volume < 0) side = -1;
                     else if (trend > 0 && power > 0 && volume > 0) side = 1;
