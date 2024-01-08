@@ -84,11 +84,9 @@ async function loadDataBarCustom(symbolInfo, urlParameters, timeEnd, firstDataRe
 						volume: data.v[i]
 					}]
 				}
-				if (firstDataRequest) {
-					lastBarsCache.set(symbolInfo.full_name, {
-						...bars[bars.length - 1],
-					});
-				}
+				lastBarsCache.set(symbolInfo.full_name, {
+					...bars[bars.length - 1],
+				});
 			}
 
 			if (bars && bars.length > 0) {
@@ -113,7 +111,16 @@ async function loadDataBarCustom(symbolInfo, urlParameters, timeEnd, firstDataRe
 				console.log(2);
 				for (let i = 0; i < dataBar.length; i++) {
 					let time = dataBar[i].time;
-					if (time >= from && time <= to) {
+					if (symbolInfo.type == "spot" && time >= from && time <= to) {
+						bars = [...bars, {
+							time: dataBar[i].time * 1000,
+							low: dataBar[i].min,
+							high: dataBar[i].max,
+							open: dataBar[i].open,
+							close: dataBar[i].close,
+							volume: dataBar[i].volume,
+						}];
+					} else {
 						bars = [...bars, {
 							time: dataBar[i].time * 1000,
 							low: dataBar[i].min,
@@ -125,11 +132,18 @@ async function loadDataBarCustom(symbolInfo, urlParameters, timeEnd, firstDataRe
 					}
 
 				}
-				if (firstDataRequest) {
+				if (symbolInfo.type == "spot") {
+					if (firstDataRequest) {
+						lastBarsCache.set(symbolInfo.full_name, {
+							...bars[bars.length - 1],
+						});
+					}
+				} else {
 					lastBarsCache.set(symbolInfo.full_name, {
 						...bars[bars.length - 1],
 					});
 				}
+				
 				if (bars.length == 0) {
 					onHistoryCallback([], {
 						noData: true,
@@ -144,9 +158,7 @@ async function loadDataBarCustom(symbolInfo, urlParameters, timeEnd, firstDataRe
 		}
 		if (bars && bars.length > 0) {
 			timeEnd = bars[0].time/1000;
-			console.log("time custom:: ", timeEnd);
 			if (timeEnd > 1103051358 && countHis < 10) {
-				console.log("load custom")
 				loadDataBarCustom(symbolInfo, urlParametersC, timeEnd, firstDataRequest, onHistoryCallback, onErrorCallback);
 			}
 		}
@@ -258,6 +270,10 @@ export default {
 			if (from > 1103051358) {
 				from = 1103051358;
 			}
+		} else {
+			if (to - from < 486000) {
+				from = to - 486000;
+			}
 		}
 
 		let urlParameters = {
@@ -266,7 +282,8 @@ export default {
 			from: from,
 			to: to,
 			resolution: resol,
-			firstDataRequest: firstDataRequest
+			firstDataRequest: firstDataRequest,
+			type: symbolInfo.type
 		};
 		//console.log("OK:",symbolInfo);
 		const query = Object.keys(urlParameters)
@@ -289,11 +306,14 @@ export default {
 							volume: data.v[i]
 						}]
 					}
-					if (firstDataRequest) {
-						lastBarsCache.set(symbolInfo.full_name, {
-							...bars[bars.length - 1],
-						});
-					}
+					lastBarsCache.set(symbolInfo.full_name, {
+						...bars[bars.length - 1],
+					});
+					// if (firstDataRequest) {
+					// 	lastBarsCache.set(symbolInfo.full_name, {
+					// 		...bars[bars.length - 1],
+					// 	});
+					// }
 				}
 
 				if (bars && bars.length > 0) {
@@ -317,10 +337,21 @@ export default {
 					console.log('[getBars]: No data');
 				}
 				else {
-					console.log(2);
 					for (let i = 0; i < dataBar.length; i++) {
 						let time = dataBar[i].time;
-						if (time >= from && time <= to) {
+						if (symbolInfo.type == "spot" && resol != 1) {
+							console.log("hjhjahjhjhjhj")
+							if (time >= from && time <= to) {
+								bars = [...bars, {
+									time: dataBar[i].time * 1000,
+									low: dataBar[i].min,
+									high: dataBar[i].max,
+									open: dataBar[i].open,
+									close: dataBar[i].close,
+									volume: dataBar[i].volume,
+								}];
+							} 
+						} else {
 							bars = [...bars, {
 								time: dataBar[i].time * 1000,
 								low: dataBar[i].min,
@@ -330,9 +361,14 @@ export default {
 								volume: dataBar[i].volume,
 							}];
 						}
-
 					}
-					if (firstDataRequest) {
+					if (symbolInfo.type == "spot" && resol != 1) {
+						if (firstDataRequest) {
+							lastBarsCache.set(symbolInfo.full_name, {
+								...bars[bars.length - 1],
+							});
+						}
+					} else {
 						lastBarsCache.set(symbolInfo.full_name, {
 							...bars[bars.length - 1],
 						});
@@ -352,10 +388,8 @@ export default {
 			//xử lý lấy data history
 			if (bars && bars.length > 0) {
 				timeEnd = bars[0].time/1000;
-				console.log("time custom:: ", timeEnd);
 			} else {
 				if (resolution == "1" && timeEnd > 1103051358) {
-					console.log("load custom")
 					loadDataBarCustom(symbolInfo, urlParameters, timeEnd, firstDataRequest, onHistoryCallback, onErrorCallback);
 				}
 			}
