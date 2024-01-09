@@ -6,13 +6,13 @@
 import { widget } from '../../assets/charting_library'
 // import { UDFCompatibleDatafeed } from '../../assets/datafeeds/udf/lib/udf-compatible-datafeed'
 import Datafeed from '@/assets/datafeed.js'
-// function getLanguageFromURL() {
-//   const regex = new RegExp('[\\?&]lang=([^&#]*)')
-//   const results = regex.exec(window.location.search)
-//   return results === null
-//     ? null
-//     : decodeURIComponent(results[1].replace(/\+/g, ' '))
-// }
+function getLanguageFromURL() {
+  const regex = new RegExp('[\\?&]lang=([^&#]*)')
+  const results = regex.exec(window.location.search)
+  return results === null
+    ? null
+    : decodeURIComponent(results[1].replace(/\+/g, ' '))
+}
 export default {
   name: 'TVChartContainer',
   props: {
@@ -73,7 +73,6 @@ export default {
       timezone: 'Asia/Ho_Chi_Minh',
       interval: this.interval,
       container: container,
-      library_path: this.libraryPath,
       logo: {
         image: '@/assets/logo-st.png',
         link: 'http://smtchart.vn/'
