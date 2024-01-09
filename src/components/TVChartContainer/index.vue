@@ -37,7 +37,7 @@ export default {
       type: String
     },
     clientId: {
-      default: 'smtchart.vn',
+      default: 'smarttrading.vn',
       type: String
     },
     userId: {
