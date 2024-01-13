@@ -1,18 +1,18 @@
 <template>
-  <div ref="chartContainer" class="TVChartContainer" />
+  <div id="tvWidgetContainer" ref="chartContainer" class="TVChartContainer" />
 </template>
 
 <script>
-import { widget } from '../../assets/charting_library'
+import { widget } from '../../assets/charting_library/'
 // import { UDFCompatibleDatafeed } from '../../assets/datafeeds/udf/lib/udf-compatible-datafeed'
 import Datafeed from '@/assets/datafeed.js'
-// function getLanguageFromURL() {
-//   const regex = new RegExp('[\\?&]lang=([^&#]*)')
-//   const results = regex.exec(window.location.search)
-//   return results === null
-//     ? null
-//     : decodeURIComponent(results[1].replace(/\+/g, ' '))
-// }
+function getLanguageFromURL() {
+  const regex = new RegExp('[\\?&]lang=([^&#]*)')
+  const results = regex.exec(window.location.search)
+  return results === null
+    ? null
+    : decodeURIComponent(results[1].replace(/\+/g, ' '))
+}
 export default {
   name: 'TVChartContainerCoso',
   props: {
@@ -41,7 +41,7 @@ export default {
       type: String
     },
     userId: {
-      default: 'public_user_id',
+      default: 'public',
       type: String
     },
     fullscreen: {
@@ -77,7 +77,8 @@ export default {
       locale: 'vi',
       timezone: 'Asia/Ho_Chi_Minh',
       interval: this.interval,
-      container: container,
+      container: 'tvWidgetContainer',
+      container_id: 'tvWidgetContainer',
       library_path: this.libraryPath,
       logo: {
         image: '@/assets/logo-st.png',
@@ -103,16 +104,7 @@ export default {
         datawindow: true,
         watchlist_settings: {
           default_symbols: [
-            '###STOCKS',
-            'NASDAQ:AAPL',
-            'NASDAQ:MSFT',
-            'NYSE:IBM',
-            '###FOREX',
-            'FX:EURUSD',
-            'FX:GBPUSD',
-            '###CRYPTO',
-            'CRYPTO:BTCUSD',
-            'CRYPTO:ETHUSD'
+            'HOSE:SSI'
           ]
         }
       },
@@ -212,7 +204,7 @@ export default {
                   }
                 },
                 inputs: {
-                  
+
                 },
                 precision: 2
               },
@@ -237,8 +229,8 @@ export default {
               this.main = function(context, inputCallback) {
                 this._context = context
                 this._input = inputCallback
-                var AV = 30;
-                var PR = 14;
+                var AV = 30
+                var PR = 14
                 var high = PineJS.Std.high(this._context)
                 var highS = this._context.new_var(high)
                 var low = PineJS.Std.low(this._context)

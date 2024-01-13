@@ -1,9 +1,11 @@
 <template>
-  <div ref="chartContainer" class="TVChartContainer" />
+  <div id="tvWidgetContainer" ref="chartContainer" class="TVChartContainer" />
 </template>
 
 <script>
-import { widget } from '../../assets/charting_library'
+// require("../../assets/charting_library/charting_library.standalone.js")
+import { widget } from '../../assets/charting_library/'
+// D:\code\smtchart\web-smarttrading\src\assets\charting_library\trading-terminal.min.js
 // import { UDFCompatibleDatafeed } from '../../assets/datafeeds/udf/lib/udf-compatible-datafeed'
 import Datafeed from '@/assets/datafeed.js'
 function getLanguageFromURL() {
@@ -37,11 +39,11 @@ export default {
       type: String
     },
     clientId: {
-      default: 'smarttrading.vn',
+      default: 'chobot.vn',
       type: String
     },
     userId: {
-      default: 'public_user_id',
+      default: 'public',
       type: String
     },
     fullscreen: {
@@ -59,7 +61,7 @@ export default {
   },
   data: function() {
     return {
-      
+
     }
   },
   tvWidget: null,
@@ -72,7 +74,9 @@ export default {
       locale: 'vi',
       timezone: 'Asia/Ho_Chi_Minh',
       interval: this.interval,
-      container: container,
+      container: 'tvWidgetContainer',
+      container_id: 'tvWidgetContainer',
+      library_path: this.libraryPath,
       logo: {
         image: '@/assets/logo-st.png',
         link: 'http://smtchart.vn/'
@@ -97,16 +101,7 @@ export default {
         datawindow: true,
         watchlist_settings: {
           default_symbols: [
-            '###STOCKS',
-            'NASDAQ:AAPL',
-            'NASDAQ:MSFT',
-            'NYSE:IBM',
-            '###FOREX',
-            'FX:EURUSD',
-            'FX:GBPUSD',
-            '###CRYPTO',
-            'CRYPTO:BTCUSD',
-            'CRYPTO:ETHUSD'
+            'HOSE:SSI'
           ]
         }
       },
@@ -130,12 +125,14 @@ export default {
       ],
       custom_indicators_getter: function(PineJS) {
         return Promise.resolve([])
-      },
-      //type: ""
+      }
+      // type: ""
     }
 
     // eslint-disable-next-line new-cap
-    let tvWidget = new widget(widgetOptions)
+    // console.log("TradingView:: ", TradingView);
+    // console.log("widget:: ", widget);
+    const tvWidget = new widget(widgetOptions)
     this.tvWidget = tvWidget
 
     tvWidget.onChartReady(() => {
@@ -145,8 +142,8 @@ export default {
         //     tvWidget.activeChart()
         //   ),
         // });
-      });
-      //console.log("chua biết là gì:: ", tvWidget.chart().setChartType(6));
+      })
+      // console.log("chua biết là gì:: ", tvWidget.chart().setChartType(6));
     })
   },
   destroyed() {

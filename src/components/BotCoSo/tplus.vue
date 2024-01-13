@@ -208,7 +208,7 @@ export default {
                   }
                 },
                 inputs: {
-                  
+
                 },
                 precision: 2
               },
@@ -239,8 +239,8 @@ export default {
                 this._context = context
                 this._input = inputCallback
 
-                const atrPeriod = 34;
-                const factor = 3;
+                const atrPeriod = 34
+                const factor = 3
                 const low = PineJS.Std.low(this._context)
                 const high = PineJS.Std.high(this._context)
                 const close = PineJS.Std.close(this._context)
@@ -299,10 +299,10 @@ export default {
                   ? signalS.get(1)
                   : signalS.get(0)
                 if (color == 1 && signalS.get(1) != 1) {
-                  long = 1
+                  long = 'LONG \n' + close
                   signal = 1
                 } else if (color == 0 && signalS.get(1) != 0) {
-                  short = 1
+                  short = 'SHORT \n' + close
                   signal = 0
                 }
                 signalS.set(signal)
