@@ -296,6 +296,42 @@ export default {
         thisVue.freeBaseIndicators,
         tvWidget.activeChart()
       )
+      var runrot = setInterval(() => {
+        let managerroot = $("#tvWidgetContainer iframe").contents().find("#overlap-manager-root");
+        if (managerroot && managerroot.length > 0) {
+          clearInterval(runrot);
+          var headerchartTypes = $("#tvWidgetContainer iframe").contents().find("#header-toolbar-chart-styles .apply-common-tooltip.isOpened-merBkM5y");
+          if (headerchartTypes && headerchartTypes.length > 0) {
+            let htmlpnf = `<div data-value="pnf" class="item-jFqVJoPk withIcon-jFqVJoPk"><span class="icon-jFqVJoPk"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28" fill="currentColor"><path d="M14.5 16a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0-1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm0 7a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0-1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm3.293-15.5l4.707 4.707.707-.707L18.5 4.793z"></path><path d="M18.5 10.207L23.207 5.5l-.707-.707L17.793 9.5zm-.707 1.293l4.707 4.707.707-.707-4.707-4.707z"></path><path d="M18.5 16.207l4.707-4.707-.707-.707-4.707 4.707zM5.793 17.5l4.707 4.707.707-.707L6.5 16.793z"></path><path d="M6.5 22.207l4.707-4.707-.707-.707L5.793 21.5zM5.793 5.5l4.707 4.707.707-.707L6.5 4.793z"></path><path d="M6.5 10.207L11.207 5.5l-.707-.707L5.793 9.5zM5.793 11.5l4.707 4.707.707-.707L6.5 10.793z"></path><path d="M6.5 16.207l4.707-4.707-.707-.707L5.793 15.5z"></path></svg></span><span class="labelRow-jFqVJoPk"><span class="label-jFqVJoPk">ĐIểm &amp; Số liệu</span></span><span class="toolbox-jFqVJoPk showOnHover-jFqVJoPk"></span></div>`;
+            let itempnt = managerroot.find('div[data-name="popup-menu-container"] div[data-name="menu-inner"] div[data-value="pnf"]');
+            if (itempnt && itempnt.length > 0) {
+            } else {
+              managerroot.find('div[data-name="popup-menu-container"] div[data-name="menu-inner"]').append(htmlpnf);
+            }
+          managerroot.find('div[data-name="popup-menu-container"] div[data-name="menu-inner"] div[data-value="pnf"]').unbind("click").click(function() {
+                tvWidget.chart().setChartType(6);
+                managerroot.html("");
+            });
+          }
+          
+          managerroot.on('DOMSubtreeModified', function(){
+            var headerchartTypes = $("#tvWidgetContainer iframe").contents().find("#header-toolbar-chart-styles .apply-common-tooltip.isOpened-merBkM5y");
+            let htmlpnf = `<div data-value="pnf" class="item-jFqVJoPk withIcon-jFqVJoPk"><span class="icon-jFqVJoPk"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28" fill="currentColor"><path d="M14.5 16a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0-1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm0 7a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0-1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm3.293-15.5l4.707 4.707.707-.707L18.5 4.793z"></path><path d="M18.5 10.207L23.207 5.5l-.707-.707L17.793 9.5zm-.707 1.293l4.707 4.707.707-.707-4.707-4.707z"></path><path d="M18.5 16.207l4.707-4.707-.707-.707-4.707 4.707zM5.793 17.5l4.707 4.707.707-.707L6.5 16.793z"></path><path d="M6.5 22.207l4.707-4.707-.707-.707L5.793 21.5zM5.793 5.5l4.707 4.707.707-.707L6.5 4.793z"></path><path d="M6.5 10.207L11.207 5.5l-.707-.707L5.793 9.5zM5.793 11.5l4.707 4.707.707-.707L6.5 10.793z"></path><path d="M6.5 16.207l4.707-4.707-.707-.707L5.793 15.5z"></path></svg></span><span class="labelRow-jFqVJoPk"><span class="label-jFqVJoPk">ĐIểm &amp; Số liệu</span></span><span class="toolbox-jFqVJoPk showOnHover-jFqVJoPk"></span></div>`;
+            if (headerchartTypes && headerchartTypes.length > 0) {
+              let itempnt = managerroot.find('div[data-name="popup-menu-container"] div[data-name="menu-inner"] div[data-value="pnf"]');
+            if (itempnt && itempnt.length > 0) {
+            } else {
+              managerroot.find('div[data-name="popup-menu-container"] div[data-name="menu-inner"]').append(htmlpnf);
+            }
+            managerroot.find('div[data-name="popup-menu-container"] div[data-name="menu-inner"] div[data-value="pnf"]').unbind("click").click(function() {
+                tvWidget.chart().setChartType(6);
+                managerroot.html("");
+            });
+            }
+            
+          });
+        }
+      }, 1000);
     })
   },
   destroyed() {

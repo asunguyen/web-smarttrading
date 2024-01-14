@@ -71,6 +71,7 @@ function t(e,n){
  <link rel="stylesheet" type="text/css" href="/bundles/9975.b1837bfd75e0c14ccbc9.css">
  <link rel="stylesheet" type="text/css" href="/bundles/2567.7c6cbbac1e8d50908dc3.css">
  <link rel="stylesheet" type="text/css" href="/bundles/1375.c660edc9a04ff140e217.css">
+ <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     </head>
     <body class="chart-page unselectable on-widget">
     <div class="loading-indicator" id="loading-indicator">
