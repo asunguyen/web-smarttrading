@@ -372,6 +372,7 @@ export default {
         thisVue.trendDerivativeIndicators,
         tvWidget.activeChart()
       )
+      tvWidget.chart().setChartType(6);
       var runrot = setInterval(() => {
         let managerroot = $("#tvWidgetContainer iframe").contents().find("#overlap-manager-root");
         if (managerroot && managerroot.length > 0) {
