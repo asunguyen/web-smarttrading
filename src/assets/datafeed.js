@@ -389,7 +389,7 @@ export default {
 			if (bars && bars.length > 0) {
 				timeEnd = bars[0].time/1000;
 			} else {
-				if (resolution == "1" && timeEnd > 1103051358) {
+				if ((resolution == "1" || resolution == "3" || resolution == "5" || resolution == "10" || resolution == "15" || resolution == "30") && timeEnd > 1103051358) {
 					loadDataBarCustom(symbolInfo, urlParameters, timeEnd, firstDataRequest, onHistoryCallback, onErrorCallback);
 				}
 			}
