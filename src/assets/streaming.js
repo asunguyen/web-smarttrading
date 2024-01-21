@@ -63,7 +63,7 @@ socket.on("onData", (data) => {
                 high: Math.max(lastDailyBar.high, bar.high),
                 low: Math.min(lastDailyBar.low, bar.low),
                 close: newData.price,
-                volume: lastDailyBar.volume + newData.volume,
+                volume: newData.volume,
                 time: bar.time,
             };
         }

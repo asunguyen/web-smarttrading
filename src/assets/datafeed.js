@@ -340,7 +340,6 @@ export default {
 					for (let i = 0; i < dataBar.length; i++) {
 						let time = dataBar[i].time;
 						if (symbolInfo.type == "spot" && resol != 1) {
-							console.log("hjhjahjhjhjhj")
 							if (time >= from && time <= to) {
 								bars = [...bars, {
 									time: dataBar[i].time * 1000,

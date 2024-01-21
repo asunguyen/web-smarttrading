@@ -39,7 +39,7 @@ export default {
       type: String
     },
     clientId: {
-      default: 'chobot.vn',
+      default: 'smtchart.vn',
       type: String
     },
     userId: {
@@ -91,14 +91,13 @@ export default {
       studies_overrides: this.studiesOverrides,
       load_last_chart: true,
       favorites: {
-        indicators: ['Volume']
       },
       resolution: 1,
       widgetbar: {
-        details: true,
-        news: true,
-        watchlist: true,
-        datawindow: true,
+        // details: true,
+        // news: true,
+        // watchlist: true,
+        // datawindow: true,
         watchlist_settings: {
           default_symbols: [
             'HOSE:SSI'
@@ -108,11 +107,7 @@ export default {
       overrides: {
         'mainSeriesProperties.showCountdown': true
       },
-      disabled_features: [
-        'use_localstorage_for_settings',
-        'open_account_manager',
-        'dom_widget'
-      ],
+      disabled_features: [],
       enabled_features: [
         'study_templates',
         'pre_post_market_sessions',
@@ -132,6 +127,11 @@ export default {
     // eslint-disable-next-line new-cap
     // console.log("TradingView:: ", TradingView);
     // console.log("widget:: ", widget);
+
+    // var app = new chobot.PulbicTradingTerminal(widgetOptions);
+
+    // app.init();
+
     const tvWidget = new widget(widgetOptions)
     this.tvWidget = tvWidget
 

@@ -94,7 +94,6 @@ export default {
       studies_overrides: this.studiesOverrides,
       load_last_chart: true,
       favorites: {
-        indicators: ['Volume']
       },
       resolution: 1,
       widgetbar: {
@@ -104,16 +103,7 @@ export default {
         datawindow: true,
         watchlist_settings: {
           default_symbols: [
-            '###STOCKS',
-            'NASDAQ:AAPL',
-            'NASDAQ:MSFT',
-            'NYSE:IBM',
-            '###FOREX',
-            'FX:EURUSD',
-            'FX:GBPUSD',
-            '###CRYPTO',
-            'CRYPTO:BTCUSD',
-            'CRYPTO:ETHUSD'
+          'HOSE:SSI'
           ]
         }
       },

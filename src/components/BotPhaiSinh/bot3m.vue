@@ -93,7 +93,6 @@ export default {
       studies_overrides: this.studiesOverrides,
       load_last_chart: true,
       favorites: {
-        indicators: ['Volume']
       },
       resolution: 1,
       widgetbar: {
