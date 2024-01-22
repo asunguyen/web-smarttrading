@@ -114,20 +114,20 @@ async function loadDataBarCustom(symbolInfo, urlParameters, timeEnd, firstDataRe
 					if (symbolInfo.type == "spot" && time >= from && time <= to) {
 						bars = [...bars, {
 							time: dataBar[i].time * 1000,
-							low: dataBar[i].min,
-							high: dataBar[i].max,
-							open: dataBar[i].open,
-							close: dataBar[i].close,
-							volume: dataBar[i].volume,
+							low: parseFloat(dataBar[i].min),
+							high: parseFloat(dataBar[i].max),
+							open: parseFloat(dataBar[i].open),
+							close: parseFloat(dataBar[i].close),
+							volume: parseFloat(dataBar[i].volume),
 						}];
 					} else {
 						bars = [...bars, {
 							time: dataBar[i].time * 1000,
-							low: dataBar[i].min,
-							high: dataBar[i].max,
-							open: dataBar[i].open,
-							close: dataBar[i].close,
-							volume: dataBar[i].volume,
+							low: parseFloat(dataBar[i].min),
+							high: parseFloat(dataBar[i].max),
+							open: parseFloat(dataBar[i].open),
+							close: parseFloat(dataBar[i].close),
+							volume: parseFloat(dataBar[i].volume),
 						}];
 					}
 
@@ -343,21 +343,21 @@ export default {
 							if (time >= from && time <= to) {
 								bars = [...bars, {
 									time: dataBar[i].time * 1000,
-									low: dataBar[i].min,
-									high: dataBar[i].max,
-									open: dataBar[i].open,
-									close: dataBar[i].close,
-									volume: dataBar[i].volume,
+									low: parseFloat(dataBar[i].min),
+									high: parseFloat(dataBar[i].max),
+									open: parseFloat(dataBar[i].open),
+									close: parseFloat(dataBar[i].close),
+									volume: parseFloat(dataBar[i].volume),
 								}];
 							} 
 						} else {
 							bars = [...bars, {
 								time: dataBar[i].time * 1000,
-								low: dataBar[i].min,
-								high: dataBar[i].max,
-								open: dataBar[i].open,
-								close: dataBar[i].close,
-								volume: dataBar[i].volume,
+								low: parseFloat(dataBar[i].min),
+								high: parseFloat(dataBar[i].max),
+								open: parseFloat(dataBar[i].open),
+								close: parseFloat(dataBar[i].close),
+								volume: parseFloat(dataBar[i].volume),
 							}];
 						}
 					}
