@@ -98,18 +98,13 @@ export default {
         news: true,
         watchlist: true,
         datawindow: true,
-        watchlist_settings: {
-          default_symbols: [
-            'HOSE:SSI'
-          ]
-        }
       },
       overrides: {
         'mainSeriesProperties.showCountdown': true
       },
       header_widget_buttons_mode: 'fullsize',
-      disabled_features: [],
-      enabled_features: [],
+      disabled_features: ['dom_widget'],
+      enabled_features: ["header_layouttoggle", "right_toolbar", "trading_account_manager", "watchlist_sections", "show_last_price_and_change_only_in_series_legend"],
       custom_indicators_getter: function(PineJS) {
         return Promise.resolve([])
       }

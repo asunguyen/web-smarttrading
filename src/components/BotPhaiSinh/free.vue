@@ -106,30 +106,13 @@ export default {
         news: true,
         watchlist: true,
         datawindow: true,
-        watchlist_settings: {
-          default_symbols: [
-          'HOSE:SSI'
-          ]
-        }
       },
       overrides: {
         'mainSeriesProperties.showCountdown': true
       },
-      disabled_features: [
-        'use_localstorage_for_settings',
-        'open_account_manager',
-        'dom_widget'
-      ],
-      enabled_features: [
-        'study_templates',
-        'pre_post_market_sessions',
-        'show_symbol_logos',
-        'show_exchange_logos',
-        'seconds_resolution',
-        'secondary_series_extend_time_scale',
-        'show_percent_option_for_right_margin',
-        'display_data_mode'
-      ],
+      header_widget_buttons_mode: 'fullsize',
+      disabled_features: [],
+      enabled_features: ["header_layouttoggle", "right_toolbar", "trading_account_manager"],
       custom_indicators_getter: function(PineJS) {
         return Promise.resolve([
           {
