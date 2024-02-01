@@ -4,94 +4,91 @@
 
 <script>
 // require("../../assets/charting_library/charting_library.standalone.js")
-import { widget } from '../../assets/charting_library/'
+import { widget } from "../../assets/charting_library/";
 // D:\code\smtchart\web-smarttrading\src\assets\charting_library\trading-terminal.min.js
 // import { UDFCompatibleDatafeed } from '../../assets/datafeeds/udf/lib/udf-compatible-datafeed'
-import Datafeed from '@/assets/datafeed.js'
+import Datafeed from "@/assets/datafeed.js";
 function getLanguageFromURL() {
-  const regex = new RegExp('[\\?&]lang=([^&#]*)')
-  const results = regex.exec(window.location.search)
+  const regex = new RegExp("[\\?&]lang=([^&#]*)");
+  const results = regex.exec(window.location.search);
   return results === null
     ? null
-    : decodeURIComponent(results[1].replace(/\+/g, ' '))
+    : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 export default {
-  name: 'TVChartContainer',
+  name: "TVChartContainer",
   props: {
     symbol: {
-      default: 'SSI',
-      type: String
+      default: "SSI",
+      type: String,
     },
     interval: {
-      default: '1',
-      type: String
+      default: "1",
+      type: String,
     },
     libraryPath: {
-      default: '/charting_library/',
-      type: String
+      default: "/charting_library/",
+      type: String,
     },
     chartsStorageUrl: {
-      default: 'https://saveload.tradingview.com',
-      type: String
+      default: "https://saveload.tradingview.com",
+      type: String,
     },
     chartsStorageApiVersion: {
-      default: '1.1',
-      type: String
+      default: "1.1",
+      type: String,
     },
     clientId: {
-      default: 'smtchart.vn',
-      type: String
+      default: "smtchart.vn",
+      type: String,
     },
     userId: {
-      default: 'public',
-      type: String
+      default: "public",
+      type: String,
     },
     fullscreen: {
       default: false,
-      type: Boolean
+      type: Boolean,
     },
     autosize: {
       default: true,
-      type: Boolean
+      type: Boolean,
     },
     studiesOverrides: {
       default: () => {},
-      type: Object
-    }
+      type: Object,
+    },
   },
-  data: function() {
-    return {
-
-    }
+  data: function () {
+    return {};
   },
   tvWidget: null,
   mounted() {
-    const thisVue = this
-    const container = this.$refs.chartContainer
+    const thisVue = this;
+    const container = this.$refs.chartContainer;
     const widgetOptions = {
       symbol: this.symbol,
       datafeed: Datafeed,
-      locale: 'vi',
-      timezone: 'Asia/Ho_Chi_Minh',
+      locale: "vi",
+      timezone: "Asia/Ho_Chi_Minh",
       interval: this.interval,
       container: container,
-      container_id: 'tvWidgetContainer',
+      container_id: "tvWidgetContainer",
       library_path: this.libraryPath,
       logo: {
-        image: '@/assets/logo-st.png',
-        link: 'http://smtchart.vn/'
+        image: "@/assets/logo-st.png",
+        link: "http://smtchart.vn/",
       },
-      theme: 'dark',
+      theme: "dark",
       // charts_storage_url: this.chartsStorageUrl,
       charts_storage_api_version: this.chartsStorageApiVersion,
       client_id: this.clientId,
       user_id: this.userId,
-      fullscreen: this.fullscreen,
+      //fullscreen: this.fullscreen,
       autosize: this.autosize,
       studies_overrides: this.studiesOverrides,
       load_last_chart: true,
-      favorites: {
-      },
+      favorites: {},
       resolution: 1,
       widgetbar: {
         details: true,
@@ -100,16 +97,23 @@ export default {
         datawindow: true,
       },
       overrides: {
-        'mainSeriesProperties.showCountdown': true
+        "mainSeriesProperties.showCountdown": true,
+        "paneProperties.backgroundGradientStartColor": "#020024",
+        "paneProperties.backgroundGradientEndColor": "#4f485e",
       },
-      header_widget_buttons_mode: 'fullsize',
-      disabled_features: ['dom_widget'],
-      enabled_features: ["header_layouttoggle", "right_toolbar", "trading_account_manager", "watchlist_sections", "show_last_price_and_change_only_in_series_legend"],
-      custom_indicators_getter: function(PineJS) {
-        return Promise.resolve([])
-      }
+      disabled_features: ["dom_widget"],
+      enabled_features: [
+        "header_layouttoggle",
+        "right_toolbar",
+        "trading_account_manager",
+        "watchlist_sections",
+        "show_last_price_and_change_only_in_series_legend",
+      ],
+      custom_indicators_getter: function (PineJS) {
+        return Promise.resolve([]);
+      },
       // type: ""
-    }
+    };
 
     // eslint-disable-next-line new-cap
     // console.log("TradingView:: ", TradingView);
@@ -119,86 +123,119 @@ export default {
 
     // app.init();
 
-    const tvWidget = new widget(widgetOptions)
-    this.tvWidget = tvWidget
-
+    const tvWidget = new widget(widgetOptions);
+    this.tvWidget = tvWidget;
     tvWidget.onChartReady(() => {
-      tvWidget.subscribe('onAutoSaveNeeded', () => {
+      tvWidget.changeTheme("dark");
+      tvWidget.subscribe("onAutoSaveNeeded", () => {
         // console.log({
         //   indicators: thisVue.getCurrentChartUserIndicators(
         //     tvWidget.activeChart()
         //   ),
         // });
-      })
+      });
       // tvWidget.chart().setChartType(6)
       var runrot = setInterval(() => {
-        const managerroot = $('#tvWidgetContainer iframe').contents().find('#overlap-manager-root')
+        const managerroot = $("#tvWidgetContainer iframe")
+          .contents()
+          .find("#overlap-manager-root");
         if (managerroot && managerroot.length > 0) {
-          var headerchartTypes = $('#tvWidgetContainer iframe').contents().find('#header-toolbar-chart-styles .apply-common-tooltip.isOpened-merBkM5y')
+          var headerchartTypes = $("#tvWidgetContainer iframe")
+            .contents()
+            .find(
+              "#header-toolbar-chart-styles .apply-common-tooltip.isOpened-merBkM5y"
+            );
           if (headerchartTypes && headerchartTypes.length > 0) {
-            const htmlpnf = `<div data-value="pnf" class="item-jFqVJoPk withIcon-jFqVJoPk"><span class="icon-jFqVJoPk"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28" fill="currentColor"><path d="M14.5 16a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0-1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm0 7a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0-1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm3.293-15.5l4.707 4.707.707-.707L18.5 4.793z"></path><path d="M18.5 10.207L23.207 5.5l-.707-.707L17.793 9.5zm-.707 1.293l4.707 4.707.707-.707-4.707-4.707z"></path><path d="M18.5 16.207l4.707-4.707-.707-.707-4.707 4.707zM5.793 17.5l4.707 4.707.707-.707L6.5 16.793z"></path><path d="M6.5 22.207l4.707-4.707-.707-.707L5.793 21.5zM5.793 5.5l4.707 4.707.707-.707L6.5 4.793z"></path><path d="M6.5 10.207L11.207 5.5l-.707-.707L5.793 9.5zM5.793 11.5l4.707 4.707.707-.707L6.5 10.793z"></path><path d="M6.5 16.207l4.707-4.707-.707-.707L5.793 15.5z"></path></svg></span><span class="labelRow-jFqVJoPk"><span class="label-jFqVJoPk">ĐIểm &amp; Số liệu</span></span><span class="toolbox-jFqVJoPk showOnHover-jFqVJoPk"></span></div>`
-            const itempnt = managerroot.find('div[data-name="popup-menu-container"] div[data-name="menu-inner"] div[data-value="pnf"]')
+            const htmlpnf = `<div data-value="pnf" class="item-jFqVJoPk withIcon-jFqVJoPk"><span class="icon-jFqVJoPk"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28" fill="currentColor"><path d="M14.5 16a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0-1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm0 7a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0-1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm3.293-15.5l4.707 4.707.707-.707L18.5 4.793z"></path><path d="M18.5 10.207L23.207 5.5l-.707-.707L17.793 9.5zm-.707 1.293l4.707 4.707.707-.707-4.707-4.707z"></path><path d="M18.5 16.207l4.707-4.707-.707-.707-4.707 4.707zM5.793 17.5l4.707 4.707.707-.707L6.5 16.793z"></path><path d="M6.5 22.207l4.707-4.707-.707-.707L5.793 21.5zM5.793 5.5l4.707 4.707.707-.707L6.5 4.793z"></path><path d="M6.5 10.207L11.207 5.5l-.707-.707L5.793 9.5zM5.793 11.5l4.707 4.707.707-.707L6.5 10.793z"></path><path d="M6.5 16.207l4.707-4.707-.707-.707L5.793 15.5z"></path></svg></span><span class="labelRow-jFqVJoPk"><span class="label-jFqVJoPk">ĐIểm &amp; Số liệu</span></span><span class="toolbox-jFqVJoPk showOnHover-jFqVJoPk"></span></div>`;
+            const itempnt = managerroot.find(
+              'div[data-name="popup-menu-container"] div[data-name="menu-inner"] div[data-value="pnf"]'
+            );
             if (itempnt && itempnt.length > 0) {
             } else {
-              managerroot.find('div[data-name="popup-menu-container"] div[data-name="menu-inner"]').append(htmlpnf)
+              managerroot
+                .find(
+                  'div[data-name="popup-menu-container"] div[data-name="menu-inner"]'
+                )
+                .append(htmlpnf);
             }
-            managerroot.find('div[data-name="popup-menu-container"] div[data-name="menu-inner"] div[data-value="pnf"]').unbind('click').click(function() {
-              tvWidget.chart().setChartType(6)
-              managerroot.html('')
-            })
+            managerroot
+              .find(
+                'div[data-name="popup-menu-container"] div[data-name="menu-inner"] div[data-value="pnf"]'
+              )
+              .unbind("click")
+              .click(function () {
+                tvWidget.chart().setChartType(6);
+                managerroot.html("");
+              });
           }
         }
-      }, 1000)
+      }, 1000);
+      //tvWidget.changeTheme("light")
       // tvWidget.chart().setChartType(6)
-    })
+      tvWidget.changeTheme("dark");
+      tvWidget.headerReady().then(function () {
+        var button = tvWidget.createButton();
+        button.setAttribute("title", "Dark or Light");
+        button.setAttribute("class","cus-theme");
+        button.addEventListener("click", function () {
+          if (tvWidget.getTheme() == "dark") {
+            tvWidget.changeTheme("light");
+          } else {
+            tvWidget.changeTheme("dark");
+          }
+        });
+        button.textContent = "Change theme";
+      });
+    });
   },
-  destroyed() {
+  beforeDestroy() {
     if (this.tvWidget !== null) {
-      this.tvWidget.remove()
-      this.tvWidget = null
+      this.tvWidget.changeTheme("dark");
+      this.tvWidget.remove();
+      this.tvWidget = null;
     }
   },
   methods: {
     getCurrentChartUserIndicators(activeChart) {
       if (!activeChart) {
-        return []
+        return [];
       }
 
       return activeChart.getAllStudies().map((study) => ({
         name: study.name,
         visible: activeChart.getStudyById(study.id).isVisible(),
-        inputs: activeChart.getStudyById(study.id).getInputValues()
+        inputs: activeChart.getStudyById(study.id).getInputValues(),
         // get styles
-      }))
+      }));
     },
 
     restoreUserIndicators(indicators, activeChart) {
       if (!indicators || indicators.length === 0) {
-        return
+        return;
       }
 
       try {
         Promise.all(
-          indicators.map(async(indicator) => {
-            const visible = indicator.visible
-            console.log('indicator.inputs:: ', indicator.inputs)
+          indicators.map(async (indicator) => {
+            const visible = indicator.visible;
+            console.log("indicator.inputs:: ", indicator.inputs);
             const newStudyID = await activeChart.createStudy(
               indicator.name,
               false,
               false,
               indicator.inputs,
               { visible }
-            )
-            console.log('newStudyID:: ', newStudyID)
+            );
+            console.log("newStudyID:: ", newStudyID);
             // convert saved styles to overrides format ?
           })
-        )
+        );
       } catch (e) {
-        return
+        return;
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>

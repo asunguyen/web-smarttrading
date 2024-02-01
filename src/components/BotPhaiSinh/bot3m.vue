@@ -321,15 +321,30 @@ export default {
           }
         }
       }, 1000);
+      tvWidget.changeTheme("dark");
+      tvWidget.headerReady().then(function () {
+        var button = tvWidget.createButton();
+        button.setAttribute("title", "Dark or Light");
+        button.setAttribute("class","cus-theme");
+        button.addEventListener("click", function () {
+          if (tvWidget.getTheme() == "dark") {
+            tvWidget.changeTheme("light");
+          } else {
+            tvWidget.changeTheme("dark");
+          }
+        });
+        button.textContent = "Change theme";
+      });
     })
     // setTimeout(function() {
     //     thisVue.tvWidget.activeChart().setChartType(6);
     // }, 5000);
   },
-  destroyed() {
+  beforeDestroy() {
     if (this.tvWidget !== null) {
-      this.tvWidget.remove()
-      this.tvWidget = null
+      this.tvWidget.changeTheme("dark");
+      this.tvWidget.remove();
+      this.tvWidget = null;
     }
   },
   methods: {

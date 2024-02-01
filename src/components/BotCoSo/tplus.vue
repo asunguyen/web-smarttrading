@@ -323,12 +323,27 @@ export default {
           }
         }
       }, 1000);
+      tvWidget.changeTheme("dark");
+      tvWidget.headerReady().then(function () {
+        var button = tvWidget.createButton();
+        button.setAttribute("title", "Dark or Light");
+        button.setAttribute("class","cus-theme");
+        button.addEventListener("click", function () {
+          if (tvWidget.getTheme() == "dark") {
+            tvWidget.changeTheme("light");
+          } else {
+            tvWidget.changeTheme("dark");
+          }
+        });
+        button.textContent = "Change theme";
+      });
     })
   },
-  destroyed() {
+  beforeDestroy() {
     if (this.tvWidget !== null) {
-      this.tvWidget.remove()
-      this.tvWidget = null
+      this.tvWidget.changeTheme("dark");
+      this.tvWidget.remove();
+      this.tvWidget = null;
     }
   },
   methods: {

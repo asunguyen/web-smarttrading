@@ -158,8 +158,11 @@ async function loadDataBarCustom(symbolInfo, urlParameters, timeEnd, firstDataRe
 		}
 		if (bars && bars.length > 0) {
 			timeEnd = bars[0].time/1000;
-			if (timeEnd > 1103051358 && countHis < 10) {
-				loadDataBarCustom(symbolInfo, urlParametersC, timeEnd, firstDataRequest, onHistoryCallback, onErrorCallback);
+			if (timeEnd > 1103051358 && countHis > 0) {
+				setTimeout(function() {
+					loadDataBarCustom(symbolInfo, urlParametersC, timeEnd, firstDataRequest, onHistoryCallback, onErrorCallback);
+				},1000);
+				
 			}
 		}
 	} catch (err) {
@@ -389,6 +392,7 @@ export default {
 				timeEnd = bars[0].time/1000;
 			} else {
 				if ((resolution == "1" || resolution == "3" || resolution == "5" || resolution == "10" || resolution == "15" || resolution == "30") && timeEnd > 1103051358) {
+					countHis = 1;
 					loadDataBarCustom(symbolInfo, urlParameters, timeEnd, firstDataRequest, onHistoryCallback, onErrorCallback);
 				}
 			}
@@ -406,7 +410,7 @@ export default {
 		onResetCacheNeededCallback,
 	) => {
 		console.log('[subscribeBars]: Method call with subscriberUID:', subscriberUID);
-		countHis = 0;
+		countHis = 1;
 		subscribeOnStream(
 			symbolInfo,
 			resolution,
@@ -426,6 +430,7 @@ export default {
 	},
 
 	unsubscribeBars: (subscriberUID) => {
+		countHis = 0;
 		console.log('[unsubscribeBars]: Method call with subscriberUID:', subscriberUID);
 		unsubscribeFromStream(subscriberUID);
 		unsubscribeFromStreamps(subscriberUID)
