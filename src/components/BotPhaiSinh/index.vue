@@ -41,7 +41,7 @@ export default {
       type: String
     },
     userId: {
-      default: 'public_user_id',
+      default: localStorage.getItem("iduser")+"_ptindex",
       type: String
     },
     fullscreen: {
@@ -116,6 +116,9 @@ export default {
       autosize: this.autosize,
       studies_overrides: this.studiesOverrides,
       load_last_chart: true,
+      saveload_separate_drawings_storage: true,
+      chart_template_storage: true,
+      use_localstorage_for_settings: true,
       favorites: {
       },
       resolution: 1,
@@ -129,8 +132,14 @@ export default {
         'mainSeriesProperties.showCountdown': true
       },
       header_widget_buttons_mode: 'fullsize',
-      disabled_features: [],
-      enabled_features: ["header_layouttoggle", "right_toolbar", "trading_account_manager"],
+      disabled_features: ["dom_widget"],
+      enabled_features: [
+        "header_layouttoggle",
+        "right_toolbar",
+        "trading_account_manager",
+        "chart_template_storage",
+        "use_localstorage_for_settings",
+      ],
       custom_indicators_getter: function(PineJS) {
         return Promise.resolve([
           {

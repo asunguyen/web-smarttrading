@@ -29,7 +29,7 @@ export default {
       type: String,
     },
     chartsStorageUrl: {
-      default: "http://api.smtchart.vn/v1/data/bot-scrape",
+      default: "http://api.smtchart.vn/v1/data/ai",
       type: String,
     },
     chartsStorageApiVersion: {
@@ -41,7 +41,7 @@ export default {
       type: String,
     },
     userId: {
-      default: "public_user_id",
+      default: localStorage.getItem("iduser")+"_scrape",
       type: String,
     },
     fullscreen: {
@@ -66,12 +66,12 @@ export default {
         },
         {
           name: "STTrendPower",
-          visible: true
+          visible: true,
         },
         {
           name: "STTrendVolume",
-          visible: true
-        }
+          visible: true,
+        },
         // ZO TREND
       ],
     };
@@ -93,17 +93,17 @@ export default {
         link: "http://smtchart.vn/",
       },
       theme: "dark",
-      // charts_storage_url: this.chartsStorageUrl,
-      // charts_storage_api_version: this.chartsStorageApiVersion,
+      charts_storage_url: this.chartsStorageUrl,
+      charts_storage_api_version: this.chartsStorageApiVersion,
       client_id: this.clientId,
       user_id: this.userId,
       fullscreen: this.fullscreen,
       autosize: this.autosize,
       studies_overrides: this.studiesOverrides,
       load_last_chart: true,
-      favorites: {
-        indicators: ["Volume"],
-      },
+      saveload_separate_drawings_storage: true,
+      chart_template_storage: true,
+      use_localstorage_for_settings: true,
       resolution: 1,
       widgetbar: {
         details: true,
@@ -112,11 +112,17 @@ export default {
         datawindow: true,
       },
       overrides: {
-        'mainSeriesProperties.showCountdown': true
+        "mainSeriesProperties.showCountdown": true,
       },
-      header_widget_buttons_mode: 'fullsize',
-      disabled_features: [],
-      enabled_features: ["header_layouttoggle", "right_toolbar", "trading_account_manager"],
+      header_widget_buttons_mode: "fullsize",
+      disabled_features: ["dom_widget"],
+      enabled_features: [
+        "header_layouttoggle",
+        "right_toolbar",
+        "trading_account_manager",
+        "chart_template_storage",
+        "use_localstorage_for_settings",
+      ],
       custom_indicators_getter: function (PineJS) {
         return Promise.resolve([
           // st bot
@@ -590,9 +596,7 @@ export default {
                 },
               },
 
-              inputs: [
-                
-              ],
+              inputs: [],
             },
 
             constructor: function () {
@@ -1182,7 +1186,7 @@ export default {
                   // điều kiện mua/bán
                   var side = 0;
 
-                  var stgMode = 1;
+                  var stgMode = 3;
 
                   // load signal judgement from BAlgo
                   // if (BAlgo.stBotClientSettings) {
@@ -1319,141 +1323,144 @@ export default {
             },
           },
           // power
-          { // SmartTrader Trend Power
-    name: "STTrendPower",
-    metainfo: {
-        _metainfoVersion: 51,
-        id: "STTrendPower@tv-basicstudies-1",
-        description: "STTrendPower",
-        shortDescription: "ST Power",
-        isCustomIndicator: 1,
-        format: {
-            type: "price",
-            precision: 4
-        },
-        is_hidden_study: 1,
-        is_price_study: 0,
-        linkedToSeries: 0,
+          {
+            // SmartTrader Trend Power
+            name: "STTrendPower",
+            metainfo: {
+              _metainfoVersion: 51,
+              id: "STTrendPower@tv-basicstudies-1",
+              description: "STTrendPower",
+              shortDescription: "ST Power",
+              isCustomIndicator: 1,
+              format: {
+                type: "price",
+                precision: 4,
+              },
+              is_hidden_study: 1,
+              is_price_study: 0,
+              linkedToSeries: 0,
 
-        isTVScript: !1,
-        isTVScriptStub: !1,
-        transparency: 65,
+              isTVScript: !1,
+              isTVScriptStub: !1,
+              transparency: 65,
 
-        plots: [{
-            id: "vol",
-            type: "line"
-        }, {
-            id: "volumePalette",
-            palette: "volumePalette",
-            target: "vol",
-            type: "colorer"
-        }, {
-            id: "vol_ma",
-            type: "line"
-        }],
+              plots: [
+                {
+                  id: "vol",
+                  type: "line",
+                },
+                {
+                  id: "volumePalette",
+                  palette: "volumePalette",
+                  target: "vol",
+                  type: "colorer",
+                },
+                {
+                  id: "vol_ma",
+                  type: "line",
+                },
+              ],
 
-        defaults: {
-            styles: {
-                vol: {
+              defaults: {
+                styles: {
+                  vol: {
                     plottype: 5,
                     linestyle: 0,
                     linewidth: 1,
                     trackPrice: !1,
                     transparency: 10,
                     visible: 1,
-                    color: "#000080"
-                },
-                vol_ma: {
+                    color: "#000080",
+                  },
+                  vol_ma: {
                     plottype: 0,
                     linestyle: 0,
                     linewidth: 1,
                     trackPrice: !1,
                     transparency: 10,
                     visible: 0,
-                    color: "#FD0000"
-                }
-            },
-            precision: 0,
-            palettes: {
-                volumePalette: {
+                    color: "#FD0000",
+                  },
+                },
+                precision: 0,
+                palettes: {
+                  volumePalette: {
                     colors: {
-                        0: {
-                            color: "#00FF00",
-                            width: 1,
-                            style: 0
-                        },
-                        1: {
-                            color: "#1e90ff",
-                            width: 1,
-                            style: 0
-                        },
-                        2: {
-                            color: "#ff0000",
-                            width: 1,
-                            style: 0
-                        },
-                        3: {
-                            color: "#e39ff6",
-                            width: 1,
-                            style: 0
-                        },
-                        4: {
-                            color: "#cfcfcf",
-                            width: 1,
-                            style: 0
-                        }
-                    }
-                }
-            },
-            inputs: {
-                iFast: 14,
-                iSlow: 26,
-                iMA: 52
-            }
-        },
-        styles: {
-            vol: {
-                title: "Trend Power",
-                histogramBase: 0,
-                isHidden: 1,
-            },
-            vol_ma: {
-                title: "Fast",
-                histogramBase: 0,
-                isHidden: 1,
-            }
-        },
-        palettes: {
-            volumePalette: {
-                colors: {
+                      0: {
+                        color: "#00FF00",
+                        width: 1,
+                        style: 0,
+                      },
+                      1: {
+                        color: "#1e90ff",
+                        width: 1,
+                        style: 0,
+                      },
+                      2: {
+                        color: "#ff0000",
+                        width: 1,
+                        style: 0,
+                      },
+                      3: {
+                        color: "#e39ff6",
+                        width: 1,
+                        style: 0,
+                      },
+                      4: {
+                        color: "#cfcfcf",
+                        width: 1,
+                        style: 0,
+                      },
+                    },
+                  },
+                },
+                inputs: {
+                  iFast: 14,
+                  iSlow: 26,
+                  iMA: 52,
+                },
+              },
+              styles: {
+                vol: {
+                  title: "Trend Power",
+                  histogramBase: 0,
+                  isHidden: 1,
+                },
+                vol_ma: {
+                  title: "Fast",
+                  histogramBase: 0,
+                  isHidden: 1,
+                },
+              },
+              palettes: {
+                volumePalette: {
+                  colors: {
                     0: {
-                        name: "Strong Long"
+                      name: "Strong Long",
                     },
                     1: {
-                        name: "Weak Long"
+                      name: "Weak Long",
                     },
                     2: {
-                        name: "Strong Short"
+                      name: "Strong Short",
                     },
                     3: {
-                        name: "Weak Short"
+                      name: "Weak Short",
                     },
                     4: {
-                        name: "Sideway"
-                    }
-                }
-            }
-        },
-        
-        inputs: [
-            
-        ],
-    },
+                      name: "Sideway",
+                    },
+                  },
+                },
+              },
 
-    constructor: function() {
-        this.init = function(context, input) {
-          this.stPower = function() {
-            var std = PineJS.Std;
+              inputs: [],
+            },
+
+            constructor: function () {
+              this.init = function (context, input) {
+                this.stPower = function () {
+                  var std = PineJS.Std;
                   var ctx = this._context;
                   var hl2, aHL2;
                   var rsiFast, fast, Fast, rsiSlow, slow, Slow;
@@ -1529,51 +1536,53 @@ export default {
                     console.log(e);
                   }
                   return result;
-          }
-        }
+                };
+              };
 
-        this.main = function(e, t) {
-            this._context = e; this._input = t;
-            var result = [];
+              this.main = function (e, t) {
+                this._context = e;
+                this._input = t;
+                var result = [];
 
-            try {
-                var ctx = this._context;
-                var time = ctx.symbol.time;
-                
-                result =this.stPower(this._context, this._input);
-                
-                return result;
-            } catch (e) {
-                console.log(e);
-                return result;
-            }
-        }
-    }
-},
-//volume
-{ // SmartTrader Trend Volume
-    name: "STTrendVolume",
-    metainfo: {
-        _metainfoVersion: 51,
-        id: "STTrendVolume@tv-basicstudies-1",
-        description: "STTrendVolume",
-        shortDescription: "ST Volume",
-        isCustomIndicator: 1,
-        format: {
-            type: "price",
-            precision: 4
-        },
-        is_hidden_study: 1,
-        is_price_study: 0,
-        linkedToSeries: 0,
+                try {
+                  var ctx = this._context;
+                  var time = ctx.symbol.time;
 
-        isTVScript: !1,
-        isTVScriptStub: !1,
-        transparency: 65,
+                  result = this.stPower(this._context, this._input);
 
-        defaults: {
-            styles: {
-                vol: {
+                  return result;
+                } catch (e) {
+                  console.log(e);
+                  return result;
+                }
+              };
+            },
+          },
+          //volume
+          {
+            // SmartTrader Trend Volume
+            name: "STTrendVolume",
+            metainfo: {
+              _metainfoVersion: 51,
+              id: "STTrendVolume@tv-basicstudies-1",
+              description: "STTrendVolume",
+              shortDescription: "ST Volume",
+              isCustomIndicator: 1,
+              format: {
+                type: "price",
+                precision: 4,
+              },
+              is_hidden_study: 1,
+              is_price_study: 0,
+              linkedToSeries: 0,
+
+              isTVScript: !1,
+              isTVScriptStub: !1,
+              transparency: 65,
+
+              defaults: {
+                styles: {
+                  vol: {
                     plottype: 5,
                     linestyle: 0,
                     linewidth: 1,
@@ -1581,8 +1590,8 @@ export default {
                     transparency: 10,
                     visible: 1,
                     color: "#000080",
-                },
-                vol_ma: {
+                  },
+                  vol_ma: {
                     plottype: 0,
                     linestyle: 0,
                     linewidth: 1,
@@ -1590,122 +1599,127 @@ export default {
                     transparency: 10,
                     visible: 0,
                     color: "#FD0000",
-                }
-            },
-            precision: 0,
-            palettes: {
-                volumePalette: {
+                  },
+                },
+                precision: 0,
+                palettes: {
+                  volumePalette: {
                     colors: {
-                        0: {
-                            color: "#00FF00",
-                            width: 1,
-                            style: 0
-                        },
-                        1: {
-                            color: "#1e90ff",
-                            width: 1,
-                            style: 0
-                        },
-                        2: {
-                            color: "#ff0000",
-                            width: 1,
-                            style: 0
-                        },
-                        3: {
-                            color: "#e39ff6",
-                            width: 1,
-                            style: 0
-                        },
-                        4: {
-                            color: "#cfcfcf",
-                            width: 1,
-                            style: 0
-                        }
-                    }
-                }
-            },
-            inputs: {
-                iFast: 14,
-                iSlow: 26,
-                iMA: 52
-            }
-        },
-        plots: [{
-            id: "vol",
-            type: "line"
-        }, {
-            id: "volumePalette",
-            palette: "volumePalette",
-            target: "vol",
-            type: "colorer"
-        }, {
-            id: "vol_ma",
-            type: "line"
-        }],
-        styles: {
-            vol: {
-                title: "Trend Volume",
-                histogramBase: 0,
-                isHidden : 1,
-            },
-            vol_ma: {
-                title: "Fast",
-                histogramBase: 0,
-                isHidden : 1,
-            }
-        },
-        palettes: {
-            volumePalette: {
-                colors: {
+                      0: {
+                        color: "#00FF00",
+                        width: 1,
+                        style: 0,
+                      },
+                      1: {
+                        color: "#1e90ff",
+                        width: 1,
+                        style: 0,
+                      },
+                      2: {
+                        color: "#ff0000",
+                        width: 1,
+                        style: 0,
+                      },
+                      3: {
+                        color: "#e39ff6",
+                        width: 1,
+                        style: 0,
+                      },
+                      4: {
+                        color: "#cfcfcf",
+                        width: 1,
+                        style: 0,
+                      },
+                    },
+                  },
+                },
+                inputs: {
+                  iFast: 14,
+                  iSlow: 26,
+                  iMA: 52,
+                },
+              },
+              plots: [
+                {
+                  id: "vol",
+                  type: "line",
+                },
+                {
+                  id: "volumePalette",
+                  palette: "volumePalette",
+                  target: "vol",
+                  type: "colorer",
+                },
+                {
+                  id: "vol_ma",
+                  type: "line",
+                },
+              ],
+              styles: {
+                vol: {
+                  title: "Trend Volume",
+                  histogramBase: 0,
+                  isHidden: 1,
+                },
+                vol_ma: {
+                  title: "Fast",
+                  histogramBase: 0,
+                  isHidden: 1,
+                },
+              },
+              palettes: {
+                volumePalette: {
+                  colors: {
                     0: {
-                        name: "Strong Long"
+                      name: "Strong Long",
                     },
                     1: {
-                        name: "Weak Long"
+                      name: "Weak Long",
                     },
                     2: {
-                        name: "Strong Short"
+                      name: "Strong Short",
                     },
                     3: {
-                        name: "Weak Short"
+                      name: "Weak Short",
                     },
                     4: {
-                        name: "Sideway"
-                    }
-                }
-            }
-        },
+                      name: "Sideway",
+                    },
+                  },
+                },
+              },
 
-        inputs: [
-            {
-                id: "iFast",
-                name: "Fast",
-                defval: 14,
-                type: "integer",
-                min: 1,
-                max: 200
-            }, {
-                id: "iSlow",
-                name: "Slow",
-                defval: 26,
-                type: "integer",
-                min: 1,
-                max: 200
-            }, {
-                id: "iMA",
-                name: "MA",
-                defval: 52,
-                type: "integer",
-                min: 1,
-                max: 200
-            }
-        ],
-    },
-    constructor: function() {
-    
-        this.init = function (context, input) {
-          this.stVolume = function() {
-            var std = PineJS.Std;
+              inputs: [
+                {
+                  id: "iFast",
+                  name: "Fast",
+                  defval: 14,
+                  type: "integer",
+                  min: 1,
+                  max: 200,
+                },
+                {
+                  id: "iSlow",
+                  name: "Slow",
+                  defval: 26,
+                  type: "integer",
+                  min: 1,
+                  max: 200,
+                },
+                {
+                  id: "iMA",
+                  name: "MA",
+                  defval: 52,
+                  type: "integer",
+                  min: 1,
+                  max: 200,
+                },
+              ],
+            },
+            constructor: function () {
+              this.init = function (context, input) {
+                this.stVolume = function () {
+                  var std = PineJS.Std;
                   var ctx = this._context;
                   var ac, aAC;
                   var rsiFast, fast, Fast, rsiSlow, slow, Slow;
@@ -1792,23 +1806,24 @@ export default {
                   }
 
                   return result;
-          }
-        }
+                };
+              };
 
-        this.main = function(e, t) {
-            this._context = e; this._input = t;
-            var result = [];
+              this.main = function (e, t) {
+                this._context = e;
+                this._input = t;
+                var result = [];
 
-            try {
-                result = this.stVolume();
-                return result;
-            } catch (e) {
-                console.log(e);
-                return result;
-            }
-        }
-    }
-}
+                try {
+                  result = this.stVolume();
+                  return result;
+                } catch (e) {
+                  console.log(e);
+                  return result;
+                }
+              };
+            },
+          },
         ]);
       },
     };
@@ -1818,32 +1833,49 @@ export default {
     this.tvWidget = tvWidget;
 
     tvWidget.onChartReady(() => {
-      tvWidget.subscribe("onAutoSaveNeeded", () => {
-        console.log({
-          indicators: thisVue.getCurrentChartUserIndicators(
-            tvWidget.activeChart()
-          ),
-        });
-      });
-      thisVue.restoreUserIndicators(
-        thisVue.scrapeDerivativeIndicators,
+      let listindi = thisVue.getCurrentChartUserIndicators(
         tvWidget.activeChart()
       );
+      if (!listindi || (listindi.length == 1 && listindi[0].name == "Volume") ) {
+        thisVue.restoreUserIndicators(
+          thisVue.scrapeDerivativeIndicators,
+          tvWidget.activeChart()
+        );
+      }
+      tvWidget.subscribe("onAutoSaveNeeded", () => {});
+
       var runrot = setInterval(() => {
-        let managerroot = $("#tvWidgetContainer iframe").contents().find("#overlap-manager-root");
+        let managerroot = $("#tvWidgetContainer iframe")
+          .contents()
+          .find("#overlap-manager-root");
         if (managerroot && managerroot.length > 0) {
-          var headerchartTypes = $("#tvWidgetContainer iframe").contents().find("#header-toolbar-chart-styles .apply-common-tooltip.isOpened-merBkM5y");
+          var headerchartTypes = $("#tvWidgetContainer iframe")
+            .contents()
+            .find(
+              "#header-toolbar-chart-styles .apply-common-tooltip.isOpened-merBkM5y"
+            );
           if (headerchartTypes && headerchartTypes.length > 0) {
             let htmlpnf = `<div data-value="pnf" class="item-jFqVJoPk withIcon-jFqVJoPk"><span class="icon-jFqVJoPk"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28" fill="currentColor"><path d="M14.5 16a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0-1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm0 7a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0-1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm3.293-15.5l4.707 4.707.707-.707L18.5 4.793z"></path><path d="M18.5 10.207L23.207 5.5l-.707-.707L17.793 9.5zm-.707 1.293l4.707 4.707.707-.707-4.707-4.707z"></path><path d="M18.5 16.207l4.707-4.707-.707-.707-4.707 4.707zM5.793 17.5l4.707 4.707.707-.707L6.5 16.793z"></path><path d="M6.5 22.207l4.707-4.707-.707-.707L5.793 21.5zM5.793 5.5l4.707 4.707.707-.707L6.5 4.793z"></path><path d="M6.5 10.207L11.207 5.5l-.707-.707L5.793 9.5zM5.793 11.5l4.707 4.707.707-.707L6.5 10.793z"></path><path d="M6.5 16.207l4.707-4.707-.707-.707L5.793 15.5z"></path></svg></span><span class="labelRow-jFqVJoPk"><span class="label-jFqVJoPk">ĐIểm &amp; Số liệu</span></span><span class="toolbox-jFqVJoPk showOnHover-jFqVJoPk"></span></div>`;
-            let itempnt = managerroot.find('div[data-name="popup-menu-container"] div[data-name="menu-inner"] div[data-value="pnf"]');
+            let itempnt = managerroot.find(
+              'div[data-name="popup-menu-container"] div[data-name="menu-inner"] div[data-value="pnf"]'
+            );
             if (itempnt && itempnt.length > 0) {
             } else {
-              managerroot.find('div[data-name="popup-menu-container"] div[data-name="menu-inner"]').append(htmlpnf);
+              managerroot
+                .find(
+                  'div[data-name="popup-menu-container"] div[data-name="menu-inner"]'
+                )
+                .append(htmlpnf);
             }
-            managerroot.find('div[data-name="popup-menu-container"] div[data-name="menu-inner"] div[data-value="pnf"]').unbind("click").click(function() {
-              tvWidget.chart().setChartType(6);
-              managerroot.html("");
-            });
+            managerroot
+              .find(
+                'div[data-name="popup-menu-container"] div[data-name="menu-inner"] div[data-value="pnf"]'
+              )
+              .unbind("click")
+              .click(function () {
+                tvWidget.chart().setChartType(6);
+                managerroot.html("");
+              });
           }
         }
       }, 1000);
@@ -1851,7 +1883,7 @@ export default {
       tvWidget.headerReady().then(function () {
         var button = tvWidget.createButton();
         button.setAttribute("title", "Dark or Light");
-        button.setAttribute("class","cus-theme");
+        button.setAttribute("class", "cus-theme");
         button.addEventListener("click", function () {
           if (tvWidget.getTheme() == "dark") {
             tvWidget.changeTheme("light");

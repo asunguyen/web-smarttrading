@@ -18,20 +18,20 @@ function getLanguageFromURL() {
 export default {
   name: "TVChartContainer",
   props: {
-    symbol: {
-      default: "SSI",
-      type: String,
-    },
-    interval: {
-      default: "1",
-      type: String,
-    },
+    // symbol: {
+    //   default: "SSI",
+    //   type: String,
+    // },
+    // interval: {
+    //   default: "1",
+    //   type: String,
+    // },
     libraryPath: {
       default: "/charting_library/",
       type: String,
     },
     chartsStorageUrl: {
-      default: "https://saveload.tradingview.com",
+      default: "http://api.smtchart.vn/v1/data/dashboard",
       type: String,
     },
     chartsStorageApiVersion: {
@@ -43,7 +43,7 @@ export default {
       type: String,
     },
     userId: {
-      default: "public",
+      default: localStorage.getItem("iduser")+"_dashboard",
       type: String,
     },
     fullscreen: {
@@ -80,7 +80,7 @@ export default {
         link: "http://smtchart.vn/",
       },
       theme: "dark",
-      // charts_storage_url: this.chartsStorageUrl,
+      charts_storage_url: this.chartsStorageUrl,
       charts_storage_api_version: this.chartsStorageApiVersion,
       client_id: this.clientId,
       user_id: this.userId,
@@ -90,6 +90,9 @@ export default {
       load_last_chart: true,
       favorites: {},
       resolution: 1,
+      saveload_separate_drawings_storage: true,
+      chart_template_storage: true,
+      use_localstorage_for_settings: true,
       widgetbar: {
         details: true,
         news: true,
@@ -108,6 +111,8 @@ export default {
         "trading_account_manager",
         "watchlist_sections",
         "show_last_price_and_change_only_in_series_legend",
+        "chart_template_storage",
+        "use_localstorage_for_settings"
       ],
       custom_indicators_getter: function (PineJS) {
         return Promise.resolve([]);
@@ -126,13 +131,18 @@ export default {
     const tvWidget = new widget(widgetOptions);
     this.tvWidget = tvWidget;
     tvWidget.onChartReady(() => {
-      tvWidget.changeTheme("dark");
-      tvWidget.subscribe("onAutoSaveNeeded", () => {
-        // console.log({
-        //   indicators: thisVue.getCurrentChartUserIndicators(
-        //     tvWidget.activeChart()
-        //   ),
-        // });
+      let listindi = thisVue.getCurrentChartUserIndicators(
+        tvWidget.activeChart()
+      );
+      if (listindi.length > 0) {
+      } else {
+        thisVue.restoreUserIndicators(
+          thisVue.scrapeDerivativeIndicators,
+          tvWidget.activeChart()
+        );
+      }
+      tvWidget.subscribe("onAutoSaveNeeded", (data) => {
+        console.log("data save:: ", data);
       });
       // tvWidget.chart().setChartType(6)
       var runrot = setInterval(() => {
