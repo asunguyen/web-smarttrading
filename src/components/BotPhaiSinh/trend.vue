@@ -270,6 +270,11 @@ export default {
                 var currMacdS = this._context.new_var(currMacd);
                 var preMacd = isNaN(currMacdS.get(1)) ? 0 : currMacdS.get(1);
 
+
+                const macd120260 = this.macd(closeS, 260, 120)
+                const macd90180 = this.macd(closeS, 180, 90);
+                const macdHistogram = macd120260 - macd90180;
+
                 const hl2 = (high + low) / 2;
                 const atr = PineJS.Std.atr(atrPeriod, this._context);
                 const atr1 = this._context.new_var(atr).get(1);
@@ -318,9 +323,7 @@ export default {
                 else if (direction > 0) color = 0;
                 var long = NaN;
                 var short = NaN;
-                if (
-                  preMacd < 0 &&
-                  currMacd >= 0 &&
+                if (macd120260 > 0 && macd90180 > 0 && macdHistogram > 0 &&
                   color == 1 &&
                   close > sma &&
                   signal != 1
@@ -328,9 +331,7 @@ export default {
                   long = "LONG \n" + close;
                   signal = 1;
                 }
-                if (
-                  preMacd > 0 &&
-                  currMacd <= 0 &&
+                if (macd120260 < 0 && macd90180 < 0 && macdHistogram < 0 &&
                   color == 0 &&
                   close < sma &&
                   signal != 0

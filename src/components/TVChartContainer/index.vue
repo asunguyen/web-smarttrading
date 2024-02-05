@@ -18,14 +18,14 @@ function getLanguageFromURL() {
 export default {
   name: "TVChartContainer",
   props: {
-    // symbol: {
-    //   default: "SSI",
-    //   type: String,
-    // },
-    // interval: {
-    //   default: "1",
-    //   type: String,
-    // },
+    symbol: {
+      default: "SSI",
+      type: String,
+    },
+    interval: {
+      default: "1",
+      type: String,
+    },
     libraryPath: {
       default: "/charting_library/",
       type: String,
