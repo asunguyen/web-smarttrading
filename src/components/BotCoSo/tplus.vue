@@ -299,15 +299,12 @@ export default {
     this.tvWidget = tvWidget;
 
     tvWidget.onChartReady(() => {
-      let listindi = thisVue.getCurrentChartUserIndicators(
+      tvWidget.activeChart().removeAllStudies();
+
+      thisVue.restoreUserIndicators(
+        thisVue.tBaseIndicators,
         tvWidget.activeChart()
       );
-      if (!listindi || (listindi.length == 1 && listindi[0].name == "Volume") ) {
-        thisVue.restoreUserIndicators(
-          thisVue.tBaseIndicators,
-          tvWidget.activeChart()
-        );
-      }
       tvWidget.subscribe("onAutoSaveNeeded", (data) => {
         console.log("data save:: ", data);
       });

@@ -1833,15 +1833,11 @@ export default {
     this.tvWidget = tvWidget;
 
     tvWidget.onChartReady(() => {
-      let listindi = thisVue.getCurrentChartUserIndicators(
-        tvWidget.activeChart()
-      );
-      if (!listindi || (listindi.length == 1 && listindi[0].name == "Volume") ) {
-        thisVue.restoreUserIndicators(
+      tvWidget.activeChart().removeAllStudies();
+      thisVue.restoreUserIndicators(
           thisVue.scrapeDerivativeIndicators,
           tvWidget.activeChart()
         );
-      }
       tvWidget.subscribe("onAutoSaveNeeded", () => {});
 
       var runrot = setInterval(() => {
@@ -1914,6 +1910,16 @@ export default {
         inputs: activeChart.getStudyById(study.id).getInputValues(),
         // get styles
       }));
+    },
+    removeAllIndicators(activeChart) {
+      if (!activeChart) {
+        return [];
+      }
+
+      return activeChart.getAllStudies().map((study) => {
+        activeChart.getStudyById(study.id).remove();
+        // get styles
+      });
     },
 
     restoreUserIndicators(indicators, activeChart) {

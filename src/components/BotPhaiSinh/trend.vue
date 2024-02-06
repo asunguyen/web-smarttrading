@@ -270,8 +270,7 @@ export default {
                 var currMacdS = this._context.new_var(currMacd);
                 var preMacd = isNaN(currMacdS.get(1)) ? 0 : currMacdS.get(1);
 
-
-                const macd120260 = this.macd(closeS, 260, 120)
+                const macd120260 = this.macd(closeS, 260, 120);
                 const macd90180 = this.macd(closeS, 180, 90);
                 const macdHistogram = macd120260 - macd90180;
 
@@ -323,7 +322,10 @@ export default {
                 else if (direction > 0) color = 0;
                 var long = NaN;
                 var short = NaN;
-                if (macd120260 > 0 && macd90180 > 0 && macdHistogram > 0 &&
+                if (
+                  macd120260 > 0 &&
+                  macd90180 > 0 &&
+                  macdHistogram > 0 &&
                   color == 1 &&
                   close > sma &&
                   signal != 1
@@ -331,7 +333,10 @@ export default {
                   long = "LONG \n" + close;
                   signal = 1;
                 }
-                if (macd120260 < 0 && macd90180 < 0 && macdHistogram < 0 &&
+                if (
+                  macd120260 < 0 &&
+                  macd90180 < 0 &&
+                  macdHistogram < 0 &&
                   color == 0 &&
                   close < sma &&
                   signal != 0
@@ -353,15 +358,11 @@ export default {
     this.tvWidget = tvWidget;
 
     tvWidget.onChartReady(() => {
-      let listindi = thisVue.getCurrentChartUserIndicators(
+      tvWidget.activeChart().removeAllStudies();
+      thisVue.restoreUserIndicators(
+        thisVue.trendDerivativeIndicators,
         tvWidget.activeChart()
       );
-      if (!listindi || (listindi.length == 1 && listindi[0].name == "Volume") ) {
-        thisVue.restoreUserIndicators(
-          thisVue.trendDerivativeIndicators,
-          tvWidget.activeChart()
-        );
-      }
       tvWidget.subscribe("onAutoSaveNeeded", (data) => {
         console.log("data save:: ", data);
       });

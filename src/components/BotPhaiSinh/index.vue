@@ -2300,6 +2300,7 @@ export default {
     this.tvWidget = tvWidget
 
     tvWidget.onChartReady(() => {
+      tvWidget.activeChart().removeAllStudies();
       tvWidget.subscribe('onAutoSaveNeeded', () => {
         console.log({
           indicators: thisVue.getCurrentChartUserIndicators(

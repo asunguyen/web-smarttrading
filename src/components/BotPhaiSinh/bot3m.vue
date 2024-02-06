@@ -211,6 +211,7 @@ export default {
             },
             constructor: function () {
               this.init = function (context, inputCallback) {
+                context.setMinimumAdditionalDepth(3000);
                 this._context = context;
                 this._input = inputCallback;
               };
@@ -298,15 +299,12 @@ export default {
     const tvWidget = new widget(widgetOptions);
     this.tvWidget = tvWidget;
     tvWidget.onChartReady(() => {
-      let listindi = thisVue.getCurrentChartUserIndicators(
+      tvWidget.activeChart().removeAllStudies();
+
+      thisVue.restoreUserIndicators(
+        thisVue.trendBaseIndicators,
         tvWidget.activeChart()
       );
-      if (!listindi || (listindi.length == 1 && listindi[0].name == "Volume") ) {
-        thisVue.restoreUserIndicators(
-          thisVue.trendBaseIndicators,
-          tvWidget.activeChart()
-        );
-      }
       tvWidget.subscribe("onAutoSaveNeeded", (data) => {
         console.log("data save:: ", data);
       });
