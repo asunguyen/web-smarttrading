@@ -31,7 +31,7 @@ export default {
       type: String,
     },
     chartsStorageUrl: {
-      default: "http://api.smtchart.vn/v1/data/dashboard",
+      default: "https://api.smtchart.vn/v1/data/dashboard",
       type: String,
     },
     chartsStorageApiVersion: {

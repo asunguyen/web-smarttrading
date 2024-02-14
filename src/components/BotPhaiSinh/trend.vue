@@ -30,7 +30,7 @@ export default {
       type: String,
     },
     chartsStorageUrl: {
-      default: "http://api.smtchart.vn/v1/data/pttrend",
+      default: "https://api.smtchart.vn/v1/data/pttrend",
       type: String,
     },
     chartsStorageApiVersion: {

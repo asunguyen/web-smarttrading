@@ -29,7 +29,7 @@ export default {
       type: String,
     },
     chartsStorageUrl: {
-      default: "http://api.smtchart.vn/v1/data/ai",
+      default: "https://api.smtchart.vn/v1/data/ai",
       type: String,
     },
     chartsStorageApiVersion: {
@@ -41,7 +41,7 @@ export default {
       type: String,
     },
     userId: {
-      default: localStorage.getItem("iduser")+"_scrape",
+      default: localStorage.getItem("iduser") + "_scrape",
       type: String,
     },
     fullscreen: {
@@ -136,12 +136,13 @@ export default {
               shortDescription: "ST Bot",
               isCustomIndicator: true,
               format: {
-                type: "inherit",
+                type: "price",
+                precision: 2,
               },
 
               is_hidden_study: true,
               is_price_study: true,
-              linkedToSeries: false,
+              linkedToSeries: true,
 
               isTVScript: false,
               isTVScriptStub: false,
@@ -240,6 +241,18 @@ export default {
                 {
                   id: "hl2",
                   type: "line",
+                },
+                {
+                  id: "plot_wick_color",
+                  type: "wick_colorer",
+                  palette: "palette_wick",
+                  target: "plot_candle",
+                },
+                {
+                  id: "plot_border_color",
+                  type: "border_colorer",
+                  palette: "palette_border",
+                  target: "plot_candle",
                 },
               ],
 
@@ -595,7 +608,6 @@ export default {
                   isHidden: 1,
                 },
               },
-
               inputs: [],
             },
 
@@ -984,177 +996,143 @@ export default {
                   return result;
                 };
                 this.stSignal = function () {
-                  var ctx = this._context;
-                  var std = PineJS.Std;
-                  var result = [NaN, NaN, NaN, NaN, NaN, NaN, NaN];
+                  this._context.select_sym(0);
+                  const o = PineJS.Std.open(this._context);
+                  const h = PineJS.Std.high(this._context);
+                  const l = PineJS.Std.low(this._context);
+                  const c = PineJS.Std.close(this._context);
+                  const v = PineJS.Std.volume(this._context);
 
-                  var iPeriod, symbol;
-                  var HH,
-                    ii,
-                    hi,
-                    lo,
-                    hl2,
-                    vol,
-                    aVol,
-                    av,
-                    value2,
-                    aValue2,
-                    hiValue2,
-                    va,
-                    aHL2,
-                    sma1,
-                    sma2,
-                    ao,
-                    a0,
-                    a1,
-                    aAO,
-                    diff,
-                    hasho,
-                    hashc,
-                    hashc1,
+                  var overridesym = true;
+                  var pvsra_sym = true;
+                  var pvsra_volume = this._context.new_var(v);
+                  var pvsra_high = this._context.new_var(h);
+                  var pvsra_low = this._context.new_var(l);
+                  var av =
+                    PineJS.Std.sum(
+                      this._context.new_var(pvsra_volume.get(1)),
+                      10,
+                      this._context
+                    ) / 10;
+                  var value2 =
+                    pvsra_volume.get(1) *
+                    (pvsra_high.get(1) - pvsra_low.get(1));
+                  var value2S = this._context.new_var(value2);
+                  var hivalue2 = PineJS.Std.highest(value2S, 10, this._context);
+                  var va =
+                    pvsra_volume.get(1) >= av * 2 || value2 >= hivalue2
+                      ? 1
+                      : pvsra_volume.get(1) >= av * 1.5
+                      ? 2
+                      : 0;
+                  var hl2 = (h + l) / 2;
+                  var hl2S = this._context.new_var(hl2);
+                  var ao =
+                    PineJS.Std.sma(hl2S, 5, this._context) -
+                    PineJS.Std.sma(hl2S, 34, this._context);
+                  var aoS = this._context.new_var(ao);
+                  var diff = ao - aoS.get(1);
+                  var hashc = (o + h + l + c) / 4;
+                  var hashcS = this._context.new_var(hashc);
+                  var hasho = (o + c) / 2;
+                  var hashoS = this._context.new_var(hasho);
+                  hasho =
+                    (PineJS.Std.nz(hashoS.get(1), 0) +
+                      PineJS.Std.nz(hashcS.get(1), 0)) /
+                    2;
+                  hashoS = this._context.new_var(hasho);
+                  hasho =
+                    (PineJS.Std.nz(hashoS.get(1), 0) +
+                      PineJS.Std.nz(hashcS.get(1), 0)) /
+                    2;
+                  hashoS = this._context.new_var(hasho);
+                  var hashc1 =
+                    hashoS.get(0) < hashc
+                      ? hashc - Math.abs(hashc - hashoS.get(0)) / 2
+                      : hashc + Math.abs(hashc - hashoS.get(0)) / 2;
+                  var hashh = Math.max(h, Math.max(hashoS.get(0), hashc));
+                  var hashl = Math.min(l, Math.min(hashoS.get(0), hashc));
+
+                  var color1 =
+                    ao >= 0 &&
+                    diff >= 0 &&
+                    ao > aoS.get(1) &&
+                    hashc1 >= hashoS.get(0)
+                      ? 0
+                      : 0; // ao xanh, nến tăng(ao dương)
+                  var color2 =
+                    ao >= 0 &&
+                    diff < 0 &&
+                    ao < aoS.get(1) &&
+                    hashc1 <= hashoS.get(0)
+                      ? 1
+                      : 0; // ao giảm, nến giảm (ao dương)
+                  var color3 =
+                    ao >= 0 &&
+                    diff >= 0 &&
+                    ao > aoS.get(1) &&
+                    hashc1 <= hashoS.get(0)
+                      ? 2
+                      : 0; // ao tăng, nến tăng(ao dương)
+                  var color4 =
+                    ao >= 0 &&
+                    diff < 0 &&
+                    ao < aoS.get(1) &&
+                    hashc1 >= hashoS.get(0)
+                      ? 3
+                      : 0; // ao giảm, nến giảm(ao dương)
+                  var color5 =
+                    ao < 0 &&
+                    diff < 0 &&
+                    ao < aoS.get(1) &&
+                    hashc1 >= hashoS.get(0)
+                      ? 4
+                      : 0; // ao giảm, nến tăng(ao âm)
+                  var color6 =
+                    ao < 0 &&
+                    diff < 0 &&
+                    ao < aoS.get(1) &&
+                    hashc1 <= hashoS.get(0)
+                      ? 5
+                      : 0; // ao giảm, nến giảm
+                  var color7 =
+                    ao < 0 &&
+                    diff >= 0 &&
+                    ao > aoS.get(1) &&
+                    hashc1 <= hashoS.get(0)
+                      ? 6
+                      : 0; // ao tăng, nến giảm
+                  var color8 =
+                    ao < 0 &&
+                    diff >= 0 &&
+                    ao > aoS.get(1) &&
+                    hashc1 >= hashoS.get(0)
+                      ? 7
+                      : 0; // ao tăng, nến tăng
+                  var color9 = va == 2 && va == 1.5 ? 8 : 0;
+                  var color = Math.max(
+                    color1,
+                    color2,
+                    color3,
+                    color4,
+                    color5,
+                    color6,
+                    color7,
+                    color8,
+                    color9
+                  );
+
+                  // Color is determined randomly
+                  const colour = Math.round(Math.random());
+                  return [
+                    hashoS.get(0),
                     hashh,
                     hashl,
-                    HO1,
-                    HC1,
-                    dx,
-                    clrFin,
-                    oref,
-                    cref,
-                    clr;
-
-                  try {
-                    iPeriod = 50;
-
-                    symbol = ctx.symbol;
-                    HH = !isNaN(symbol.time) ? std.hour(ctx) : NaN;
-                    ii = !isNaN(symbol.time) ? std.minute(ctx) : NaN;
-
-                    open = std.open(ctx);
-                    close = std.close(ctx);
-                    hi = std.high(ctx);
-                    lo = std.low(ctx);
-                    hl2 = (hi + lo) / 2;
-                    vol = std.volume(ctx);
-
-                    aVol = ctx.new_var(vol);
-                    av = std.sum(aVol, 10, ctx) / 10;
-
-                    value2 = vol * (hi - lo);
-                    aValue2 = ctx.new_var(value2);
-
-                    hiValue2 = std.highest(aValue2, 10);
-                    va =
-                      vol >= 2 * av || value2 > hiValue2
-                        ? 1
-                        : vol >= 1.5 * av
-                        ? 2
-                        : 0;
-
-                    aHL2 = ctx.new_var(hl2);
-                    sma1 = std.sma(aHL2, 5, ctx);
-                    sma2 = std.sma(aHL2, 34, ctx);
-
-                    ao = sma1 - sma2;
-                    aAO = ctx.new_var(ao);
-
-                    a0 = aAO.get(0);
-                    a1 = aAO.get(1);
-                    diff = a0 - a1;
-
-                    // calculate hashc
-                    hashc = (open + hi + lo + close) / 4;
-                    HC1 = ctx.new_var(hashc);
-
-                    // calculate hasho
-                    HO1 = ctx.new_var(NaN);
-
-                    cref = HO1.get(1);
-                    oref = HC1.get(1);
-
-                    hasho = isNaN(oref)
-                      ? (open + close) / 2
-                      : (oref + cref) / 2;
-
-                    HO1.set(hasho);
-
-                    // calculate hashc1
-                    dx = Math.abs(hashc - hasho) / 2;
-                    hashc1 = hasho < hashc ? hashc - dx : hashc + dx;
-
-                    // calculate hash high
-                    hashh = Math.max(hi, Math.max(hasho, hashc));
-
-                    // calculate hash open
-                    hashl = Math.min(lo, Math.min(hasho, hashc));
-
-                    //console.log(`STSignal, ${HH}:${ii}, ${oref}, ${cref}, ${hasho}, ${hashc}, ${hashc1}, ${hashh}, ${hashl}`);
-
-                    clrFin = 0;
-
-                    if (ao >= 0) {
-                      // BullishStrongLong
-                      clr = 1;
-                      clrFin =
-                        clrFin == 0 && diff >= 0 && a0 > a1 && hashc >= hasho
-                          ? clr
-                          : clrFin; // ao tang, n?n tang(ao duong)
-
-                      // BullishStrongShort
-                      clr = 2;
-                      clrFin =
-                        clrFin == 0 && diff < 0 && a0 < a1 && hashc1 <= hasho
-                          ? clr
-                          : clrFin; // ao gi?m, n?n gi?m (ao duong)
-
-                      //BullishWeakLong
-                      clr = 3;
-                      clrFin =
-                        clrFin == 0 && diff >= 0 && a0 > a1 && hashc1 <= hasho
-                          ? clr
-                          : clrFin; // ao tang, n?n tang(ao duong)
-
-                      // BullishWeakShort
-                      clr = 4;
-                      clrFin =
-                        clrFin == 0 && diff < 0 && a0 < a1 && hashc1 >= hasho
-                          ? clr
-                          : clrFin; // ao gi?m, n?n gi?m(ao duong)
-                    } else if (ao < 0) {
-                      // BearishStrongLong
-                      clr = 5;
-                      clrFin =
-                        clrFin == 0 && diff < 0 && a0 < a1 && hashc1 >= hasho
-                          ? clr
-                          : clrFin; // ao gi?m, n?n tang(ao âm)
-
-                      // BearishStrongShort
-                      clr = 6;
-                      clrFin =
-                        clrFin == 0 && diff < 0 && a0 < a1 && hashc1 <= hasho
-                          ? clr
-                          : clrFin; // ao gi?m, n?n gi?m
-
-                      // BearishWeakLong
-                      clr = 7;
-                      clrFin =
-                        clrFin == 0 && diff >= 0 && a0 > a1 && hashc1 <= hasho
-                          ? clr
-                          : clrFin; // ao tang, n?n gi?m
-
-                      // BearishWeakShort
-                      clr = 8;
-                      clrFin =
-                        clrFin == 0 && diff >= 0 && a0 > a1 && hashc1 >= hasho
-                          ? clr
-                          : clrFin; // ao tang, n?n tang
-                    }
-
-                    result = [hasho, hashh, hashl, hashc1, clrFin, va];
-                  } catch (e) {
-                    console.log(e);
-                  }
-
-                  return result;
+                    hashc1,
+                    color /* bar*/,
+                    color /* wick*/,
+                    color /* border*/,
+                  ];
                 };
               };
 
@@ -1186,7 +1164,7 @@ export default {
                   // điều kiện mua/bán
                   var side = 0;
 
-                  var stgMode = 3;
+                  var stgMode = 1;
 
                   // load signal judgement from BAlgo
                   // if (BAlgo.stBotClientSettings) {
@@ -1824,6 +1802,9 @@ export default {
               };
             },
           },
+          //zo trend
+          
+          //zo signal
         ]);
       },
     };
@@ -1835,9 +1816,9 @@ export default {
     tvWidget.onChartReady(() => {
       tvWidget.activeChart().removeAllStudies();
       thisVue.restoreUserIndicators(
-          thisVue.scrapeDerivativeIndicators,
-          tvWidget.activeChart()
-        );
+        thisVue.scrapeDerivativeIndicators,
+        tvWidget.activeChart()
+      );
       tvWidget.subscribe("onAutoSaveNeeded", () => {});
 
       var runrot = setInterval(() => {

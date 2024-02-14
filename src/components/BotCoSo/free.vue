@@ -29,7 +29,7 @@ export default {
       type: String,
     },
     chartsStorageUrl: {
-      default: "http://api.smtchart.vn/v1/data/csfree",
+      default: "https://api.smtchart.vn/v1/data/csfree",
       type: String,
     },
     chartsStorageApiVersion: {

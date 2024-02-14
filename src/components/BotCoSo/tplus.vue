@@ -29,7 +29,7 @@ export default {
       type: String,
     },
     chartsStorageUrl: {
-      default: "http://api.smtchart.vn/v1/data/cstplus",
+      default: "https://api.smtchart.vn/v1/data/cstplus",
       type: String,
     },
     chartsStorageApiVersion: {

@@ -1,6 +1,6 @@
 
 const { io } = require("socket.io-client");
-const socket = io("http://api.smtchart.vn", { 
+const socket = io("https://api.smtchart.vn", { 
     'transports': ["websocket", "polling"] ,
     'query': {
         'symbol': "VNINDEX"
