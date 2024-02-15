@@ -295,6 +295,7 @@ export default {
 		try {
 			const response = await makeApiRequest(`history?${query}`);
 			const data = response.data;
+			console.log(data);
 			let dataBar = [];
 			let bars = [];
 			if (data.nextTime || data.nextTime >= 0) {

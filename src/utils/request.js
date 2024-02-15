@@ -22,8 +22,8 @@ service.interceptors.request.use(
       // please modify it according to the actual situation
       config.headers['Authorization'] = 'Bearer ' + getToken()
     }
-    config.headers["Content-Type"] = "application/json";
-    config["mode"] = 'no-cors';
+    // config.headers["Content-Type"] = "application/json";
+    // config["mode"] = 'no-cors';
     return config
   },
   error => {
