@@ -86,7 +86,7 @@ export default {
       user_id: this.userId,
       //fullscreen: this.fullscreen,
       autosize: this.autosize,
-      studies_overrides: this.studiesOverrides,
+      //studies_overrides: this.studiesOverrides,
       load_last_chart: true,
       favorites: {},
       resolution: 1,
@@ -99,11 +99,11 @@ export default {
         watchlist: true,
         datawindow: true,
       },
-      overrides: {
-        "mainSeriesProperties.showCountdown": true,
-        "paneProperties.backgroundGradientStartColor": "#020024",
-        "paneProperties.backgroundGradientEndColor": "#4f485e",
-      },
+      // overrides: {
+      //   "mainSeriesProperties.showCountdown": true,
+      //   "paneProperties.backgroundGradientStartColor": "#020024",
+      //   "paneProperties.backgroundGradientEndColor": "#4f485e",
+      // },
       disabled_features: ["dom_widget"],
       enabled_features: [
         "header_layouttoggle",

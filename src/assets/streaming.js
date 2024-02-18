@@ -155,21 +155,21 @@ function updateBar(newData, subscriber, lastDailyBar) {
             symbol: subscriber.symbol,
             resolution: subscriber.resolution,
             time: roundedTimestamp * 1000,
-            open: newData.Open,
-            high: isNewBar ? newData.Hight : lastBar.close,
-            low: isNewBar ? newData.Low : lastBar.close,
-            close: newData.Close,
+            open: isNewBar ? newData.Open : lastBar.close,
+            high: isNewBar ? newData.Hight : lastBar.high,
+            low: isNewBar ? newData.Low : lastBar.low,
+            close: isNewBar ? newData.Close : lastBar.close,
             volume: newData.volume
         };
     } else {
-        if (newData.price < lastBar.low) {
-            lastBar.low = newData.price;
-        } else if (newData.price > lastBar.high) {
-            lastBar.high = newData.price;
-        }
+        // if (newData.price < lastBar.low) {
+        //     lastBar.low = newData.price;
+        // } else if (newData.price > lastBar.high) {
+        //     lastBar.high = newData.price;
+        // }
 
-        lastBar.volume += newData.volume;
-        lastBar.close = newData.price;
+        // lastBar.volume += newData.volume;
+        // lastBar.close = newData.price;
         updatedBar = lastBar;
     }
 
