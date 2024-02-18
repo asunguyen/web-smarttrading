@@ -1,15 +1,15 @@
 var zotrend = {
-    name: "ZO TREND",
+    name: "ST HTF",
     metainfo: {
       _metainfoVersion: 51,
-      description: "ZO TREND",
-      shortDescription: "ZO TREND",
+      description: "ST HTF",
+      shortDescription: "ST HTF",
       is_hidden_study: false,
       is_price_study: false,
       isCustomIndicator: true,
       linkedToSeries: true,
 
-      id: "ZO TREND@luuvietha",
+      id: "ST HTF@luuvietha",
 
       format: {
         type: "price",

@@ -72,6 +72,10 @@ export default {
           name: "STTrendVolume",
           visible: true,
         },
+        {
+          name: "ST HTF",
+          visible: true,
+        },
         // ZO TREND
       ],
     };
@@ -113,11 +117,11 @@ export default {
         watchlist: true,
         datawindow: true,
       },
-      overrides: {
-        "mainSeriesProperties.showCountdown": true,
-        "paneProperties.backgroundGradientStartColor": "#020024",
-        "paneProperties.backgroundGradientEndColor": "#4f485e",
-      },
+      // overrides: {
+      //   "mainSeriesProperties.showCountdown": true,
+      //   "paneProperties.backgroundGradientStartColor": "#020024",
+      //   "paneProperties.backgroundGradientEndColor": "#4f485e",
+      // },
       disabled_features: ["dom_widget"],
       enabled_features: [
         "header_layouttoggle",
@@ -248,6 +252,12 @@ export default {
                   type: "line",
                 },
                 {
+                  id: "plot_bar_color",
+                  type: "ohlc_colorer",
+                  palette: "palette_bar",
+                  target: "plot_candle",
+                },
+                {
                   id: "plot_wick_color",
                   type: "wick_colorer",
                   palette: "palette_wick",
@@ -269,7 +279,7 @@ export default {
                   objBId: "trend2",
                   type: "plot_plot",
                   palette: "trend_palette_2",
-                  isHidden: 1,
+                  isHidden: 0,
                 },
               ],
 
@@ -280,6 +290,81 @@ export default {
               },
 
               palettes: {
+                palette_bar: {
+                  colors: [
+                    { name: "Bullish Strong Long" },
+                    { name: "Bullish Strong Short" },
+                    { name: "Bullish Weak Long" },
+                    { name: "Bullish Weak Short" },
+                    { name: "Bearish Strong Long" },
+                    { name: "Bearish Strong Short" },
+                    { name: "Bearish Weak Long" },
+                    { name: "Bearish Weak Short" },
+                    { name: "Candle Color" },
+                  ],
+
+                  valToIndex: {
+                    0: 0,
+                    1: 1,
+                    2: 2,
+                    3: 3,
+                    4: 4,
+                    5: 5,
+                    6: 6,
+                    7: 7,
+                    8: 8,
+                  },
+                },
+                palette_wick: {
+                  colors: [
+                    { name: "Bullish Strong Long" },
+                    { name: "Bullish Strong Short" },
+                    { name: "Bullish Weak Long" },
+                    { name: "Bullish Weak Short" },
+                    { name: "Bearish Strong Long" },
+                    { name: "Bearish Strong Short" },
+                    { name: "Bearish Weak Long" },
+                    { name: "Bearish Weak Short" },
+                    { name: "Candle Color" },
+                  ],
+
+                  valToIndex: {
+                    0: 0,
+                    1: 1,
+                    2: 2,
+                    3: 3,
+                    4: 4,
+                    5: 5,
+                    6: 6,
+                    7: 7,
+                    8: 8,
+                  },
+                },
+                palette_border: {
+                  colors: [
+                    { name: "Bullish Strong Long" },
+                    { name: "Bullish Strong Short" },
+                    { name: "Bullish Weak Long" },
+                    { name: "Bullish Weak Short" },
+                    { name: "Bearish Strong Long" },
+                    { name: "Bearish Strong Short" },
+                    { name: "Bearish Weak Long" },
+                    { name: "Bearish Weak Short" },
+                    { name: "Candle Color" },
+                  ],
+
+                  valToIndex: {
+                    0: 0,
+                    1: 1,
+                    2: 2,
+                    3: 3,
+                    4: 4,
+                    5: 5,
+                    6: 6,
+                    7: 7,
+                    8: 8,
+                  },
+                },
                 signal_palette_0: {
                   colors: [
                     { name: "1 Color" },
@@ -408,6 +493,45 @@ export default {
                         style: 0,
                       },
                     },
+                  },
+                  palette_bar: {
+                    colors: [
+                      { color: "#00F400", width: 1, style: 0 },
+                      { color: "#006C00", width: 1, style: 0 },
+                      { color: "#0057AE", width: 1, style: 0 },
+                      { color: "#1A8CFF", width: 1, style: 0 },
+                      { color: "#FF917D", width: 1, style: 0 },
+                      { color: "#FD2600", width: 1, style: 0 },
+                      { color: "#891289", width: 1, style: 0 },
+                      { color: "#F29FF2", width: 1, style: 0 },
+                      { color: "#FFEB3B", width: 1, style: 0 },
+                    ],
+                  },
+                  palette_wick: {
+                    colors: [
+                      { color: "#00F400" },
+                      { color: "#006C00" },
+                      { color: "#0057AE" },
+                      { color: "#1A8CFF" },
+                      { color: "#FF917D" },
+                      { color: "#FD2600" },
+                      { color: "#891289" },
+                      { color: "#F29FF2" },
+                      { color: "#FFEB3B" },
+                    ],
+                  },
+                  palette_border: {
+                    colors: [
+                      { color: "#00F400" },
+                      { color: "#006C00" },
+                      { color: "#0057AE" },
+                      { color: "#1A8CFF" },
+                      { color: "#FF917D" },
+                      { color: "#FD2600" },
+                      { color: "#891289" },
+                      { color: "#F29FF2" },
+                      { color: "#FFEB3B" },
+                    ],
                   },
                 },
 
@@ -1144,6 +1268,24 @@ export default {
                   }
                   return result;
                 };
+                this.f_2 = function (src, len, ctx) {
+                  var series_0 = ctx.new_var(
+                    -PineJS.Std.min(PineJS.Std.change(src), 0)
+                  );
+                  return PineJS.Std.rma(series_0, len, ctx);
+                };
+                this.pvsra_security = function (
+                  overridesym,
+                  pvsra_sym,
+                  sresolution,
+                  sseries
+                ) {
+                  var symbol = overridesym
+                    ? pvsra_sym
+                    : window.tvWidget.activeChart().symbol().split(":")[1];
+                  var realTimeIndex = barstate.isrealtime ? 1 : 0;
+                  var series = sseries[realTimeIndex];
+                };
               };
 
               this.main = function (context, input) {
@@ -1302,6 +1444,136 @@ export default {
                   // // invoke Strategy with signal
                   // if (buy||sell||short||cover)
                   //     Strategy.onBotSignal(this.stgName, botSignal);
+
+                  // color bar zo-signal
+                  this._context.select_sym(0);
+                  const o = PineJS.Std.open(this._context);
+                  const h = PineJS.Std.high(this._context);
+                  const l = PineJS.Std.low(this._context);
+                  const c = PineJS.Std.close(this._context);
+                  const v = PineJS.Std.volume(this._context);
+
+                  var overridesym = true;
+                  var pvsra_sym = true;
+                  var pvsra_volume = this._context.new_var(v);
+                  var pvsra_high = this._context.new_var(h);
+                  var pvsra_low = this._context.new_var(l);
+                  var av =
+                    PineJS.Std.sum(
+                      this._context.new_var(pvsra_volume.get(1)),
+                      10,
+                      this._context
+                    ) / 10;
+                  var value2 =
+                    pvsra_volume.get(1) *
+                    (pvsra_high.get(1) - pvsra_low.get(1));
+                  var value2S = this._context.new_var(value2);
+                  var hivalue2 = PineJS.Std.highest(value2S, 10, this._context);
+                  var va =
+                    pvsra_volume.get(1) >= av * 2 || value2 >= hivalue2
+                      ? 1
+                      : pvsra_volume.get(1) >= av * 1.5
+                      ? 2
+                      : 0;
+                  var hl2 = (h + l) / 2;
+                  var hl2S = this._context.new_var(hl2);
+                  var ao =
+                    PineJS.Std.sma(hl2S, 5, this._context) -
+                    PineJS.Std.sma(hl2S, 34, this._context);
+                  var aoS = this._context.new_var(ao);
+                  var diff = ao - aoS.get(1);
+                  var hashc = (o + h + l + c) / 4;
+                  var hashcS = this._context.new_var(hashc);
+                  var hasho = (o + c) / 2;
+                  var hashoS = this._context.new_var(hasho);
+                  hasho =
+                    (PineJS.Std.nz(hashoS.get(1), 0) +
+                      PineJS.Std.nz(hashcS.get(1), 0)) /
+                    2;
+                  hashoS = this._context.new_var(hasho);
+                  hasho =
+                    (PineJS.Std.nz(hashoS.get(1), 0) +
+                      PineJS.Std.nz(hashcS.get(1), 0)) /
+                    2;
+                  hashoS = this._context.new_var(hasho);
+                  var hashc1 =
+                    hashoS.get(0) < hashc
+                      ? hashc - Math.abs(hashc - hashoS.get(0)) / 2
+                      : hashc + Math.abs(hashc - hashoS.get(0)) / 2;
+                  var hashh = Math.max(h, Math.max(hashoS.get(0), hashc));
+                  var hashl = Math.min(l, Math.min(hashoS.get(0), hashc));
+
+                  var color1 =
+                    ao >= 0 &&
+                    diff >= 0 &&
+                    ao > aoS.get(1) &&
+                    hashc1 >= hashoS.get(0)
+                      ? 0
+                      : 0; // ao xanh, nến tăng(ao dương)
+                  var color2 =
+                    ao >= 0 &&
+                    diff < 0 &&
+                    ao < aoS.get(1) &&
+                    hashc1 <= hashoS.get(0)
+                      ? 1
+                      : 0; // ao giảm, nến giảm (ao dương)
+                  var color3 =
+                    ao >= 0 &&
+                    diff >= 0 &&
+                    ao > aoS.get(1) &&
+                    hashc1 <= hashoS.get(0)
+                      ? 2
+                      : 0; // ao tăng, nến tăng(ao dương)
+                  var color4 =
+                    ao >= 0 &&
+                    diff < 0 &&
+                    ao < aoS.get(1) &&
+                    hashc1 >= hashoS.get(0)
+                      ? 3
+                      : 0; // ao giảm, nến giảm(ao dương)
+                  var color5 =
+                    ao < 0 &&
+                    diff < 0 &&
+                    ao < aoS.get(1) &&
+                    hashc1 >= hashoS.get(0)
+                      ? 4
+                      : 0; // ao giảm, nến tăng(ao âm)
+                  var color6 =
+                    ao < 0 &&
+                    diff < 0 &&
+                    ao < aoS.get(1) &&
+                    hashc1 <= hashoS.get(0)
+                      ? 5
+                      : 0; // ao giảm, nến giảm
+                  var color7 =
+                    ao < 0 &&
+                    diff >= 0 &&
+                    ao > aoS.get(1) &&
+                    hashc1 <= hashoS.get(0)
+                      ? 6
+                      : 0; // ao tăng, nến giảm
+                  var color8 =
+                    ao < 0 &&
+                    diff >= 0 &&
+                    ao > aoS.get(1) &&
+                    hashc1 >= hashoS.get(0)
+                      ? 7
+                      : 0; // ao tăng, nến tăng
+                  var color9 = va == 2 && va == 1.5 ? 8 : 0;
+                  var color = Math.max(
+                    color1,
+                    color2,
+                    color3,
+                    color4,
+                    color5,
+                    color6,
+                    color7,
+                    color8,
+                    color9
+                  );
+                  result.push(color);
+                  result.push(color);
+                  result.push(color);
                   return result;
                 } catch (e) {
                   console.log(e);
@@ -1447,6 +1719,8 @@ export default {
 
             constructor: function () {
               this.init = function (context, input) {
+                this._context = context;
+                this._input = input;
                 this.stPower = function () {
                   var std = PineJS.Std;
                   var ctx = this._context;
@@ -1812,7 +2086,164 @@ export default {
               };
             },
           },
-          //zo trend
+          //st HTF
+          {
+            name: "ST HTF",
+            metainfo: {
+              _metainfoVersion: 51,
+              description: "ST HTF",
+              shortDescription: "ST HTF",
+              is_hidden_study: false,
+              is_price_study: false,
+              isCustomIndicator: true,
+              linkedToSeries: true,
+
+              id: "ST HTF@luuvietha",
+
+              format: {
+                type: "price",
+                precision: 2,
+              },
+              plots: [
+                {
+                  id: "plot_0",
+                  type: "line",
+                },
+                {
+                  id: "plot_1",
+                  type: "line",
+                },
+                {
+                  id: "plot_2",
+                  type: "line",
+                },
+                {
+                  id: "plot_3",
+                  type: "line",
+                },
+              ],
+              styles: {
+                plot_0: {
+                  title: "Trend MTF",
+                  histogramBase: 1,
+                },
+                plot_1: {
+                  title: "Current Trend TF",
+                  histogramBase: 1,
+                },
+                plot_2: {
+                  title: "High IZE Trend",
+                  histogramBase: 1,
+                },
+                plot_3: {
+                  title: "Low IZE Trend",
+                  histogramBase: 1,
+                },
+              },
+              defaults: {
+                styles: {
+                  plot_0: {
+                    linestyle: 0,
+                    visible: true,
+                    linewidth: 1,
+                    plottype: 0,
+                    trackPrice: false,
+                    transparency: 0,
+                    color: "#008FFF",
+                  },
+                  plot_1: {
+                    linestyle: 0,
+                    visible: true,
+                    linewidth: 1,
+                    plottype: 0,
+                    trackPrice: false,
+                    transparency: 0,
+                    color: "#04FF00",
+                  },
+                  plot_2: {
+                    linestyle: 0,
+                    visible: true,
+                    linewidth: 1,
+                    plottype: 0,
+                    trackPrice: false,
+                    transparency: 0,
+                    color: "#FF0000",
+                  },
+                },
+                inputs: {
+                  av: 30,
+                  pr: 14,
+                },
+                precision: 2,
+              },
+              inputs: [
+                {
+                  id: "av",
+                  name: "AV",
+                  type: "integer",
+                  min: 1,
+                  max: 2e3,
+                },
+                {
+                  id: "pr",
+                  name: "PR",
+                  type: "integer",
+                  min: 1,
+                  max: 2e3,
+                },
+              ],
+            },
+            constructor: function () {
+              this.main = function (context, inputCallback) {
+                this._context = context;
+                this._input = inputCallback;
+                var AV = this._input(0);
+                var PR = this._input(1);
+                var high = PineJS.Std.high(this._context);
+                var highS = this._context.new_var(high);
+                var low = PineJS.Std.low(this._context);
+                var lowS = this._context.new_var(low);
+                var upMove = highS.get(0) - highS.get(1);
+                var downMove = lowS.get(0) - lowS.get(1);
+                var plusDM = upMove > downMove && upMove > 0 ? upMove : 0;
+                var plusDMS = this._context.new_var(plusDM);
+                var minusDM = downMove > upMove && downMove > 0 ? downMove : 0;
+                var minusDMS = this._context.new_var(minusDM);
+                var tr1 = highS.get(0) - lowS.get(0);
+                var close = PineJS.Std.low(this._context);
+                var closeS = this._context.new_var(close);
+                var tr2 = Math.abs(highS.get(0) - closeS.get(1));
+                var tr3 = Math.abs(lowS.get(0) - closeS.get(1));
+                var trueRange = Math.max(Math.max(tr1, tr2), tr3);
+                var trueRangeS = this._context.new_var(trueRange);
+                var plusDI =
+                  (PineJS.Std.sma(plusDMS, PR, this._context) /
+                    PineJS.Std.sma(trueRangeS, PR, this._context)) *
+                  100;
+                var minusDI =
+                  (PineJS.Std.sma(minusDMS, PR, this._context) /
+                    PineJS.Std.sma(trueRangeS, PR, this._context)) *
+                  100;
+
+                var DX =
+                  (Math.abs(plusDI - minusDI) / (plusDI + minusDI)) * 100;
+                var DXS = this._context.new_var(DX);
+                var ADX = PineJS.Std.sma(DXS, PR, this._context);
+
+                const A = plusDI < 20;
+                const B = minusDI < 20;
+                const E = ADX > AV;
+                const P = plusDI;
+                const Q = minusDI;
+
+                const HL = P > Q;
+                const LH = Q > P;
+                const X = E && HL && B;
+                const Y = E && LH && A;
+                return [ADX, P, Q];
+              };
+            },
+          },
 
           //zo signal
         ]);

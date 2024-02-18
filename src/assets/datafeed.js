@@ -200,7 +200,6 @@ export default {
 		onResolveErrorCallback,
 		extension
 	) => {
-		console.log("extension:: ", extension);
 		console.log('[resolveSymbol]: Method call', symbolName);
 		const symbols = await GeSymbolType('search', symbolName);
 		const symbolItem = symbols.find(({
@@ -288,14 +287,12 @@ export default {
 			firstDataRequest: firstDataRequest,
 			type: symbolInfo.type
 		};
-		//console.log("OK:",symbolInfo);
 		const query = Object.keys(urlParameters)
 			.map(name => `${name}=${encodeURIComponent(urlParameters[name])}`)
 			.join('&');
 		try {
 			const response = await makeApiRequest(`history?${query}`);
 			const data = response.data;
-			console.log(data);
 			let dataBar = [];
 			let bars = [];
 			if (data.nextTime || data.nextTime >= 0) {
