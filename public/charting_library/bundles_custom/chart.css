@@ -1,0 +1,16 @@
+div.customButton-qqNP9X6e {
+    height: 100%;
+    display: flex;
+    vertical-align: middle;
+    margin: 0;
+    padding: 0;
+}
+
+div.customButton,
+div.customButton-qqNP9X6e div.button-GwQQdU8S {
+    padding: 10px;
+}
+
+.button-replay-mode:before {
+    content: "",
+}

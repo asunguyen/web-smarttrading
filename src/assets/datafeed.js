@@ -114,20 +114,20 @@ async function loadDataBarCustom(symbolInfo, urlParameters, timeEnd, firstDataRe
 					if (symbolInfo.type == "spot" && time >= from && time <= to) {
 						bars = [...bars, {
 							time: dataBar[i].time * 1000,
-							low: dataBar[i].min,
-							high: dataBar[i].max,
-							open: dataBar[i].open,
-							close: dataBar[i].close,
-							volume: dataBar[i].volume,
+							low: parseFloat(dataBar[i].min),
+							high: parseFloat(dataBar[i].max),
+							open: parseFloat(dataBar[i].open),
+							close: parseFloat(dataBar[i].close),
+							volume: parseFloat(dataBar[i].volume),
 						}];
 					} else {
 						bars = [...bars, {
 							time: dataBar[i].time * 1000,
-							low: dataBar[i].min,
-							high: dataBar[i].max,
-							open: dataBar[i].open,
-							close: dataBar[i].close,
-							volume: dataBar[i].volume,
+							low: parseFloat(dataBar[i].min),
+							high: parseFloat(dataBar[i].max),
+							open: parseFloat(dataBar[i].open),
+							close: parseFloat(dataBar[i].close),
+							volume: parseFloat(dataBar[i].volume),
 						}];
 					}
 
@@ -158,8 +158,11 @@ async function loadDataBarCustom(symbolInfo, urlParameters, timeEnd, firstDataRe
 		}
 		if (bars && bars.length > 0) {
 			timeEnd = bars[0].time/1000;
-			if (timeEnd > 1103051358 && countHis < 10) {
-				loadDataBarCustom(symbolInfo, urlParametersC, timeEnd, firstDataRequest, onHistoryCallback, onErrorCallback);
+			if (timeEnd > 1103051358 && countHis > 0) {
+				setTimeout(function() {
+					loadDataBarCustom(symbolInfo, urlParametersC, timeEnd, firstDataRequest, onHistoryCallback, onErrorCallback);
+				},1000);
+				
 			}
 		}
 	} catch (err) {
@@ -292,6 +295,7 @@ export default {
 		try {
 			const response = await makeApiRequest(`history?${query}`);
 			const data = response.data;
+			console.log(data);
 			let dataBar = [];
 			let bars = [];
 			if (data.nextTime || data.nextTime >= 0) {
@@ -340,25 +344,24 @@ export default {
 					for (let i = 0; i < dataBar.length; i++) {
 						let time = dataBar[i].time;
 						if (symbolInfo.type == "spot" && resol != 1) {
-							console.log("hjhjahjhjhjhj")
 							if (time >= from && time <= to) {
 								bars = [...bars, {
 									time: dataBar[i].time * 1000,
-									low: dataBar[i].min,
-									high: dataBar[i].max,
-									open: dataBar[i].open,
-									close: dataBar[i].close,
-									volume: dataBar[i].volume,
+									low: parseFloat(dataBar[i].min),
+									high: parseFloat(dataBar[i].max),
+									open: parseFloat(dataBar[i].open),
+									close: parseFloat(dataBar[i].close),
+									volume: parseFloat(dataBar[i].volume),
 								}];
 							} 
 						} else {
 							bars = [...bars, {
 								time: dataBar[i].time * 1000,
-								low: dataBar[i].min,
-								high: dataBar[i].max,
-								open: dataBar[i].open,
-								close: dataBar[i].close,
-								volume: dataBar[i].volume,
+								low: parseFloat(dataBar[i].min),
+								high: parseFloat(dataBar[i].max),
+								open: parseFloat(dataBar[i].open),
+								close: parseFloat(dataBar[i].close),
+								volume: parseFloat(dataBar[i].volume),
 							}];
 						}
 					}
@@ -389,7 +392,8 @@ export default {
 			if (bars && bars.length > 0) {
 				timeEnd = bars[0].time/1000;
 			} else {
-				if (resolution == "1" && timeEnd > 1103051358) {
+				if ((resolution == "1" || resolution == "3" || resolution == "5" || resolution == "10" || resolution == "15" || resolution == "30") && timeEnd > 1103051358) {
+					countHis = 1;
 					loadDataBarCustom(symbolInfo, urlParameters, timeEnd, firstDataRequest, onHistoryCallback, onErrorCallback);
 				}
 			}
@@ -407,7 +411,7 @@ export default {
 		onResetCacheNeededCallback,
 	) => {
 		console.log('[subscribeBars]: Method call with subscriberUID:', subscriberUID);
-		countHis = 0;
+		countHis = 1;
 		subscribeOnStream(
 			symbolInfo,
 			resolution,
@@ -427,6 +431,7 @@ export default {
 	},
 
 	unsubscribeBars: (subscriberUID) => {
+		countHis = 0;
 		console.log('[unsubscribeBars]: Method call with subscriberUID:', subscriberUID);
 		unsubscribeFromStream(subscriberUID);
 		unsubscribeFromStreamps(subscriberUID)

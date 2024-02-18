@@ -41,7 +41,7 @@ export default {
       type: String
     },
     userId: {
-      default: 'public_user_id',
+      default: localStorage.getItem("iduser")+"_ptindex",
       type: String
     },
     fullscreen: {
@@ -116,8 +116,10 @@ export default {
       autosize: this.autosize,
       studies_overrides: this.studiesOverrides,
       load_last_chart: true,
+      saveload_separate_drawings_storage: true,
+      chart_template_storage: true,
+      use_localstorage_for_settings: true,
       favorites: {
-        indicators: ['Volume']
       },
       resolution: 1,
       widgetbar: {
@@ -125,38 +127,18 @@ export default {
         news: true,
         watchlist: true,
         datawindow: true,
-        watchlist_settings: {
-          default_symbols: [
-            '###STOCKS',
-            'NASDAQ:AAPL',
-            'NASDAQ:MSFT',
-            'NYSE:IBM',
-            '###FOREX',
-            'FX:EURUSD',
-            'FX:GBPUSD',
-            '###CRYPTO',
-            'CRYPTO:BTCUSD',
-            'CRYPTO:ETHUSD'
-          ]
-        }
       },
       overrides: {
         'mainSeriesProperties.showCountdown': true
       },
-      disabled_features: [
-        'use_localstorage_for_settings',
-        'open_account_manager',
-        'dom_widget'
-      ],
+      header_widget_buttons_mode: 'fullsize',
+      disabled_features: ["dom_widget"],
       enabled_features: [
-        'study_templates',
-        'pre_post_market_sessions',
-        'show_symbol_logos',
-        'show_exchange_logos',
-        'seconds_resolution',
-        'secondary_series_extend_time_scale',
-        'show_percent_option_for_right_margin',
-        'display_data_mode'
+        "header_layouttoggle",
+        "right_toolbar",
+        "trading_account_manager",
+        "chart_template_storage",
+        "use_localstorage_for_settings",
       ],
       custom_indicators_getter: function(PineJS) {
         return Promise.resolve([
@@ -2318,6 +2300,7 @@ export default {
     this.tvWidget = tvWidget
 
     tvWidget.onChartReady(() => {
+      tvWidget.activeChart().removeAllStudies();
       tvWidget.subscribe('onAutoSaveNeeded', () => {
         console.log({
           indicators: thisVue.getCurrentChartUserIndicators(
@@ -2349,12 +2332,27 @@ export default {
           tvWidget.activeChart()
         )
       }
+      tvWidget.changeTheme("dark");
+      tvWidget.headerReady().then(function () {
+        var button = tvWidget.createButton();
+        button.setAttribute("title", "Dark or Light");
+        button.setAttribute("class","cus-theme");
+        button.addEventListener("click", function () {
+          if (tvWidget.getTheme() == "dark") {
+            tvWidget.changeTheme("light");
+          } else {
+            tvWidget.changeTheme("dark");
+          }
+        });
+        button.textContent = "Change theme";
+      });
     })
   },
-  destroyed() {
+  beforeDestroy() {
     if (this.tvWidget !== null) {
-      this.tvWidget.remove()
-      this.tvWidget = null
+      this.tvWidget.changeTheme("dark");
+      this.tvWidget.remove();
+      this.tvWidget = null;
     }
   },
   methods: {

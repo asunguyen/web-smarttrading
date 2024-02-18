@@ -1,5 +1,5 @@
 <template>
-  <div ref="chartContainer" class="TVChartContainer" />
+  <div ref="chartContainer" class="TVChartContainer" id="tvWidgetContainer" />
 </template>
 
 <script>
@@ -30,7 +30,7 @@ export default {
       type: String,
     },
     chartsStorageUrl: {
-      default: "https://saveload.tradingview.com",
+      default: "https://api.smtchart.vn/v1/data/pttrend",
       type: String,
     },
     chartsStorageApiVersion: {
@@ -42,7 +42,7 @@ export default {
       type: String,
     },
     userId: {
-      default: "public_user_id",
+      default: localStorage.getItem("iduser") + "_pttrend",
       type: String,
     },
     fullscreen: {
@@ -85,7 +85,7 @@ export default {
         link: "http://smtchart.vn/",
       },
       theme: "dark",
-      // charts_storage_url: this.chartsStorageUrl,
+      charts_storage_url: this.chartsStorageUrl,
       charts_storage_api_version: this.chartsStorageApiVersion,
       client_id: this.clientId,
       user_id: this.userId,
@@ -93,47 +93,28 @@ export default {
       autosize: this.autosize,
       studies_overrides: this.studiesOverrides,
       load_last_chart: true,
-      favorites: {
-        indicators: ["Volume"],
-      },
+      saveload_separate_drawings_storage: true,
+      chart_template_storage: true,
+      use_localstorage_for_settings: true,
+      favorites: {},
       resolution: 1,
       widgetbar: {
         details: true,
         news: true,
         watchlist: true,
         datawindow: true,
-        watchlist_settings: {
-          default_symbols: [
-            "###STOCKS",
-            "NASDAQ:AAPL",
-            "NASDAQ:MSFT",
-            "NYSE:IBM",
-            "###FOREX",
-            "FX:EURUSD",
-            "FX:GBPUSD",
-            "###CRYPTO",
-            "CRYPTO:BTCUSD",
-            "CRYPTO:ETHUSD",
-          ],
-        },
       },
       overrides: {
         "mainSeriesProperties.showCountdown": true,
       },
-      disabled_features: [
-        "use_localstorage_for_settings",
-        "open_account_manager",
-        "dom_widget",
-      ],
+      header_widget_buttons_mode: "fullsize",
+      disabled_features: ["dom_widget"],
       enabled_features: [
-        "study_templates",
-        "pre_post_market_sessions",
-        "show_symbol_logos",
-        "show_exchange_logos",
-        "seconds_resolution",
-        "secondary_series_extend_time_scale",
-        "show_percent_option_for_right_margin",
-        "display_data_mode",
+        "header_layouttoggle",
+        "right_toolbar",
+        "trading_account_manager",
+        "chart_template_storage",
+        "use_localstorage_for_settings",
       ],
       custom_indicators_getter: function (PineJS) {
         return Promise.resolve([
@@ -215,9 +196,7 @@ export default {
                     transparency: 0,
                   },
                 },
-                inputs: {
-                  
-                },
+                inputs: {},
                 precision: 2,
                 palettes: {
                   palette_0: {
@@ -291,6 +270,10 @@ export default {
                 var currMacdS = this._context.new_var(currMacd);
                 var preMacd = isNaN(currMacdS.get(1)) ? 0 : currMacdS.get(1);
 
+                const macd120260 = this.macd(closeS, 260, 120);
+                const macd90180 = this.macd(closeS, 180, 90);
+                const macdHistogram = macd120260 - macd90180;
+
                 const hl2 = (high + low) / 2;
                 const atr = PineJS.Std.atr(atrPeriod, this._context);
                 const atr1 = this._context.new_var(atr).get(1);
@@ -339,12 +322,26 @@ export default {
                 else if (direction > 0) color = 0;
                 var long = NaN;
                 var short = NaN;
-                if (preMacd < 0 && currMacd >= 0 && color == 1 && close > sma && signal != 1) {
-                  long = 1;
+                if (
+                  macd120260 > 0 &&
+                  macd90180 > 0 &&
+                  macdHistogram > 0 &&
+                  color == 1 &&
+                  close > sma &&
+                  signal != 1
+                ) {
+                  long = "LONG \n" + close;
                   signal = 1;
-                } 
-                if ( preMacd > 0 && currMacd <= 0 && color == 0 && close < sma && signal != 0 ) {
-                  short = 1;
+                }
+                if (
+                  macd120260 < 0 &&
+                  macd90180 < 0 &&
+                  macdHistogram < 0 &&
+                  color == 0 &&
+                  close < sma &&
+                  signal != 0
+                ) {
+                  short = "SHORT \n" + close;
                   signal = 0;
                 }
 
@@ -361,21 +358,69 @@ export default {
     this.tvWidget = tvWidget;
 
     tvWidget.onChartReady(() => {
-      tvWidget.subscribe("onAutoSaveNeeded", () => {
-        console.log({
-          indicators: thisVue.getCurrentChartUserIndicators(
-            tvWidget.activeChart()
-          ),
-        });
-      });
+      tvWidget.activeChart().removeAllStudies();
       thisVue.restoreUserIndicators(
         thisVue.trendDerivativeIndicators,
         tvWidget.activeChart()
       );
+      tvWidget.subscribe("onAutoSaveNeeded", (data) => {
+        console.log("data save:: ", data);
+      });
+
+      var runrot = setInterval(() => {
+        let managerroot = $("#tvWidgetContainer iframe")
+          .contents()
+          .find("#overlap-manager-root");
+        if (managerroot && managerroot.length > 0) {
+          var headerchartTypes = $("#tvWidgetContainer iframe")
+            .contents()
+            .find(
+              "#header-toolbar-chart-styles .apply-common-tooltip.isOpened-merBkM5y"
+            );
+          if (headerchartTypes && headerchartTypes.length > 0) {
+            let htmlpnf = `<div data-value="pnf" class="item-jFqVJoPk withIcon-jFqVJoPk"><span class="icon-jFqVJoPk"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28" fill="currentColor"><path d="M14.5 16a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0-1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm0 7a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0-1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm3.293-15.5l4.707 4.707.707-.707L18.5 4.793z"></path><path d="M18.5 10.207L23.207 5.5l-.707-.707L17.793 9.5zm-.707 1.293l4.707 4.707.707-.707-4.707-4.707z"></path><path d="M18.5 16.207l4.707-4.707-.707-.707-4.707 4.707zM5.793 17.5l4.707 4.707.707-.707L6.5 16.793z"></path><path d="M6.5 22.207l4.707-4.707-.707-.707L5.793 21.5zM5.793 5.5l4.707 4.707.707-.707L6.5 4.793z"></path><path d="M6.5 10.207L11.207 5.5l-.707-.707L5.793 9.5zM5.793 11.5l4.707 4.707.707-.707L6.5 10.793z"></path><path d="M6.5 16.207l4.707-4.707-.707-.707L5.793 15.5z"></path></svg></span><span class="labelRow-jFqVJoPk"><span class="label-jFqVJoPk">ĐIểm &amp; Số liệu</span></span><span class="toolbox-jFqVJoPk showOnHover-jFqVJoPk"></span></div>`;
+            let itempnt = managerroot.find(
+              'div[data-name="popup-menu-container"] div[data-name="menu-inner"] div[data-value="pnf"]'
+            );
+            if (itempnt && itempnt.length > 0) {
+            } else {
+              managerroot
+                .find(
+                  'div[data-name="popup-menu-container"] div[data-name="menu-inner"]'
+                )
+                .append(htmlpnf);
+            }
+            managerroot
+              .find(
+                'div[data-name="popup-menu-container"] div[data-name="menu-inner"] div[data-value="pnf"]'
+              )
+              .unbind("click")
+              .click(function () {
+                tvWidget.chart().setChartType(6);
+                managerroot.html("");
+              });
+          }
+        }
+      }, 1000);
+      tvWidget.changeTheme("dark");
+      tvWidget.headerReady().then(function () {
+        var button = tvWidget.createButton();
+        button.setAttribute("title", "Dark or Light");
+        button.setAttribute("class", "cus-theme");
+        button.addEventListener("click", function () {
+          if (tvWidget.getTheme() == "dark") {
+            tvWidget.changeTheme("light");
+          } else {
+            tvWidget.changeTheme("dark");
+          }
+        });
+        button.textContent = "Change theme";
+      });
     });
   },
-  destroyed() {
+  beforeDestroy() {
     if (this.tvWidget !== null) {
+      this.tvWidget.changeTheme("dark");
       this.tvWidget.remove();
       this.tvWidget = null;
     }

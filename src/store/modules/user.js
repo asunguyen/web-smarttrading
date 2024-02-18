@@ -34,6 +34,7 @@ const actions = {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password }).then(response => {
+        localStorage.setItem("token", response.token);
         commit('SET_TOKEN', response.token)
         setToken(response.token)
         resolve()
@@ -55,7 +56,7 @@ const actions = {
 
         const { isAdmin, username } = data
         const roles = isAdmin ? ['admin'] : ['editor']
-
+        localStorage.setItem("iduser", data._id);
         // roles must be a non-empty array
         if (!roles || roles.length <= 0) {
           reject('getInfo: roles must be a non-null array!')
@@ -77,6 +78,7 @@ const actions = {
     commit('SET_TOKEN', '')
     commit('SET_NAME', '')
     commit('SET_ROLES', [])
+    localStorage.removeItem("token");
     removeToken()
     removeUserInfo()
     resetRouter()

@@ -1,5 +1,5 @@
 <template>
-  <div ref="chartContainer" class="TVChartContainer" />
+  <div ref="chartContainer" class="TVChartContainer" id="tvWidgetContainer" />
 </template>
 
 <script>
@@ -29,7 +29,7 @@ export default {
       type: String,
     },
     chartsStorageUrl: {
-      default: "http://api.smtchart.vn/v1/data/bot-scrape",
+      default: "https://api.smtchart.vn/v1/data/ai",
       type: String,
     },
     chartsStorageApiVersion: {
@@ -41,7 +41,7 @@ export default {
       type: String,
     },
     userId: {
-      default: "public_user_id",
+      default: localStorage.getItem("iduser") + "_scrape",
       type: String,
     },
     fullscreen: {
@@ -66,12 +66,12 @@ export default {
         },
         {
           name: "STTrendPower",
-          visible: true
+          visible: true,
         },
         {
           name: "STTrendVolume",
-          visible: true
-        }
+          visible: true,
+        },
         // ZO TREND
       ],
     };
@@ -87,61 +87,46 @@ export default {
       timezone: "Asia/Ho_Chi_Minh",
       interval: this.interval,
       container: container,
+      container_id: "tvWidgetContainer",
       library_path: this.libraryPath,
       logo: {
         image: "@/assets/logo-st.png",
         link: "http://smtchart.vn/",
       },
       theme: "dark",
-      // charts_storage_url: this.chartsStorageUrl,
-      // charts_storage_api_version: this.chartsStorageApiVersion,
+      charts_storage_url: this.chartsStorageUrl,
+      charts_storage_api_version: this.chartsStorageApiVersion,
       client_id: this.clientId,
       user_id: this.userId,
-      fullscreen: this.fullscreen,
+      //fullscreen: this.fullscreen,
       autosize: this.autosize,
       studies_overrides: this.studiesOverrides,
       load_last_chart: true,
-      favorites: {
-        indicators: ["Volume"],
-      },
+      favorites: {},
       resolution: 1,
+      saveload_separate_drawings_storage: true,
+      chart_template_storage: true,
+      use_localstorage_for_settings: true,
       widgetbar: {
         details: true,
         news: true,
         watchlist: true,
         datawindow: true,
-        watchlist_settings: {
-          default_symbols: [
-            "###STOCKS",
-            "NASDAQ:AAPL",
-            "NASDAQ:MSFT",
-            "NYSE:IBM",
-            "###FOREX",
-            "FX:EURUSD",
-            "FX:GBPUSD",
-            "###CRYPTO",
-            "CRYPTO:BTCUSD",
-            "CRYPTO:ETHUSD",
-          ],
-        },
       },
       overrides: {
         "mainSeriesProperties.showCountdown": true,
+        "paneProperties.backgroundGradientStartColor": "#020024",
+        "paneProperties.backgroundGradientEndColor": "#4f485e",
       },
-      disabled_features: [
-        "use_localstorage_for_settings",
-        "open_account_manager",
-        "dom_widget",
-      ],
+      disabled_features: ["dom_widget"],
       enabled_features: [
-        "study_templates",
-        "pre_post_market_sessions",
-        "show_symbol_logos",
-        "show_exchange_logos",
-        "seconds_resolution",
-        "secondary_series_extend_time_scale",
-        "show_percent_option_for_right_margin",
-        "display_data_mode",
+        "header_layouttoggle",
+        "right_toolbar",
+        "trading_account_manager",
+        "watchlist_sections",
+        "show_last_price_and_change_only_in_series_legend",
+        "chart_template_storage",
+        "use_localstorage_for_settings",
       ],
       custom_indicators_getter: function (PineJS) {
         return Promise.resolve([
@@ -156,12 +141,13 @@ export default {
               shortDescription: "ST Bot",
               isCustomIndicator: true,
               format: {
-                type: "inherit",
+                type: "price",
+                precision: 2,
               },
 
               is_hidden_study: true,
               is_price_study: true,
-              linkedToSeries: false,
+              linkedToSeries: true,
 
               isTVScript: false,
               isTVScriptStub: false,
@@ -260,6 +246,18 @@ export default {
                 {
                   id: "hl2",
                   type: "line",
+                },
+                {
+                  id: "plot_wick_color",
+                  type: "wick_colorer",
+                  palette: "palette_wick",
+                  target: "plot_candle",
+                },
+                {
+                  id: "plot_border_color",
+                  type: "border_colorer",
+                  palette: "palette_border",
+                  target: "plot_candle",
                 },
               ],
 
@@ -615,10 +613,7 @@ export default {
                   isHidden: 1,
                 },
               },
-
-              inputs: [
-                
-              ],
+              inputs: [],
             },
 
             constructor: function () {
@@ -1009,7 +1004,6 @@ export default {
                   var ctx = this._context;
                   var std = PineJS.Std;
                   var result = [NaN, NaN, NaN, NaN, NaN, NaN, NaN];
-
                   var iPeriod, symbol;
                   var HH,
                     ii,
@@ -1043,27 +1037,21 @@ export default {
                     oref,
                     cref,
                     clr;
-
                   try {
                     iPeriod = 50;
-
                     symbol = ctx.symbol;
                     HH = !isNaN(symbol.time) ? std.hour(ctx) : NaN;
                     ii = !isNaN(symbol.time) ? std.minute(ctx) : NaN;
-
                     open = std.open(ctx);
                     close = std.close(ctx);
                     hi = std.high(ctx);
                     lo = std.low(ctx);
                     hl2 = (hi + lo) / 2;
                     vol = std.volume(ctx);
-
                     aVol = ctx.new_var(vol);
                     av = std.sum(aVol, 10, ctx) / 10;
-
                     value2 = vol * (hi - lo);
                     aValue2 = ctx.new_var(value2);
-
                     hiValue2 = std.highest(aValue2, 10);
                     va =
                       vol >= 2 * av || value2 > hiValue2
@@ -1071,48 +1059,34 @@ export default {
                         : vol >= 1.5 * av
                         ? 2
                         : 0;
-
                     aHL2 = ctx.new_var(hl2);
                     sma1 = std.sma(aHL2, 5, ctx);
                     sma2 = std.sma(aHL2, 34, ctx);
-
                     ao = sma1 - sma2;
                     aAO = ctx.new_var(ao);
-
                     a0 = aAO.get(0);
                     a1 = aAO.get(1);
                     diff = a0 - a1;
-
                     // calculate hashc
                     hashc = (open + hi + lo + close) / 4;
                     HC1 = ctx.new_var(hashc);
-
                     // calculate hasho
                     HO1 = ctx.new_var(NaN);
-
                     cref = HO1.get(1);
                     oref = HC1.get(1);
-
                     hasho = isNaN(oref)
                       ? (open + close) / 2
                       : (oref + cref) / 2;
-
                     HO1.set(hasho);
-
                     // calculate hashc1
                     dx = Math.abs(hashc - hasho) / 2;
                     hashc1 = hasho < hashc ? hashc - dx : hashc + dx;
-
                     // calculate hash high
                     hashh = Math.max(hi, Math.max(hasho, hashc));
-
                     // calculate hash open
                     hashl = Math.min(lo, Math.min(hasho, hashc));
-
                     //console.log(`STSignal, ${HH}:${ii}, ${oref}, ${cref}, ${hasho}, ${hashc}, ${hashc1}, ${hashh}, ${hashl}`);
-
                     clrFin = 0;
-
                     if (ao >= 0) {
                       // BullishStrongLong
                       clr = 1;
@@ -1120,21 +1094,18 @@ export default {
                         clrFin == 0 && diff >= 0 && a0 > a1 && hashc >= hasho
                           ? clr
                           : clrFin; // ao tang, n?n tang(ao duong)
-
                       // BullishStrongShort
                       clr = 2;
                       clrFin =
                         clrFin == 0 && diff < 0 && a0 < a1 && hashc1 <= hasho
                           ? clr
                           : clrFin; // ao gi?m, n?n gi?m (ao duong)
-
                       //BullishWeakLong
                       clr = 3;
                       clrFin =
                         clrFin == 0 && diff >= 0 && a0 > a1 && hashc1 <= hasho
                           ? clr
                           : clrFin; // ao tang, n?n tang(ao duong)
-
                       // BullishWeakShort
                       clr = 4;
                       clrFin =
@@ -1148,21 +1119,18 @@ export default {
                         clrFin == 0 && diff < 0 && a0 < a1 && hashc1 >= hasho
                           ? clr
                           : clrFin; // ao gi?m, n?n tang(ao âm)
-
                       // BearishStrongShort
                       clr = 6;
                       clrFin =
                         clrFin == 0 && diff < 0 && a0 < a1 && hashc1 <= hasho
                           ? clr
                           : clrFin; // ao gi?m, n?n gi?m
-
                       // BearishWeakLong
                       clr = 7;
                       clrFin =
                         clrFin == 0 && diff >= 0 && a0 > a1 && hashc1 <= hasho
                           ? clr
                           : clrFin; // ao tang, n?n gi?m
-
                       // BearishWeakShort
                       clr = 8;
                       clrFin =
@@ -1170,12 +1138,10 @@ export default {
                           ? clr
                           : clrFin; // ao tang, n?n tang
                     }
-
                     result = [hasho, hashh, hashl, hashc1, clrFin, va];
                   } catch (e) {
                     console.log(e);
                   }
-
                   return result;
                 };
               };
@@ -1345,141 +1311,144 @@ export default {
             },
           },
           // power
-          { // SmartTrader Trend Power
-    name: "STTrendPower",
-    metainfo: {
-        _metainfoVersion: 51,
-        id: "STTrendPower@tv-basicstudies-1",
-        description: "STTrendPower",
-        shortDescription: "ST Power",
-        isCustomIndicator: 1,
-        format: {
-            type: "price",
-            precision: 4
-        },
-        is_hidden_study: 1,
-        is_price_study: 0,
-        linkedToSeries: 0,
+          {
+            // SmartTrader Trend Power
+            name: "STTrendPower",
+            metainfo: {
+              _metainfoVersion: 51,
+              id: "STTrendPower@tv-basicstudies-1",
+              description: "STTrendPower",
+              shortDescription: "ST Power",
+              isCustomIndicator: 1,
+              format: {
+                type: "price",
+                precision: 4,
+              },
+              is_hidden_study: 1,
+              is_price_study: 0,
+              linkedToSeries: 0,
 
-        isTVScript: !1,
-        isTVScriptStub: !1,
-        transparency: 65,
+              isTVScript: !1,
+              isTVScriptStub: !1,
+              transparency: 65,
 
-        plots: [{
-            id: "vol",
-            type: "line"
-        }, {
-            id: "volumePalette",
-            palette: "volumePalette",
-            target: "vol",
-            type: "colorer"
-        }, {
-            id: "vol_ma",
-            type: "line"
-        }],
+              plots: [
+                {
+                  id: "vol",
+                  type: "line",
+                },
+                {
+                  id: "volumePalette",
+                  palette: "volumePalette",
+                  target: "vol",
+                  type: "colorer",
+                },
+                {
+                  id: "vol_ma",
+                  type: "line",
+                },
+              ],
 
-        defaults: {
-            styles: {
-                vol: {
+              defaults: {
+                styles: {
+                  vol: {
                     plottype: 5,
                     linestyle: 0,
                     linewidth: 1,
                     trackPrice: !1,
                     transparency: 10,
                     visible: 1,
-                    color: "#000080"
-                },
-                vol_ma: {
+                    color: "#000080",
+                  },
+                  vol_ma: {
                     plottype: 0,
                     linestyle: 0,
                     linewidth: 1,
                     trackPrice: !1,
                     transparency: 10,
                     visible: 0,
-                    color: "#FD0000"
-                }
-            },
-            precision: 0,
-            palettes: {
-                volumePalette: {
+                    color: "#FD0000",
+                  },
+                },
+                precision: 0,
+                palettes: {
+                  volumePalette: {
                     colors: {
-                        0: {
-                            color: "#00FF00",
-                            width: 1,
-                            style: 0
-                        },
-                        1: {
-                            color: "#1e90ff",
-                            width: 1,
-                            style: 0
-                        },
-                        2: {
-                            color: "#ff0000",
-                            width: 1,
-                            style: 0
-                        },
-                        3: {
-                            color: "#e39ff6",
-                            width: 1,
-                            style: 0
-                        },
-                        4: {
-                            color: "#cfcfcf",
-                            width: 1,
-                            style: 0
-                        }
-                    }
-                }
-            },
-            inputs: {
-                iFast: 14,
-                iSlow: 26,
-                iMA: 52
-            }
-        },
-        styles: {
-            vol: {
-                title: "Trend Power",
-                histogramBase: 0,
-                isHidden: 1,
-            },
-            vol_ma: {
-                title: "Fast",
-                histogramBase: 0,
-                isHidden: 1,
-            }
-        },
-        palettes: {
-            volumePalette: {
-                colors: {
+                      0: {
+                        color: "#00FF00",
+                        width: 1,
+                        style: 0,
+                      },
+                      1: {
+                        color: "#1e90ff",
+                        width: 1,
+                        style: 0,
+                      },
+                      2: {
+                        color: "#ff0000",
+                        width: 1,
+                        style: 0,
+                      },
+                      3: {
+                        color: "#e39ff6",
+                        width: 1,
+                        style: 0,
+                      },
+                      4: {
+                        color: "#cfcfcf",
+                        width: 1,
+                        style: 0,
+                      },
+                    },
+                  },
+                },
+                inputs: {
+                  iFast: 14,
+                  iSlow: 26,
+                  iMA: 52,
+                },
+              },
+              styles: {
+                vol: {
+                  title: "Trend Power",
+                  histogramBase: 0,
+                  isHidden: 1,
+                },
+                vol_ma: {
+                  title: "Fast",
+                  histogramBase: 0,
+                  isHidden: 1,
+                },
+              },
+              palettes: {
+                volumePalette: {
+                  colors: {
                     0: {
-                        name: "Strong Long"
+                      name: "Strong Long",
                     },
                     1: {
-                        name: "Weak Long"
+                      name: "Weak Long",
                     },
                     2: {
-                        name: "Strong Short"
+                      name: "Strong Short",
                     },
                     3: {
-                        name: "Weak Short"
+                      name: "Weak Short",
                     },
                     4: {
-                        name: "Sideway"
-                    }
-                }
-            }
-        },
-        
-        inputs: [
-            
-        ],
-    },
+                      name: "Sideway",
+                    },
+                  },
+                },
+              },
 
-    constructor: function() {
-        this.init = function(context, input) {
-          this.stPower = function() {
-            var std = PineJS.Std;
+              inputs: [],
+            },
+
+            constructor: function () {
+              this.init = function (context, input) {
+                this.stPower = function () {
+                  var std = PineJS.Std;
                   var ctx = this._context;
                   var hl2, aHL2;
                   var rsiFast, fast, Fast, rsiSlow, slow, Slow;
@@ -1555,51 +1524,53 @@ export default {
                     console.log(e);
                   }
                   return result;
-          }
-        }
+                };
+              };
 
-        this.main = function(e, t) {
-            this._context = e; this._input = t;
-            var result = [];
+              this.main = function (e, t) {
+                this._context = e;
+                this._input = t;
+                var result = [];
 
-            try {
-                var ctx = this._context;
-                var time = ctx.symbol.time;
-                
-                result =this.stPower(this._context, this._input);
-                
-                return result;
-            } catch (e) {
-                console.log(e);
-                return result;
-            }
-        }
-    }
-},
-//volume
-{ // SmartTrader Trend Volume
-    name: "STTrendVolume",
-    metainfo: {
-        _metainfoVersion: 51,
-        id: "STTrendVolume@tv-basicstudies-1",
-        description: "STTrendVolume",
-        shortDescription: "ST Volume",
-        isCustomIndicator: 1,
-        format: {
-            type: "price",
-            precision: 4
-        },
-        is_hidden_study: 1,
-        is_price_study: 0,
-        linkedToSeries: 0,
+                try {
+                  var ctx = this._context;
+                  var time = ctx.symbol.time;
 
-        isTVScript: !1,
-        isTVScriptStub: !1,
-        transparency: 65,
+                  result = this.stPower(this._context, this._input);
 
-        defaults: {
-            styles: {
-                vol: {
+                  return result;
+                } catch (e) {
+                  console.log(e);
+                  return result;
+                }
+              };
+            },
+          },
+          //volume
+          {
+            // SmartTrader Trend Volume
+            name: "STTrendVolume",
+            metainfo: {
+              _metainfoVersion: 51,
+              id: "STTrendVolume@tv-basicstudies-1",
+              description: "STTrendVolume",
+              shortDescription: "ST Volume",
+              isCustomIndicator: 1,
+              format: {
+                type: "price",
+                precision: 4,
+              },
+              is_hidden_study: 1,
+              is_price_study: 0,
+              linkedToSeries: 0,
+
+              isTVScript: !1,
+              isTVScriptStub: !1,
+              transparency: 65,
+
+              defaults: {
+                styles: {
+                  vol: {
                     plottype: 5,
                     linestyle: 0,
                     linewidth: 1,
@@ -1607,8 +1578,8 @@ export default {
                     transparency: 10,
                     visible: 1,
                     color: "#000080",
-                },
-                vol_ma: {
+                  },
+                  vol_ma: {
                     plottype: 0,
                     linestyle: 0,
                     linewidth: 1,
@@ -1616,122 +1587,127 @@ export default {
                     transparency: 10,
                     visible: 0,
                     color: "#FD0000",
-                }
-            },
-            precision: 0,
-            palettes: {
-                volumePalette: {
+                  },
+                },
+                precision: 0,
+                palettes: {
+                  volumePalette: {
                     colors: {
-                        0: {
-                            color: "#00FF00",
-                            width: 1,
-                            style: 0
-                        },
-                        1: {
-                            color: "#1e90ff",
-                            width: 1,
-                            style: 0
-                        },
-                        2: {
-                            color: "#ff0000",
-                            width: 1,
-                            style: 0
-                        },
-                        3: {
-                            color: "#e39ff6",
-                            width: 1,
-                            style: 0
-                        },
-                        4: {
-                            color: "#cfcfcf",
-                            width: 1,
-                            style: 0
-                        }
-                    }
-                }
-            },
-            inputs: {
-                iFast: 14,
-                iSlow: 26,
-                iMA: 52
-            }
-        },
-        plots: [{
-            id: "vol",
-            type: "line"
-        }, {
-            id: "volumePalette",
-            palette: "volumePalette",
-            target: "vol",
-            type: "colorer"
-        }, {
-            id: "vol_ma",
-            type: "line"
-        }],
-        styles: {
-            vol: {
-                title: "Trend Volume",
-                histogramBase: 0,
-                isHidden : 1,
-            },
-            vol_ma: {
-                title: "Fast",
-                histogramBase: 0,
-                isHidden : 1,
-            }
-        },
-        palettes: {
-            volumePalette: {
-                colors: {
+                      0: {
+                        color: "#00FF00",
+                        width: 1,
+                        style: 0,
+                      },
+                      1: {
+                        color: "#1e90ff",
+                        width: 1,
+                        style: 0,
+                      },
+                      2: {
+                        color: "#ff0000",
+                        width: 1,
+                        style: 0,
+                      },
+                      3: {
+                        color: "#e39ff6",
+                        width: 1,
+                        style: 0,
+                      },
+                      4: {
+                        color: "#cfcfcf",
+                        width: 1,
+                        style: 0,
+                      },
+                    },
+                  },
+                },
+                inputs: {
+                  iFast: 14,
+                  iSlow: 26,
+                  iMA: 52,
+                },
+              },
+              plots: [
+                {
+                  id: "vol",
+                  type: "line",
+                },
+                {
+                  id: "volumePalette",
+                  palette: "volumePalette",
+                  target: "vol",
+                  type: "colorer",
+                },
+                {
+                  id: "vol_ma",
+                  type: "line",
+                },
+              ],
+              styles: {
+                vol: {
+                  title: "Trend Volume",
+                  histogramBase: 0,
+                  isHidden: 1,
+                },
+                vol_ma: {
+                  title: "Fast",
+                  histogramBase: 0,
+                  isHidden: 1,
+                },
+              },
+              palettes: {
+                volumePalette: {
+                  colors: {
                     0: {
-                        name: "Strong Long"
+                      name: "Strong Long",
                     },
                     1: {
-                        name: "Weak Long"
+                      name: "Weak Long",
                     },
                     2: {
-                        name: "Strong Short"
+                      name: "Strong Short",
                     },
                     3: {
-                        name: "Weak Short"
+                      name: "Weak Short",
                     },
                     4: {
-                        name: "Sideway"
-                    }
-                }
-            }
-        },
+                      name: "Sideway",
+                    },
+                  },
+                },
+              },
 
-        inputs: [
-            {
-                id: "iFast",
-                name: "Fast",
-                defval: 14,
-                type: "integer",
-                min: 1,
-                max: 200
-            }, {
-                id: "iSlow",
-                name: "Slow",
-                defval: 26,
-                type: "integer",
-                min: 1,
-                max: 200
-            }, {
-                id: "iMA",
-                name: "MA",
-                defval: 52,
-                type: "integer",
-                min: 1,
-                max: 200
-            }
-        ],
-    },
-    constructor: function() {
-    
-        this.init = function (context, input) {
-          this.stVolume = function() {
-            var std = PineJS.Std;
+              inputs: [
+                {
+                  id: "iFast",
+                  name: "Fast",
+                  defval: 14,
+                  type: "integer",
+                  min: 1,
+                  max: 200,
+                },
+                {
+                  id: "iSlow",
+                  name: "Slow",
+                  defval: 26,
+                  type: "integer",
+                  min: 1,
+                  max: 200,
+                },
+                {
+                  id: "iMA",
+                  name: "MA",
+                  defval: 52,
+                  type: "integer",
+                  min: 1,
+                  max: 200,
+                },
+              ],
+            },
+            constructor: function () {
+              this.init = function (context, input) {
+                this.stVolume = function () {
+                  var std = PineJS.Std;
                   var ctx = this._context;
                   var ac, aAC;
                   var rsiFast, fast, Fast, rsiSlow, slow, Slow;
@@ -1818,23 +1794,27 @@ export default {
                   }
 
                   return result;
-          }
-        }
+                };
+              };
 
-        this.main = function(e, t) {
-            this._context = e; this._input = t;
-            var result = [];
+              this.main = function (e, t) {
+                this._context = e;
+                this._input = t;
+                var result = [];
 
-            try {
-                result = this.stVolume();
-                return result;
-            } catch (e) {
-                console.log(e);
-                return result;
-            }
-        }
-    }
-}
+                try {
+                  result = this.stVolume();
+                  return result;
+                } catch (e) {
+                  console.log(e);
+                  return result;
+                }
+              };
+            },
+          },
+          //zo trend
+
+          //zo signal
         ]);
       },
     };
@@ -1844,21 +1824,67 @@ export default {
     this.tvWidget = tvWidget;
 
     tvWidget.onChartReady(() => {
-      tvWidget.subscribe("onAutoSaveNeeded", () => {
-        console.log({
-          indicators: thisVue.getCurrentChartUserIndicators(
-            tvWidget.activeChart()
-          ),
-        });
-      });
+      tvWidget.activeChart().removeAllStudies();
       thisVue.restoreUserIndicators(
         thisVue.scrapeDerivativeIndicators,
         tvWidget.activeChart()
       );
+      tvWidget.subscribe("onAutoSaveNeeded", () => {});
+
+      var runrot = setInterval(() => {
+        let managerroot = $("#tvWidgetContainer iframe")
+          .contents()
+          .find("#overlap-manager-root");
+        if (managerroot && managerroot.length > 0) {
+          var headerchartTypes = $("#tvWidgetContainer iframe")
+            .contents()
+            .find(
+              "#header-toolbar-chart-styles .apply-common-tooltip.isOpened-merBkM5y"
+            );
+          if (headerchartTypes && headerchartTypes.length > 0) {
+            let htmlpnf = `<div data-value="pnf" class="item-jFqVJoPk withIcon-jFqVJoPk"><span class="icon-jFqVJoPk"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28" fill="currentColor"><path d="M14.5 16a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0-1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm0 7a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0-1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm3.293-15.5l4.707 4.707.707-.707L18.5 4.793z"></path><path d="M18.5 10.207L23.207 5.5l-.707-.707L17.793 9.5zm-.707 1.293l4.707 4.707.707-.707-4.707-4.707z"></path><path d="M18.5 16.207l4.707-4.707-.707-.707-4.707 4.707zM5.793 17.5l4.707 4.707.707-.707L6.5 16.793z"></path><path d="M6.5 22.207l4.707-4.707-.707-.707L5.793 21.5zM5.793 5.5l4.707 4.707.707-.707L6.5 4.793z"></path><path d="M6.5 10.207L11.207 5.5l-.707-.707L5.793 9.5zM5.793 11.5l4.707 4.707.707-.707L6.5 10.793z"></path><path d="M6.5 16.207l4.707-4.707-.707-.707L5.793 15.5z"></path></svg></span><span class="labelRow-jFqVJoPk"><span class="label-jFqVJoPk">ĐIểm &amp; Số liệu</span></span><span class="toolbox-jFqVJoPk showOnHover-jFqVJoPk"></span></div>`;
+            let itempnt = managerroot.find(
+              'div[data-name="popup-menu-container"] div[data-name="menu-inner"] div[data-value="pnf"]'
+            );
+            if (itempnt && itempnt.length > 0) {
+            } else {
+              managerroot
+                .find(
+                  'div[data-name="popup-menu-container"] div[data-name="menu-inner"]'
+                )
+                .append(htmlpnf);
+            }
+            managerroot
+              .find(
+                'div[data-name="popup-menu-container"] div[data-name="menu-inner"] div[data-value="pnf"]'
+              )
+              .unbind("click")
+              .click(function () {
+                tvWidget.chart().setChartType(6);
+                managerroot.html("");
+              });
+          }
+        }
+      }, 1000);
+      tvWidget.changeTheme("dark");
+      tvWidget.headerReady().then(function () {
+        var button = tvWidget.createButton();
+        button.setAttribute("title", "Dark or Light");
+        button.setAttribute("class", "cus-theme");
+        button.addEventListener("click", function () {
+          if (tvWidget.getTheme() == "dark") {
+            tvWidget.changeTheme("light");
+          } else {
+            tvWidget.changeTheme("dark");
+          }
+        });
+        button.textContent = "Change theme";
+      });
     });
   },
-  destroyed() {
+  beforeDestroy() {
     if (this.tvWidget !== null) {
+      this.tvWidget.changeTheme("dark");
       this.tvWidget.remove();
       this.tvWidget = null;
     }
@@ -1875,6 +1901,16 @@ export default {
         inputs: activeChart.getStudyById(study.id).getInputValues(),
         // get styles
       }));
+    },
+    removeAllIndicators(activeChart) {
+      if (!activeChart) {
+        return [];
+      }
+
+      return activeChart.getAllStudies().map((study) => {
+        activeChart.getStudyById(study.id).remove();
+        // get styles
+      });
     },
 
     restoreUserIndicators(indicators, activeChart) {

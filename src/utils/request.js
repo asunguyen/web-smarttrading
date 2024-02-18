@@ -6,7 +6,7 @@ import { getToken } from '@/utils/auth'
 
 // create an axios instance
 const service = axios.create({
-  baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
+  baseURL: "https://api.smtchart.vn/v1", // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
   timeout: 30000 // request timeout
 })
@@ -22,6 +22,8 @@ service.interceptors.request.use(
       // please modify it according to the actual situation
       config.headers['Authorization'] = 'Bearer ' + getToken()
     }
+    // config.headers["Content-Type"] = "application/json";
+    // config["mode"] = 'no-cors';
     return config
   },
   error => {
