@@ -1705,9 +1705,9 @@ export default {
                   const LH = Q > P
                   const X = E && HL && B
                   const Y = E && LH && A
-                  result.push(lowS + ADX)
-                  result.push(lowS + P)
-                  result.push(lowS + Q)
+                  result.push(hl2S + ADX)
+                  result.push(hl2S + P)
+                  result.push(hl2S + Q)
                   return result
                 } catch (e) {
                   console.log(e)
