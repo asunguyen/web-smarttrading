@@ -72,11 +72,11 @@ export default {
           name: "STTrendVolume",
           visible: true,
         },
-        {
-          name: "ST HTF",
-          visible: true,
-        },
-        // ZO TREND
+        // ZO TREND ST HTF
+        // {
+        //   name: "ST HTF",
+        //   visible: true,
+        // },
       ],
     };
   },
@@ -268,6 +268,23 @@ export default {
                   type: "border_colorer",
                   palette: "palette_border",
                   target: "plot_candle",
+                },
+                // plot htf
+                {
+                  id: "plot_0",
+                  type: "line",
+                },
+                {
+                  id: "plot_1",
+                  type: "line",
+                },
+                {
+                  id: "plot_2",
+                  type: "line",
+                },
+                {
+                  id: "plot_3",
+                  type: "line",
                 },
               ],
 
@@ -575,6 +592,34 @@ export default {
                     location: "BelowBar",
                     plottype: "shape_label_up",
                   },
+                  //htf
+                  plot_0: {
+                    linestyle: 0,
+                    visible: true,
+                    linewidth: 1,
+                    plottype: 0,
+                    trackPrice: false,
+                    transparency: 0,
+                    color: "#008FFF",
+                  },
+                  plot_1: {
+                    linestyle: 0,
+                    visible: true,
+                    linewidth: 1,
+                    plottype: 0,
+                    trackPrice: false,
+                    transparency: 0,
+                    color: "#04FF00",
+                  },
+                  plot_2: {
+                    linestyle: 0,
+                    visible: true,
+                    linewidth: 1,
+                    plottype: 0,
+                    trackPrice: false,
+                    transparency: 0,
+                    color: "#FF0000",
+                  },
                 },
 
                 inputs: {
@@ -736,8 +781,50 @@ export default {
 
                   isHidden: 1,
                 },
+                //stype htf
+                plot_0: {
+                  title: "Trend MTF",
+                  histogramBase: 1,
+                  linestyle: 2,
+                  linewidth: 2,
+                  transparency: 10,
+                  trackPrice: false,
+
+                  isHidden: 1,
+                },
+                plot_1: {
+                  title: "Current Trend TF",
+                  histogramBase: 1,
+                  linestyle: 2,
+                  linewidth: 2,
+                  transparency: 10,
+                  trackPrice: false,
+
+                  isHidden: 1,
+                },
+                plot_2: {
+                  title: "High IZE Trend",
+                  histogramBase: 1,
+                  linestyle: 2,
+                  linewidth: 2,
+                  transparency: 10,
+                  trackPrice: false,
+
+                  isHidden: 1,
+                },
+                plot_3: {
+                  title: "Low IZE Trend",
+                  histogramBase: 1,
+                  linestyle: 2,
+                  linewidth: 2,
+                  transparency: 10,
+                  trackPrice: false,
+
+                  isHidden: 1,
+                },
               },
-              inputs: [],
+              inputs: [
+              ],
             },
 
             constructor: function () {
@@ -1574,6 +1661,53 @@ export default {
                   result.push(color);
                   result.push(color);
                   result.push(color);
+
+                  //htf
+                  var AV = 30;
+                  var PR = 14;
+                  var high = PineJS.Std.high(this._context);
+                  var highS = this._context.new_var(high);
+                  var low = PineJS.Std.low(this._context);
+                  var lowS = this._context.new_var(low);
+                  var upMove = highS.get(0) - highS.get(1);
+                  var downMove = lowS.get(0) - lowS.get(1);
+                  var plusDM = upMove > downMove && upMove > 0 ? upMove : 0;
+                  var plusDMS = this._context.new_var(plusDM);
+                  var minusDM =
+                    downMove > upMove && downMove > 0 ? downMove : 0;
+                  var minusDMS = this._context.new_var(minusDM);
+                  var tr1 = highS.get(0) - lowS.get(0);
+                  var close = PineJS.Std.low(this._context);
+                  var closeS = this._context.new_var(close);
+                  var tr2 = Math.abs(highS.get(0) - closeS.get(1));
+                  var tr3 = Math.abs(lowS.get(0) - closeS.get(1));
+                  var trueRange = Math.max(Math.max(tr1, tr2), tr3);
+                  var trueRangeS = this._context.new_var(trueRange);
+                  var plusDI =
+                    (PineJS.Std.sma(plusDMS, PR, this._context) /
+                      PineJS.Std.sma(trueRangeS, PR, this._context))
+                  var minusDI =
+                    (PineJS.Std.sma(minusDMS, PR, this._context) /
+                      PineJS.Std.sma(trueRangeS, PR, this._context))
+
+                  var DX =
+                    (Math.abs(plusDI - minusDI) / (plusDI + minusDI))
+                  var DXS = this._context.new_var(DX);
+                  var ADX = PineJS.Std.sma(DXS, PR, this._context);
+
+                  const A = plusDI < 20;
+                  const B = minusDI < 20;
+                  const E = ADX > AV;
+                  const P = plusDI;
+                  const Q = minusDI;
+
+                  const HL = P > Q;
+                  const LH = Q > P;
+                  const X = E && HL && B;
+                  const Y = E && LH && A;
+                  result.push(lowS + ADX);
+                  result.push(lowS + P);
+                  result.push(lowS + Q);
                   return result;
                 } catch (e) {
                   console.log(e);
@@ -2086,7 +2220,7 @@ export default {
               };
             },
           },
-          //st HTF
+          //zo trend
           {
             name: "ST HTF",
             metainfo: {
@@ -2244,7 +2378,6 @@ export default {
               };
             },
           },
-
           //zo signal
         ]);
       },
