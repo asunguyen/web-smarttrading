@@ -595,7 +595,7 @@ export default {
                   // htf
                   plot_0: {
                     linestyle: 0,
-                    visible: true,
+                    visible: false,
                     linewidth: 1,
                     plottype: 0,
                     trackPrice: false,
@@ -604,7 +604,7 @@ export default {
                   },
                   plot_1: {
                     linestyle: 0,
-                    visible: true,
+                    visible: false,
                     linewidth: 1,
                     plottype: 0,
                     trackPrice: false,
@@ -613,7 +613,7 @@ export default {
                   },
                   plot_2: {
                     linestyle: 0,
-                    visible: true,
+                    visible: false,
                     linewidth: 1,
                     plottype: 0,
                     trackPrice: false,
@@ -1663,8 +1663,8 @@ export default {
                   result.push(color)
 
                   // htf
-                  var AV = 30
-                  var PR = 14
+                  var AV = 50
+                  var PR = 13;
                   var high = PineJS.Std.high(this._context)
                   var highS = this._context.new_var(high)
                   var low = PineJS.Std.low(this._context)
@@ -1687,8 +1687,8 @@ export default {
                     (PineJS.Std.sma(plusDMS, PR, this._context) /
                       PineJS.Std.sma(trueRangeS, PR, this._context))
                   var minusDI =
-                    (PineJS.Std.sma(minusDMS, PR, this._context) /
-                      PineJS.Std.sma(trueRangeS, PR, this._context))
+                    (PineJS.Std.sma(minusDMS, AV, this._context) /
+                      PineJS.Std.sma(trueRangeS, AV, this._context))
 
                   var DX =
                     (Math.abs(plusDI - minusDI) / (plusDI + minusDI))
