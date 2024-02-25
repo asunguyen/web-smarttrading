@@ -105,6 +105,9 @@ var zotrend = {
       ],
     },
     constructor: function () {
+      this.init = function(context, input) {
+
+      };
       this.main = function (context, inputCallback) {
         this._context = context;
         this._input = inputCallback;
@@ -155,6 +158,8 @@ var zotrend = {
         const X = E && HL && B;
         const Y = E && LH && A;
         return [ADX, P, Q];
+
+        
       };
     },
   }
@@ -250,3 +255,78 @@ var zotrend = {
 
 // fill(plot_ema_50_high_in_down, plot_trend_tf1, color = trend_tf1_line() > ema_50_high ? #FA8072 : na, transp = 50 )
 // fill(plot_ema_50_low_in_up, plot_trend_tf1, color = trend_tf1_line() < ema_50_low ? #008080 : na, transp = 50)
+
+
+// HTF convert demo
+
+// var highMA = 13;
+// var lowMA = 50;
+// var close_tf0 = close;
+// var trend_tf2 = 1;
+// var trend_tf1 = 1;
+
+// // Hàm Next1
+// function Next1(from) {
+//     var next = from;
+//     next = from === "1" ? "5" : next;
+//     next = from === "5" ? "30" : next;
+//     next = from === "30" ? "60" : next;
+//     next = from === "15" ? "60" : next;
+//     next = from === "60" ? "240" : next;
+//     next = from === "240" ? "D" : next;
+//     next = from === "D" ? "W" : next;
+//     next = from === "W" ? "M" : next;
+//     return next;
+// }
+
+// // Hàm Next2
+// function Next2(from) {
+//     return Next1(Next1(from));
+// }
+
+// // Hàm Next3
+// function Next3(from) {
+//     return Next1(Next2(from));
+// }
+
+// // Hàm Next4
+// function Next4(from) {
+//     return Next1(Next3(from));
+// }
+
+// // Hàm Next
+// function Next(from, step) {
+//     return step === 0 ? from : step === 1 ? Next1(from) : step === 2 ? Next2(from) : step === 3 ? Next3(from) : Next4(from);
+// }
+
+// // Các phép toán khác
+// var ema_high = ema(high, highMA);
+// var ema_low = ema(low, highMA);
+
+// var ema_50_high = ema(high, lowMA);
+// var ema_50_low = ema(low, lowMA);
+
+// var ema_13_high_tf1 = ema_high; // Giả sử giá trị ema_13_high_tf1 bằng ema_high
+// var ema_13_low_tf1 = ema_low; // Giả sử giá trị ema_13_low_tf1 bằng ema_low
+// var ema_13_high_tf2 = ema_high; // Giả sử giá trị ema_13_high_tf2 bằng ema_high
+// var ema_13_low_tf2 = ema_low; // Giả sử giá trị ema_13_low_tf2 bằng ema_low
+
+// // Cập nhật trend_tf2 và trend_tf1
+// if (trend_tf2 === 1 && close_tf2 > ema_13_high_tf2 && close_tf2[1] < ema_13_high_tf2[1]) {
+//     trend_tf2 = -1;
+// } else if (trend_tf2 === -1 && close_tf2 < ema_13_low_tf2 && close_tf2[1] > ema_13_low_tf2[1]) {
+//     trend_tf2 = 1;
+// }
+
+// if (trend_tf1 === 1 && close_tf1 > ema_13_high_tf1 && close_tf1[1] < ema_13_high_tf1[1]) {
+//     trend_tf1 = -1;
+// } else if (trend_tf1 === -1 && close_tf1 < ema_13_low_tf1 && close_tf1[1] > ema_13_low_tf1[1]) {
+//     trend_tf1 = 1;
+// }
+
+
+// // Vẽ đồ thị
+// plot(trend_tf2, "Trend MTF", color = trend_tf2 === 1 ? Color.red : Color.green, style = plot.style_line, linewidth = 2);
+// plot(trend_tf1, "Current Trend TF", color = trend_tf1 === 1 ? Color.orange : Color.blue, style = plot.style_line, linewidth = 3);
+
+// plot(ema_50_high - ema_50_low, "High IZE Trend", color = ema_50_high > ema_50_low ? Color.red : Color.blue, style = plot.style_histogram);
