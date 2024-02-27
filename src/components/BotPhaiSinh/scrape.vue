@@ -884,6 +884,31 @@ export default {
 
                   return NaN;
                 };
+                this.getNextFrame = function (period) {
+                  period = parseInt(period);
+
+                  if (period == 1) {
+                    return 3;
+                  } else if (period == 3) {
+                    return 5;
+                  } else if (period == 5) {
+                    return 10;
+                  } else if (period == 10) {
+                    return 15;
+                  } else if (period == 15) {
+                    return 30;
+                  } else if (period == 30) {
+                    return 60;
+                  } else if (period == 60) {
+                    return 120;
+                  } else if (period == 120) {
+                    return 180;
+                  }else if (period == 180) {
+                    return 240;
+                  }
+
+                  return NaN;
+                };
                 this.stTrend = function () {
                   PineJS.Std.ref = function (e, periods) {
                     return e.get(periods);
@@ -959,7 +984,194 @@ export default {
                     } else {
                       return [NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN];
                     }
+                    h0 = std.high(ctx);
+                    H0 = ctx.new_var(h0);
 
+                    h1 = std.highest(H0, tf1_mul);
+                    H1 = ctx.new_var(h1);
+
+                    eh1 = std.ema(H1, iFast * tf1_mul, ctx);
+                    EH1 = ctx.new_var(eh1);
+
+                    EH1S = ctx.new_var(eh1);
+                    if (minOdd == 0) {
+                      EH1S.set((eh1s = eh1));
+                    } else {
+                      eh1s = std.ref(EH1S, 1);
+                      EH1S.set(eh1s);
+                    }
+
+                    l0 = std.low(ctx);
+                    L0 = ctx.new_var(l0);
+
+                    l1 = std.lowest(L0, tf1_mul);
+                    L1 = ctx.new_var(l1);
+
+                    el1 = std.ema(L1, iFast * tf1_mul, ctx);
+                    EL1 = ctx.new_var(el1);
+
+                    EL1S = ctx.new_var(el1);
+                    if (minOdd == 0) {
+                      EL1S.set((el1s = el1));
+                    } else {
+                      el1s = std.ref(EL1S, 1);
+                      EL1S.set(el1s);
+                    }
+
+                    c0 = std.close(ctx);
+                    C0 = ctx.new_var(c0);
+
+                    c1h = std.highest(C0, tf1_mul);
+                    C1H = ctx.new_var(c1h);
+
+                    c1l = std.lowest(C0, tf1_mul);
+                    C1L = ctx.new_var(c1l);
+
+                    rc1h = std.ref(C1H, 1);
+                    rc1l = std.ref(C1L, 1);
+
+                    reh1 = std.ref(EH1, 1);
+                    rel1 = std.ref(EL1, 1);
+
+                    eh0 = std.ema(H0, iSlow, ctx);
+                    el0 = std.ema(L0, iSlow, ctx);
+
+                    SIDE = ctx.new_var(NaN);
+                    side = SIDE.get(1);
+                    const o0 = std.open(ctx);
+                    var oc2 = (o0 + c0) / 2;
+                    var OC2 = ctx.new_var(oc2);
+                    var ma = std.sma(OC2, 5, ctx);
+                    var MA = ctx.new_var(ma);
+                    var rma = MA.get(1);
+
+                    SIDE = ctx.new_var(NaN);
+                    side = SIDE.get(1);
+
+                    if (ma < el1) side = -1;
+                    else if (ma > eh1) side = 1;
+
+                    // update trend side
+                    SIDE.set(side);
+
+                    trend = isNaN(side) ? NaN : side > 0 ? el1 : eh1;
+                    trend = isNaN(side) ? NaN : side > 0 ? el1s : eh1s;
+                    clr = isNaN(side) ? 0 : side > 0 ? 1 : 0;
+
+                    cloud1 = trend;
+                    cloud2 = side > 0 ? el0 : eh0;
+
+                    data = {
+                      side: side,
+                      eh1: eh1,
+                      el1: el1,
+
+                      eh1s: eh1s,
+                      el1s: el1s,
+
+                      eh0: eh0,
+                      el0: el0,
+                    };
+
+                    values = [
+                      cloud1,
+                      clr,
+                      cloud2,
+                      clr,
+                      eh0,
+                      clr,
+                      el0,
+                      clr,
+                      side,
+                      eh1,
+                      el1,
+                      eh1s,
+                      el1s,
+                      eh0,
+                      el0,
+                      ma,
+                    ];
+                  } catch (e) {
+                    console.log(e);
+                  }
+
+                  return values;
+                };
+                this.stTrendHTF = function () {
+                  PineJS.Std.ref = function (e, periods) {
+                    return e.get(periods);
+                  };
+                  const ctx = this._context;
+                  const std = PineJS.Std;
+
+                  var values = [];
+                  var iFast = 13;
+                  var iSlow = 50;
+                  var symbol;
+                  var hour, min, minOdd;
+                  var eh1s, el1s;
+
+                  var data = {};
+
+                  var tf0, tf1, tf1_mul;
+
+                  var h0,
+                    H0,
+                    h1,
+                    H1,
+                    eh1,
+                    EH1,
+                    EH1S,
+                    l0,
+                    L0,
+                    l1,
+                    L1,
+                    el1,
+                    EL1,
+                    EL1S,
+                    c0,
+                    C0,
+                    c1h,
+                    C1H,
+                    c1l,
+                    C1L,
+                    rc1h,
+                    rc1l,
+                    reh1,
+                    rel1,
+                    eh0,
+                    el0,
+                    SIDE,
+                    side,
+                    trend,
+                    clr,
+                    cloud1,
+                    cloud2;
+
+                  try {
+                    symbol = ctx.symbol;
+                    hour = isNaN(symbol.time) ? NaN : std.hour(ctx);
+                    min = isNaN(symbol.time) ? NaN : std.minute(ctx);
+                    // console.log(`${hour}:${min} => ${hour*60+min}`);
+                    min = hour * 60 + min;
+                    tf0 = std.interval(ctx);
+                    tf1 = this.getHigherTimeframe(this.getNextFrame(tf0));
+                    if (Number.isInteger(tf1) && tf1 < 240) {
+                      tf1_mul = Math.round(tf1 / tf0);
+                      if (std.isdwm(ctx)) {
+                        // day, week, month
+                        minOdd = symbol.index % tf1_mul;
+                      } else {
+                        // intraday
+                        minOdd = min % tf1_mul;
+                      }
+                    } else if (tf1 >= 240 || tf1 == "W" || tf1 == "D") {
+                      tf1_mul = 5;
+                      minOdd = symbol.index % tf1_mul;
+                      // console.log(minOdd);
+                    } else {
+                      return [NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN];
+                    }
                     h0 = std.high(ctx);
                     H0 = ctx.new_var(h0);
 
@@ -1636,12 +1848,12 @@ export default {
 
                   // htf
 
-                 
-                  result.push(retTrend[2]);
-                  result.push(retTrend[0]);
+                 const trendHTF = this.stTrendHTF();
+                  result.push(trendHTF[2]);
+                  result.push(trendHTF[0]);
                   result.push(ema_50_high );
-                  result.push(retTrend[0] + (ema_50_high - ema_50_low));
-                  result.push(retTrend[1]);
+                  result.push(trendHTF[0] + (ema_50_high - ema_50_low));
+                  result.push(trendHTF[1]);
 
                   // plot(trend_tf2, "Trend MTF", color = trend_tf2 === 1 ? Color.red : Color.green, style = plot.style_line, linewidth = 2);
                   // plot(trend_tf1, "Current Trend TF", color = trend_tf1 === 1 ? Color.orange : Color.blue, style = plot.style_line, linewidth = 3);
