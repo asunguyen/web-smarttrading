@@ -17,7 +17,7 @@ export default {
   name: "TVChartContainerPhaiSinh",
   props: {
     symbol: {
-      default: "BTCUSDT",
+      default: "VN30F1M",
       type: String,
     },
     interval: {
@@ -111,6 +111,7 @@ export default {
       saveload_separate_drawings_storage: true,
       chart_template_storage: true,
       use_localstorage_for_settings: true,
+      show_last_price_and_change_only_in_series_legend: true,
       widgetbar: {
         details: true,
         news: true,
@@ -131,6 +132,7 @@ export default {
         "show_last_price_and_change_only_in_series_legend",
         "chart_template_storage",
         "use_localstorage_for_settings",
+        "show_last_price_and_change_only_in_series_legend"
       ],
       custom_indicators_getter: function (PineJS) {
         return Promise.resolve([
@@ -888,26 +890,24 @@ export default {
                   period = parseInt(period);
 
                   if (period == 1) {
-                    return 3;
-                  } else if (period == 3) {
                     return 5;
                   } else if (period == 5) {
-                    return 10;
-                  } else if (period == 10) {
-                    return 15;
-                  } else if (period == 15) {
                     return 30;
                   } else if (period == 30) {
                     return 60;
+                  } else if (period == 15) {
+                    return 60;
                   } else if (period == 60) {
-                    return 120;
-                  } else if (period == 120) {
-                    return 180;
-                  }else if (period == 180) {
                     return 240;
+                  } else if (period == 240) {
+                    return "D";
+                  }else if (period == "D") {
+                    return "W";
+                  }else if (period == "W") {
+                    return "M";
                   }
 
-                  return NaN;
+                  return period;
                 };
                 this.stTrend = function () {
                   PineJS.Std.ref = function (e, periods) {
@@ -1155,7 +1155,7 @@ export default {
                     // console.log(`${hour}:${min} => ${hour*60+min}`);
                     min = hour * 60 + min;
                     tf0 = std.interval(ctx);
-                    tf1 = this.getHigherTimeframe(this.getNextFrame(tf0));
+                    tf1 = this.getNextFrame(this.getNextFrame(tf0));
                     if (Number.isInteger(tf1) && tf1 < 240) {
                       tf1_mul = Math.round(tf1 / tf0);
                       if (std.isdwm(ctx)) {
@@ -1851,8 +1851,8 @@ export default {
                  const trendHTF = this.stTrendHTF();
                   result.push(trendHTF[2]);
                   result.push(trendHTF[0]);
-                  result.push(ema_50_high );
-                  result.push(trendHTF[0] + (ema_50_high - ema_50_low));
+                  result.push(ema_50_high);
+                  result.push(trendHTF[0]);
                   result.push(trendHTF[1]);
 
                   // plot(trend_tf2, "Trend MTF", color = trend_tf2 === 1 ? Color.red : Color.green, style = plot.style_line, linewidth = 2);

@@ -51,10 +51,10 @@ socket.on("onData", (data) => {
                 resolution: subscriptionItem.resolution,
                 time: roundedTimestamp * 1000,
                 open: newData.price,
-                high: isNewBar ? newData.price : lastBar.close,
-                low: isNewBar ? newData.price : lastBar.close,
+                high: newData.price,
+                low: newData.price,
                 close: newData.price,
-                volume: newData.volume
+                volume: newData.volume,
             };
         }
         else {
@@ -155,21 +155,21 @@ function updateBar(newData, subscriber, lastDailyBar) {
             symbol: subscriber.symbol,
             resolution: subscriber.resolution,
             time: roundedTimestamp * 1000,
-            open: isNewBar ? newData.Open : lastBar.close,
-            high: isNewBar ? newData.Hight : lastBar.high,
-            low: isNewBar ? newData.Low : lastBar.low,
-            close: isNewBar ? newData.Close : lastBar.close,
+            open: newData.Open,
+            high: newData.Hight,
+            low: newData.Low,
+            close: newData.Close,
             volume: newData.volume
         };
     } else {
-        // if (newData.price < lastBar.low) {
-        //     lastBar.low = newData.price;
-        // } else if (newData.price > lastBar.high) {
-        //     lastBar.high = newData.price;
-        // }
-
-        // lastBar.volume += newData.volume;
-        // lastBar.close = newData.price;
+        if (newData.price < lastBar.low) {
+            lastBar.low = newData.price;
+        } 
+        if (newData.price > lastBar.high) {
+            lastBar.high = newData.price;
+        }
+        lastBar.volume = newData.volume;
+        lastBar.close = newData.price;
         updatedBar = lastBar;
     }
 
