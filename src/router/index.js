@@ -178,16 +178,16 @@ export const asyncRoutes = [
     },
     children: [
       {
+        path: 'robot-derivative/scrape',
+        component: () => import('@/views/ai-trading-robot/derivative-robot/scrape'),
+        name: 'BOT SMT Phái sinh - Forex',
+        meta: { title: 'BOT SMT Phái sinh - Forex', icon: 'el-icon-cpu', affix: true }
+      },
+      {
         path: 'robot-derivative/free',
         component: () => import('@/views/ai-trading-robot/derivative-robot/free'),
         name: 'Robot phái sinh 1M',
         meta: { title: 'Robot phái sinh 1M', icon: 'el-icon-cpu', affix: true }
-      },
-      {
-        path: 'robot-derivative/scrape',
-        component: () => import('@/views/ai-trading-robot/derivative-robot/scrape'),
-        name: 'BOT AI',
-        meta: { title: 'BOT AI', icon: 'el-icon-cpu', affix: true }
       },
       {
         path: 'robot-derivative/trend',

@@ -248,7 +248,7 @@ export default {
 				session: "24x7",
 				minmov: 1,
 				pricescale: 1000,
-				has_intraday: true,
+				has_intraday: false,
 				intraday_multipliers: ['1'],
 				volume_precision: 8,
 				data_status: 'streaming',

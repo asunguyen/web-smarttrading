@@ -172,7 +172,6 @@ function updateBar(newData, subscriber, lastDailyBar) {
         lastBar.close = newData.price;
         updatedBar = lastBar;
     }
-
     return updatedBar;
 }
 
