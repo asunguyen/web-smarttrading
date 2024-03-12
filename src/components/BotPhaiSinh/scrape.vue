@@ -75,7 +75,7 @@ export default {
         // ZO TREND ST HTF
         // {
         //   name: "ST HTF",
-        //   visible: true,
+        //   visible: true, visible: true,
         // },
       ],
     };

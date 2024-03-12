@@ -23,7 +23,7 @@ export default {
       type: String,
     },
     interval: {
-      default: "1",
+      default: "D",
       type: String,
     },
     libraryPath: {
@@ -141,6 +141,7 @@ export default {
           tvWidget.activeChart()
         );
       }
+      tvWidget.chart().setChartType(1);
       tvWidget.subscribe("onAutoSaveNeeded", (data) => {
         console.log("data save:: ", data);
       });

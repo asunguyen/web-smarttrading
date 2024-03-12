@@ -143,7 +143,7 @@ async function loadDataBarCustom(symbolInfo, urlParameters, timeEnd, firstDataRe
 						...bars[bars.length - 1],
 					});
 				}
-				
+
 				if (bars.length == 0) {
 					onHistoryCallback([], {
 						noData: true,
@@ -157,12 +157,12 @@ async function loadDataBarCustom(symbolInfo, urlParameters, timeEnd, firstDataRe
 			}
 		}
 		if (bars && bars.length > 0) {
-			timeEnd = bars[0].time/1000;
-			if (timeEnd > 1103051358 && countHis > 0) {
-				setTimeout(function() {
+			timeEnd = bars[0].time / 1000;
+			if (timeEnd > 1103051358 && countHis < 20) {
+				setTimeout(function () {
 					loadDataBarCustom(symbolInfo, urlParametersC, timeEnd, firstDataRequest, onHistoryCallback, onErrorCallback);
-				},1000);
-				
+				}, 1000);
+
 			}
 		}
 	} catch (err) {
@@ -210,51 +210,29 @@ export default {
 			onResolveErrorCallback('cannot resolve symbol');
 			return;
 		}
-		let symbolInfo;
+		let symbolInfo = symbolItem;
+		symbolInfo.name = symbolItem.symbol;
+			symbolInfo.full_name = symbolItem.full_name;
+			symbolInfo.description = symbolItem.description;
+			symbolInfo.listed_exchange = '';
+			symbolInfo.type = symbolItem.type;
+			symbolInfo.ticker = symbolItem.symbol;
+			symbolInfo.exchange = symbolItem.exchange;
+			symbolInfo.format = 'price';
+			symbolInfo.supported_resolutions = configurationData.supported_resolutions;
+			symbolInfo.timezone = 'Asia/Ho_Chi_Minh';
+			symbolInfo.minmov = 1;
+			symbolInfo.pricescale = 1000;
+			symbolInfo.has_intraday = true;
+			symbolInfo.intraday_multipliers = ['1'],
+			symbolInfo.volume_precision = 8;
+			symbolInfo.data_status = 'streaming';
+			symbolInfo.pathRq = symbolItem.pathRq;
+			symbolInfo.id = symbolItem.id;
 		if (symbolItem.exchange == "HOSE" || symbolItem.exchange == "HNX" || symbolItem.exchange == "UPCOM") {
-			symbolInfo = {
-				name: symbolItem.symbol,
-				full_name: symbolItem.full_name,
-				description: symbolItem.description,
-				listed_exchange: '',
-				type: symbolItem.type,
-				ticker: symbolItem.symbol,
-				exchange: symbolItem.exchange,
-				format: 'price',
-				supported_resolutions: configurationData.supported_resolutions,
-				timezone: 'Asia/Ho_Chi_Minh',
-				session: '0900-1445',
-				minmov: 1,
-				pricescale: 1000,
-				has_intraday: true,
-				intraday_multipliers: ['1'],
-				volume_precision: 8,
-				data_status: 'streaming',
-				pathRq: symbolItem.pathRq,
-				id: symbolItem.id,
-			};
+			symbolInfo.session = '0900-1446';
 		} else {
-			symbolInfo = {
-				name: symbolItem.symbol,
-				full_name: symbolItem.full_name,
-				description: symbolItem.description,
-				listed_exchange: '',
-				type: symbolItem.type,
-				ticker: symbolItem.symbol,
-				exchange: symbolItem.exchange,
-				format: 'price',
-				supported_resolutions: configurationData.supported_resolutions,
-				timezone: 'Asia/Ho_Chi_Minh',
-				session: "24x7",
-				minmov: 1,
-				pricescale: 1000,
-				has_intraday: false,
-				intraday_multipliers: ['1'],
-				volume_precision: 8,
-				data_status: 'streaming',
-				pathRq: symbolItem.pathRq,
-				id: symbolItem.id,
-			};
+			symbolInfo.session = "24x7";
 		}
 
 
@@ -265,9 +243,6 @@ export default {
 	getBars: async (symbolInfo, resolution, periodParams, onHistoryCallback, onErrorCallback) => {
 		let { from, to, firstDataRequest } = periodParams;
 		var resol = resolution;
-		if (resolution == "60" || resolution == "90" || resolution == "120" || resolution == "180" || resolution == "240") {
-			resol = "H";
-		}
 		if ((symbolInfo.name == "VN30F1M" || symbolInfo.name == "VN30F1Q" || symbolInfo.name == "VN30F2M" || symbolInfo.name == "VN30F2Q") || (symbolInfo.exchange == "HNX" || symbolInfo.exchange == "HOSE" || symbolInfo.exchange == "UPCOM")) {
 			if (from > 1103051358) {
 				from = 1103051358;
@@ -350,7 +325,7 @@ export default {
 									close: parseFloat(dataBar[i].close),
 									volume: parseFloat(dataBar[i].volume),
 								}];
-							} 
+							}
 						} else {
 							bars = [...bars, {
 								time: dataBar[i].time * 1000,
@@ -387,7 +362,7 @@ export default {
 			}
 			//xử lý lấy data history
 			if (bars && bars.length > 0) {
-				timeEnd = bars[0].time/1000;
+				timeEnd = bars[0].time / 1000;
 			} else {
 				if ((resolution == "1" || resolution == "3" || resolution == "5" || resolution == "10" || resolution == "15" || resolution == "30") && timeEnd > 1103051358) {
 					countHis = 1;
@@ -408,7 +383,6 @@ export default {
 		onResetCacheNeededCallback,
 	) => {
 		console.log('[subscribeBars]: Method call with subscriberUID:', subscriberUID);
-		countHis = 1;
 		subscribeOnStream(
 			symbolInfo,
 			resolution,
