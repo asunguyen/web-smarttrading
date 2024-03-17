@@ -59,15 +59,15 @@ socketdchart.on('price', data => {
     const bar = updateBar(newData, lastDailyBar, subscriptionItem);
     var upBar;
 
-    if (isNewBar || roundedTimestamp > lastBarTimestamp) {
+    if (isNewBar || ((roundedTimestamp > lastBarTimestamp && resolution < 1440) ) ) {
         upBar = {
             ...lastDailyBar,
             symbol: lastDailyBar.symbol,
             resolution: subscriptionItem.resolution,
             time: roundedTimestamp * 1000,
-            open: newData.price,
-            high: isNewBar ? newData.price : lastBar.close,
-            low: isNewBar ? newData.price : lastBar.close,
+            open: isNewBar ? newData.Open : lastBar.close,
+            high: newData.Hight,
+            low: newData.Low,
             close: newData.price,
             volume: newData.volume
         };
@@ -159,10 +159,10 @@ function updateBar(newData, subscriber, lastDailyBar) {
             symbol: subscriber.symbol,
             resolution: subscriber.resolution,
             time: roundedTimestamp * 1000,
-            open: newData.Open,
+            open: isNewBar ? newData.Open : lastBar.close,
             high: isNewBar ? newData.Hight : lastBar.close,
             low: isNewBar ? newData.Low : lastBar.close,
-            close: newData.Close,
+            close: isNewBar ? newData.Close: lastBar.close,
             volume: newData.volume
         };
     } else {

@@ -41,21 +41,22 @@ socket.on("onData", (data) => {
         }
         const interval = resolution * 60;
         const roundedTimestamp = Math.floor(newData.ts / interval) * interval;
+        const checknewBar = newData.ts % interval;
 
         const bar = updateBar(newData, lastDailyBar, subscriptionItem);
         var upBar;
-        if (isNewBar || roundedTimestamp > lastBarTimestamp) {
+        if (isNewBar || ((roundedTimestamp > lastBarTimestamp && resolution < 1440) ) ) {
             upBar = {
-                ...lastDailyBar,
                 symbol: lastDailyBar.symbol,
                 resolution: subscriptionItem.resolution,
                 time: roundedTimestamp * 1000,
-                open: newData.price,
-                high: newData.price,
-                low: newData.price,
+                open: isNewBar ? newData.Open : lastBar.close,
+                high: newData.Hight,
+                low: newData.Low,
                 close: newData.price,
                 volume: newData.volume,
             };
+            console.log("1:: ", upBar);
         }
         else {
             upBar = {
@@ -66,9 +67,7 @@ socket.on("onData", (data) => {
                 volume: newData.volume,
                 time: bar.time,
             };
-        }
-        if (upBar.time < lastDailyBar.time) {
-            upBar.time = lastDailyBar.time + 1000;
+            console.log("2:: ", upBar);
         }
         subscriptionItem.lastDailyBar = upBar;
         // Send data to every subscriber of that symbol
@@ -155,10 +154,10 @@ function updateBar(newData, subscriber, lastDailyBar) {
             symbol: subscriber.symbol,
             resolution: subscriber.resolution,
             time: roundedTimestamp * 1000,
-            open: newData.Open,
-            high: newData.Hight,
-            low: newData.Low,
-            close: newData.Close,
+            open: isNewBar ? newData.Open : lastBar.close,
+            high: isNewBar ? newData.Hight : lastBar.close,
+            low: isNewBar ? newData.Low : lastBar.close,
+            close: isNewBar ? newData.Close: lastBar.close,
             volume: newData.volume
         };
     } else {
@@ -169,7 +168,7 @@ function updateBar(newData, subscriber, lastDailyBar) {
             lastBar.high = newData.price;
         }
         lastBar.volume = newData.volume;
-        lastBar.close = newData.price;
+        //lastBar.close = newData.price;
         updatedBar = lastBar;
     }
     return updatedBar;
