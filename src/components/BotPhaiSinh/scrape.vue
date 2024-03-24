@@ -1,5 +1,5 @@
 <template>
-  <div ref="chartContainer" class="TVChartContainer" id="tvWidgetContainer" />
+  <div id="tvWidgetContainer" ref="chartContainer" class="TVChartContainer" />
 </template>
 
 <script>
@@ -72,7 +72,11 @@ export default {
           name: "STTrendVolume",
           visible: true,
         },
-        // ZO TREND
+        // ZO TREND ST HTF
+        // {
+        //   name: "ST HTF",
+        //   visible: true, visible: true,
+        // },
       ],
     };
   },
@@ -98,7 +102,7 @@ export default {
       charts_storage_api_version: this.chartsStorageApiVersion,
       client_id: this.clientId,
       user_id: this.userId,
-      //fullscreen: this.fullscreen,
+      // fullscreen: this.fullscreen,
       autosize: this.autosize,
       studies_overrides: this.studiesOverrides,
       load_last_chart: true,
@@ -107,17 +111,18 @@ export default {
       saveload_separate_drawings_storage: true,
       chart_template_storage: true,
       use_localstorage_for_settings: true,
+      show_last_price_and_change_only_in_series_legend: true,
       widgetbar: {
         details: true,
         news: true,
         watchlist: true,
         datawindow: true,
       },
-      overrides: {
-        "mainSeriesProperties.showCountdown": true,
-        "paneProperties.backgroundGradientStartColor": "#020024",
-        "paneProperties.backgroundGradientEndColor": "#4f485e",
-      },
+      // overrides: {
+      //   "mainSeriesProperties.showCountdown": true,
+      //   "paneProperties.backgroundGradientStartColor": "#020024",
+      //   "paneProperties.backgroundGradientEndColor": "#4f485e",
+      // },
       disabled_features: ["dom_widget"],
       enabled_features: [
         "header_layouttoggle",
@@ -127,6 +132,7 @@ export default {
         "show_last_price_and_change_only_in_series_legend",
         "chart_template_storage",
         "use_localstorage_for_settings",
+        "show_last_price_and_change_only_in_series_legend"
       ],
       custom_indicators_getter: function (PineJS) {
         return Promise.resolve([
@@ -248,6 +254,12 @@ export default {
                   type: "line",
                 },
                 {
+                  id: "plot_bar_color",
+                  type: "ohlc_colorer",
+                  palette: "palette_bar",
+                  target: "plot_candle",
+                },
+                {
                   id: "plot_wick_color",
                   type: "wick_colorer",
                   palette: "palette_wick",
@@ -259,6 +271,29 @@ export default {
                   palette: "palette_border",
                   target: "plot_candle",
                 },
+                // plot htf
+                {
+                  id: "plot_0",
+                  type: "line",
+                },
+                {
+                  id: "plot_1",
+                  type: "line",
+                },
+                {
+                  id: "plot_2",
+                  type: "line",
+                },
+                {
+                  id: "plot_3",
+                  type: "line",
+                },
+                {
+                  id: "trend1_colorer1",
+                  type: "colorer",
+                  target: "plot_3",
+                  palette: "trend_palette_3",
+                },
               ],
 
               filledAreas: [
@@ -269,7 +304,7 @@ export default {
                   objBId: "trend2",
                   type: "plot_plot",
                   palette: "trend_palette_2",
-                  isHidden: 1,
+                  isHidden: 0,
                 },
               ],
 
@@ -280,6 +315,81 @@ export default {
               },
 
               palettes: {
+                palette_bar: {
+                  colors: [
+                    { name: "Bullish Strong Long" },
+                    { name: "Bullish Strong Short" },
+                    { name: "Bullish Weak Long" },
+                    { name: "Bullish Weak Short" },
+                    { name: "Bearish Strong Long" },
+                    { name: "Bearish Strong Short" },
+                    { name: "Bearish Weak Long" },
+                    { name: "Bearish Weak Short" },
+                    { name: "Candle Color" },
+                  ],
+
+                  valToIndex: {
+                    0: 0,
+                    1: 1,
+                    2: 2,
+                    3: 3,
+                    4: 4,
+                    5: 5,
+                    6: 6,
+                    7: 7,
+                    8: 8,
+                  },
+                },
+                palette_wick: {
+                  colors: [
+                    { name: "Bullish Strong Long" },
+                    { name: "Bullish Strong Short" },
+                    { name: "Bullish Weak Long" },
+                    { name: "Bullish Weak Short" },
+                    { name: "Bearish Strong Long" },
+                    { name: "Bearish Strong Short" },
+                    { name: "Bearish Weak Long" },
+                    { name: "Bearish Weak Short" },
+                    { name: "Candle Color" },
+                  ],
+
+                  valToIndex: {
+                    0: 0,
+                    1: 1,
+                    2: 2,
+                    3: 3,
+                    4: 4,
+                    5: 5,
+                    6: 6,
+                    7: 7,
+                    8: 8,
+                  },
+                },
+                palette_border: {
+                  colors: [
+                    { name: "Bullish Strong Long" },
+                    { name: "Bullish Strong Short" },
+                    { name: "Bullish Weak Long" },
+                    { name: "Bullish Weak Short" },
+                    { name: "Bearish Strong Long" },
+                    { name: "Bearish Strong Short" },
+                    { name: "Bearish Weak Long" },
+                    { name: "Bearish Weak Short" },
+                    { name: "Candle Color" },
+                  ],
+
+                  valToIndex: {
+                    0: 0,
+                    1: 1,
+                    2: 2,
+                    3: 3,
+                    4: 4,
+                    5: 5,
+                    6: 6,
+                    7: 7,
+                    8: 8,
+                  },
+                },
                 signal_palette_0: {
                   colors: [
                     { name: "1 Color" },
@@ -319,7 +429,7 @@ export default {
                     1: 1,
                   },
                 },
-                pal_cloud: {
+                fill_0: {
                   colors: {
                     0: {
                       name: "LONG",
@@ -339,6 +449,16 @@ export default {
                     { name: "SHORT", color: "rgba(128, 63, 63, 0.2)" },
                     { name: "Normal", color: "#000000" },
                   ],
+                },
+                trend_palette_3: {
+                  colors: {
+                    0: {
+                      name: "LONG",
+                    },
+                    1: {
+                      name: "SHORT",
+                    },
+                  },
                 },
               },
 
@@ -409,6 +529,59 @@ export default {
                       },
                     },
                   },
+                  palette_bar: {
+                    colors: [
+                      { color: "#00F400", width: 1, style: 0 },
+                      { color: "#006C00", width: 1, style: 0 },
+                      { color: "#0057AE", width: 1, style: 0 },
+                      { color: "#1A8CFF", width: 1, style: 0 },
+                      { color: "#FF917D", width: 1, style: 0 },
+                      { color: "#FD2600", width: 1, style: 0 },
+                      { color: "#891289", width: 1, style: 0 },
+                      { color: "#F29FF2", width: 1, style: 0 },
+                      { color: "#FFEB3B", width: 1, style: 0 },
+                    ],
+                  },
+                  palette_wick: {
+                    colors: [
+                      { color: "#00F400" },
+                      { color: "#006C00" },
+                      { color: "#0057AE" },
+                      { color: "#1A8CFF" },
+                      { color: "#FF917D" },
+                      { color: "#FD2600" },
+                      { color: "#891289" },
+                      { color: "#F29FF2" },
+                      { color: "#FFEB3B" },
+                    ],
+                  },
+                  palette_border: {
+                    colors: [
+                      { color: "#00F400" },
+                      { color: "#006C00" },
+                      { color: "#0057AE" },
+                      { color: "#1A8CFF" },
+                      { color: "#FF917D" },
+                      { color: "#FD2600" },
+                      { color: "#891289" },
+                      { color: "#F29FF2" },
+                      { color: "#FFEB3B" },
+                    ],
+                  },
+                  trend_palette_3: {
+                    colors: {
+                      0: {
+                        color: "#FF0000",
+                        width: 2,
+                        style: 0,
+                      },
+                      1: {
+                        color: "#00FF00",
+                        width: 2,
+                        style: 0,
+                      },
+                    },
+                  },
                 },
 
                 styles: {
@@ -451,10 +624,38 @@ export default {
                     location: "BelowBar",
                     plottype: "shape_label_up",
                   },
+                  // htf
+                  plot_0: {
+                    linestyle: 0,
+                    visible: false,
+                    linewidth: 1,
+                    plottype: 0,
+                    trackPrice: false,
+                    transparency: 0,
+                    color: "#008FFF",
+                  },
+                  plot_1: {
+                    linestyle: 0,
+                    visible: false,
+                    linewidth: 1,
+                    plottype: 0,
+                    trackPrice: false,
+                    transparency: 0,
+                    color: "#04FF00",
+                  },
+                  plot_2: {
+                    linestyle: 0,
+                    visible: false,
+                    linewidth: 1,
+                    plottype: 0,
+                    trackPrice: false,
+                    transparency: 0,
+                    color: "#FF0000",
+                  },
                 },
 
                 inputs: {
-                  trend_fast: 14,
+                  trend_fast: 13,
                   trend_slow: 50,
 
                   signal_fast: 14,
@@ -612,6 +813,47 @@ export default {
 
                   isHidden: 1,
                 },
+                // stype htf
+                plot_0: {
+                  title: "Trend MTF",
+                  histogramBase: 1,
+                  linestyle: 2,
+                  linewidth: 2,
+                  transparency: 10,
+                  trackPrice: false,
+
+                  isHidden: 1,
+                },
+                plot_1: {
+                  title: "Current Trend TF",
+                  histogramBase: 1,
+                  linestyle: 2,
+                  linewidth: 3,
+                  transparency: 10,
+                  trackPrice: false,
+
+                  isHidden: 1,
+                },
+                plot_2: {
+                  title: "High IZE Trend",
+                  histogramBase: 1,
+                  linestyle: 2,
+                  linewidth: 2,
+                  transparency: 10,
+                  trackPrice: false,
+
+                  isHidden: 1,
+                },
+                plot_3: {
+                  title: "Low IZE Trend",
+                  histogramBase: 1,
+                  linestyle: 2,
+                  linewidth: 2,
+                  transparency: 10,
+                  trackPrice: false,
+
+                  isHidden: 1,
+                },
               },
               inputs: [],
             },
@@ -644,12 +886,35 @@ export default {
 
                   return NaN;
                 };
+                this.getNextFrame = function (period) {
+                  period = parseInt(period);
+
+                  if (period == 1) {
+                    return 5;
+                  } else if (period == 5) {
+                    return 30;
+                  } else if (period == 30) {
+                    return 60;
+                  } else if (period == 15) {
+                    return 60;
+                  } else if (period == 60) {
+                    return 240;
+                  } else if (period == 240) {
+                    return "D";
+                  }else if (period == "D") {
+                    return "W";
+                  }else if (period == "W") {
+                    return "M";
+                  }
+
+                  return period;
+                };
                 this.stTrend = function () {
                   PineJS.Std.ref = function (e, periods) {
                     return e.get(periods);
                   };
-                  const ctx = this._context,
-                    std = PineJS.Std;
+                  const ctx = this._context;
+                  const std = PineJS.Std;
 
                   var values = [];
                   var iFast = 13;
@@ -699,7 +964,7 @@ export default {
                     symbol = ctx.symbol;
                     hour = isNaN(symbol.time) ? NaN : std.hour(ctx);
                     min = isNaN(symbol.time) ? NaN : std.minute(ctx);
-                    //console.log(`${hour}:${min} => ${hour*60+min}`);
+                    // console.log(`${hour}:${min} => ${hour*60+min}`);
                     min = hour * 60 + min;
                     tf0 = std.interval(ctx);
                     tf1 = this.getHigherTimeframe(tf0);
@@ -715,11 +980,198 @@ export default {
                     } else if (tf1 >= 240 || tf1 == "W" || tf1 == "D") {
                       tf1_mul = 5;
                       minOdd = symbol.index % tf1_mul;
-                      //console.log(minOdd);
+                      // console.log(minOdd);
                     } else {
                       return [NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN];
                     }
+                    h0 = std.high(ctx);
+                    H0 = ctx.new_var(h0);
 
+                    h1 = std.highest(H0, tf1_mul);
+                    H1 = ctx.new_var(h1);
+
+                    eh1 = std.ema(H1, iFast * tf1_mul, ctx);
+                    EH1 = ctx.new_var(eh1);
+
+                    EH1S = ctx.new_var(eh1);
+                    if (minOdd == 0) {
+                      EH1S.set((eh1s = eh1));
+                    } else {
+                      eh1s = std.ref(EH1S, 1);
+                      EH1S.set(eh1s);
+                    }
+
+                    l0 = std.low(ctx);
+                    L0 = ctx.new_var(l0);
+
+                    l1 = std.lowest(L0, tf1_mul);
+                    L1 = ctx.new_var(l1);
+
+                    el1 = std.ema(L1, iFast * tf1_mul, ctx);
+                    EL1 = ctx.new_var(el1);
+
+                    EL1S = ctx.new_var(el1);
+                    if (minOdd == 0) {
+                      EL1S.set((el1s = el1));
+                    } else {
+                      el1s = std.ref(EL1S, 1);
+                      EL1S.set(el1s);
+                    }
+
+                    c0 = std.close(ctx);
+                    C0 = ctx.new_var(c0);
+
+                    c1h = std.highest(C0, tf1_mul);
+                    C1H = ctx.new_var(c1h);
+
+                    c1l = std.lowest(C0, tf1_mul);
+                    C1L = ctx.new_var(c1l);
+
+                    rc1h = std.ref(C1H, 1);
+                    rc1l = std.ref(C1L, 1);
+
+                    reh1 = std.ref(EH1, 1);
+                    rel1 = std.ref(EL1, 1);
+
+                    eh0 = std.ema(H0, iSlow, ctx);
+                    el0 = std.ema(L0, iSlow, ctx);
+
+                    SIDE = ctx.new_var(NaN);
+                    side = SIDE.get(1);
+                    const o0 = std.open(ctx);
+                    var oc2 = (o0 + c0) / 2;
+                    var OC2 = ctx.new_var(oc2);
+                    var ma = std.sma(OC2, 5, ctx);
+                    var MA = ctx.new_var(ma);
+                    var rma = MA.get(1);
+
+                    SIDE = ctx.new_var(NaN);
+                    side = SIDE.get(1);
+
+                    if (ma < el1) side = -1;
+                    else if (ma > eh1) side = 1;
+
+                    // update trend side
+                    SIDE.set(side);
+
+                    trend = isNaN(side) ? NaN : side > 0 ? el1 : eh1;
+                    trend = isNaN(side) ? NaN : side > 0 ? el1s : eh1s;
+                    clr = isNaN(side) ? 0 : side > 0 ? 1 : 0;
+
+                    cloud1 = trend;
+                    cloud2 = side > 0 ? el0 : eh0;
+
+                    data = {
+                      side: side,
+                      eh1: eh1,
+                      el1: el1,
+
+                      eh1s: eh1s,
+                      el1s: el1s,
+
+                      eh0: eh0,
+                      el0: el0,
+                    };
+
+                    values = [
+                      cloud1,
+                      clr,
+                      cloud2,
+                      clr,
+                      eh0,
+                      clr,
+                      el0,
+                      clr,
+                      side,
+                      eh1,
+                      el1,
+                      eh1s,
+                      el1s,
+                      eh0,
+                      el0,
+                      ma,
+                    ];
+                  } catch (e) {
+                    console.log(e);
+                  }
+
+                  return values;
+                };
+                this.stTrendHTF = function () {
+                  PineJS.Std.ref = function (e, periods) {
+                    return e.get(periods);
+                  };
+                  const ctx = this._context;
+                  const std = PineJS.Std;
+
+                  var values = [];
+                  var iFast = 13;
+                  var iSlow = 50;
+                  var symbol;
+                  var hour, min, minOdd;
+                  var eh1s, el1s;
+
+                  var data = {};
+
+                  var tf0, tf1, tf1_mul;
+
+                  var h0,
+                    H0,
+                    h1,
+                    H1,
+                    eh1,
+                    EH1,
+                    EH1S,
+                    l0,
+                    L0,
+                    l1,
+                    L1,
+                    el1,
+                    EL1,
+                    EL1S,
+                    c0,
+                    C0,
+                    c1h,
+                    C1H,
+                    c1l,
+                    C1L,
+                    rc1h,
+                    rc1l,
+                    reh1,
+                    rel1,
+                    eh0,
+                    el0,
+                    SIDE,
+                    side,
+                    trend,
+                    clr,
+                    cloud1,
+                    cloud2;
+
+                  try {
+                    symbol = ctx.symbol;
+                    hour = isNaN(symbol.time) ? NaN : std.hour(ctx);
+                    min = isNaN(symbol.time) ? NaN : std.minute(ctx);
+                    // console.log(`${hour}:${min} => ${hour*60+min}`);
+                    min = hour * 60 + min;
+                    tf0 = std.interval(ctx);
+                    tf1 = this.getNextFrame(this.getNextFrame(tf0));
+                    if (Number.isInteger(tf1) && tf1 < 240) {
+                      tf1_mul = Math.round(tf1 / tf0);
+                      if (std.isdwm(ctx)) {
+                        // day, week, month
+                        minOdd = symbol.index % tf1_mul;
+                      } else {
+                        // intraday
+                        minOdd = min % tf1_mul;
+                      }
+                    } else if (tf1 >= 240 || tf1 == "W" || tf1 == "D") {
+                      tf1_mul = 5;
+                      minOdd = symbol.index % tf1_mul;
+                      // console.log(minOdd);
+                    } else {
+                      return [NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN];
+                    }
                     h0 = std.high(ctx);
                     H0 = ctx.new_var(h0);
 
@@ -957,12 +1409,12 @@ export default {
                       return l != 0 ? 100 - 100 / (1 + k / l) : NaN;
                     };
                     rsiFast = std.rsi2(aAC, iFast, ctx) - 50;
-                    //rsiFast = std.rsi(aAC, iFast) - 50;
+                    // rsiFast = std.rsi(aAC, iFast) - 50;
                     fast = std.wma(ctx.new_var(rsiFast), iMA, ctx);
                     Fast = ctx.new_var(fast);
 
                     rsiSlow = std.rsi2(aAC, iSlow, ctx) - 50;
-                    //rsiSlow = std.rsi(aAC, iSlow) - 50;
+                    // rsiSlow = std.rsi(aAC, iSlow) - 50;
                     slow = std.wma(ctx.new_var(rsiSlow), iMA, ctx);
                     Slow = ctx.new_var(slow);
 
@@ -1085,7 +1537,7 @@ export default {
                     hashh = Math.max(hi, Math.max(hasho, hashc));
                     // calculate hash open
                     hashl = Math.min(lo, Math.min(hasho, hashc));
-                    //console.log(`STSignal, ${HH}:${ii}, ${oref}, ${cref}, ${hasho}, ${hashc}, ${hashc1}, ${hashh}, ${hashl}`);
+                    // console.log(`STSignal, ${HH}:${ii}, ${oref}, ${cref}, ${hasho}, ${hashc}, ${hashc1}, ${hashh}, ${hashl}`);
                     clrFin = 0;
                     if (ao >= 0) {
                       // BullishStrongLong
@@ -1100,7 +1552,7 @@ export default {
                         clrFin == 0 && diff < 0 && a0 < a1 && hashc1 <= hasho
                           ? clr
                           : clrFin; // ao gi?m, n?n gi?m (ao duong)
-                      //BullishWeakLong
+                      // BullishWeakLong
                       clr = 3;
                       clrFin =
                         clrFin == 0 && diff >= 0 && a0 > a1 && hashc1 <= hasho
@@ -1152,6 +1604,18 @@ export default {
                 this._input = input;
                 var result = [];
 
+                var highMA = 13;
+                var lowMA = 50;
+                
+                const high = PineJS.Std.high(context);
+                const high0 = this._context.new_var(high);
+                const low = PineJS.Std.low(context);
+                const low0 = this._context.new_var(low);
+                var ema_high = PineJS.Std.ema(high0, highMA, context);
+                var ema_low = PineJS.Std.ema(low0, highMA, context);
+
+                var ema_50_high = PineJS.Std.ema(high0, lowMA, context);
+                var ema_50_low = PineJS.Std.ema(low0, lowMA, context);
                 try {
                   const ctx = context;
 
@@ -1193,7 +1657,7 @@ export default {
                   const phaseVolume = stgMode == 2;
                   const phasePower = stgMode == 1;
 
-                  //console.log("tren:: ", trend);
+                  // console.log("tren:: ", trend);
                   if (phaseAll) {
                     if (trend < 0 && power < 0 && volume < 0) side = -1;
                     else if (trend > 0 && power > 0 && volume > 0) side = 1;
@@ -1231,11 +1695,12 @@ export default {
                   var SPRICE = ctx.new_var(shortPrice);
 
                   if (side != refSide) {
-                    //console.log(side, refSide, long, short);
+                    // console.log(side, refSide, long, short);
                   }
 
                   const clr_bg = side > 0 ? 0 : side < 0 ? 1 : 2;
                   result.push(clr_bg);
+
                   var longText = buy ? "LONG \n" + price : NaN;
                   var shortText = short ? "SHORT \n" + price : NaN;
                   var sellText = sell ? "Close \n" + price : NaN;
@@ -1251,57 +1716,150 @@ export default {
                   var hl2 = (h0 + l0) * 0.5;
                   result.push(hl2);
 
-                  // if ("function" == typeof(this._onStudyCompleted)) {
-                  //     this._onStudyCompleted("STBot", this, {
-                  //         trend: retTrend,
-                  //         power: retPower,
-                  //         volume: retVolume,
-                  //         signal: retSignal,
-                  //         longText,
-                  //         sellText,
-                  //         shortText,
-                  //         coverText
-                  //     });
-                  // }
+                  // color bar zo-signal
+                  this._context.select_sym(0);
+                  const o = PineJS.Std.open(this._context);
+                  const h = PineJS.Std.high(this._context);
+                  const l = PineJS.Std.low(this._context);
+                  const c = PineJS.Std.close(this._context);
+                  const v = PineJS.Std.volume(this._context);
 
-                  // update strategy
-                  // var botSignal = buy ? SIGNAL_TYPES.BUY : sell ? SIGNAL_TYPES.SELL : short ? SIGNAL_TYPES.SHORT : cover ? SIGNAL_TYPES.COVER : 0;
-                  // var strend = 0;
-                  // if (botSignal) {
-                  //     if (side == 0) {
-                  //         strend = refSide;
-                  //     } else {
-                  //         strend = side;
-                  //     }
-                  // }
+                  var overridesym = true;
+                  var pvsra_sym = true;
+                  var pvsra_volume = this._context.new_var(v);
+                  var pvsra_high = this._context.new_var(h);
+                  var pvsra_low = this._context.new_var(l);
+                  var av =
+                    PineJS.Std.sum(
+                      this._context.new_var(pvsra_volume.get(1)),
+                      10,
+                      this._context
+                    ) / 10;
+                  var value2 =
+                    pvsra_volume.get(1) *
+                    (pvsra_high.get(1) - pvsra_low.get(1));
+                  var value2S = this._context.new_var(value2);
+                  var hivalue2 = PineJS.Std.highest(value2S, 10, this._context);
+                  var va =
+                    pvsra_volume.get(1) >= av * 2 || value2 >= hivalue2
+                      ? 1
+                      : pvsra_volume.get(1) >= av * 1.5
+                      ? 2
+                      : 0;
+                  var hl2 = (h + l) / 2;
+                  var hl2S = this._context.new_var(hl2);
+                  var ao =
+                    PineJS.Std.sma(hl2S, 5, this._context) -
+                    PineJS.Std.sma(hl2S, 34, this._context);
+                  var aoS = this._context.new_var(ao);
+                  var diff = ao - aoS.get(1);
+                  var hashc = (o + h + l + c) / 4;
+                  var hashcS = this._context.new_var(hashc);
+                  var hasho = (o + c) / 2;
+                  var hashoS = this._context.new_var(hasho);
+                  hasho =
+                    (PineJS.Std.nz(hashoS.get(1), 0) +
+                      PineJS.Std.nz(hashcS.get(1), 0)) /
+                    2;
+                  hashoS = this._context.new_var(hasho);
+                  hasho =
+                    (PineJS.Std.nz(hashoS.get(1), 0) +
+                      PineJS.Std.nz(hashcS.get(1), 0)) /
+                    2;
+                  hashoS = this._context.new_var(hasho);
+                  var hashc1 =
+                    hashoS.get(0) < hashc
+                      ? hashc - Math.abs(hashc - hashoS.get(0)) / 2
+                      : hashc + Math.abs(hashc - hashoS.get(0)) / 2;
+                  var hashh = Math.max(h, Math.max(hashoS.get(0), hashc));
+                  var hashl = Math.min(l, Math.min(hashoS.get(0), hashc));
 
-                  // var time = std.time(ctx);
-                  // var updateTime = new Date().valueOf();
-                  // var botSignal = {
+                  var color1 =
+                    ao >= 0 &&
+                    diff >= 0 &&
+                    ao > aoS.get(1) &&
+                    hashc1 >= hashoS.get(0)
+                      ? 0
+                      : 0; // ao xanh, nến tăng(ao dương)
+                  var color2 =
+                    ao >= 0 &&
+                    diff < 0 &&
+                    ao < aoS.get(1) &&
+                    hashc1 <= hashoS.get(0)
+                      ? 1
+                      : 0; // ao giảm, nến giảm (ao dương)
+                  var color3 =
+                    ao >= 0 &&
+                    diff >= 0 &&
+                    ao > aoS.get(1) &&
+                    hashc1 <= hashoS.get(0)
+                      ? 2
+                      : 0; // ao tăng, nến tăng(ao dương)
+                  var color4 =
+                    ao >= 0 &&
+                    diff < 0 &&
+                    ao < aoS.get(1) &&
+                    hashc1 >= hashoS.get(0)
+                      ? 3
+                      : 0; // ao giảm, nến giảm(ao dương)
+                  var color5 =
+                    ao < 0 &&
+                    diff < 0 &&
+                    ao < aoS.get(1) &&
+                    hashc1 >= hashoS.get(0)
+                      ? 4
+                      : 0; // ao giảm, nến tăng(ao âm)
+                  var color6 =
+                    ao < 0 &&
+                    diff < 0 &&
+                    ao < aoS.get(1) &&
+                    hashc1 <= hashoS.get(0)
+                      ? 5
+                      : 0; // ao giảm, nến giảm
+                  var color7 =
+                    ao < 0 &&
+                    diff >= 0 &&
+                    ao > aoS.get(1) &&
+                    hashc1 <= hashoS.get(0)
+                      ? 6
+                      : 0; // ao tăng, nến giảm
+                  var color8 =
+                    ao < 0 &&
+                    diff >= 0 &&
+                    ao > aoS.get(1) &&
+                    hashc1 >= hashoS.get(0)
+                      ? 7
+                      : 0; // ao tăng, nến tăng
+                  var color9 = va == 2 && va == 1.5 ? 8 : 0;
+                  var color = Math.max(
+                    color1,
+                    color2,
+                    color3,
+                    color4,
+                    color5,
+                    color6,
+                    color7,
+                    color8,
+                    color9
+                  );
+                  result.push(color);
+                  result.push(color);
+                  result.push(color);
 
-                  //     time,
-                  //     index: ctx.symbol.index,
-                  //     updateTime: updateTime,
-                  //     isBarClosed: ctx.symbol.isBarClosed,
+                  // htf
 
-                  //     open : std.open(ctx),
-                  //     high: std.high(ctx),
-                  //     low: std.low(ctx),
-                  //     close: std.close(ctx),
-                  //     volume: std.volume(ctx),
+                 const trendHTF = this.stTrendHTF();
+                  result.push(trendHTF[2]);
+                  result.push(trendHTF[0]);
+                  result.push(ema_50_high);
+                  result.push(trendHTF[0]);
+                  result.push(trendHTF[1]);
 
-                  //     trend: strend,
-                  //     signal: botSignal,
-                  //     price: std.close(ctx),
-                  // };
+                  // plot(trend_tf2, "Trend MTF", color = trend_tf2 === 1 ? Color.red : Color.green, style = plot.style_line, linewidth = 2);
+                  // plot(trend_tf1, "Current Trend TF", color = trend_tf1 === 1 ? Color.orange : Color.blue, style = plot.style_line, linewidth = 3);
 
-                  // update bot result
-                  //console.debug("New bot result: ", time, botResult);
-                  // Strategy.onBotResult(this.stgName, botSignal);
+                  // plot(ema_50_high - ema_50_low, "High IZE Trend", color = ema_50_high > ema_50_low ? Color.red : Color.blue, style = plot.style_histogram);
 
-                  // // invoke Strategy with signal
-                  // if (buy||sell||short||cover)
-                  //     Strategy.onBotSignal(this.stgName, botSignal);
                   return result;
                 } catch (e) {
                   console.log(e);
@@ -1447,6 +2005,8 @@ export default {
 
             constructor: function () {
               this.init = function (context, input) {
+                this._context = context;
+                this._input = input;
                 this.stPower = function () {
                   var std = PineJS.Std;
                   var ctx = this._context;
@@ -1546,7 +2106,7 @@ export default {
               };
             },
           },
-          //volume
+          // volume
           {
             // SmartTrader Trend Volume
             name: "STTrendVolume",
@@ -1752,12 +2312,12 @@ export default {
                       return l != 0 ? 100 - 100 / (1 + k / l) : NaN;
                     };
                     rsiFast = std.rsi2(aAC, iFast, ctx) - 50;
-                    //rsiFast = std.rsi(aAC, iFast) - 50;
+                    // rsiFast = std.rsi(aAC, iFast) - 50;
                     fast = std.wma(ctx.new_var(rsiFast), iMA, ctx);
                     Fast = ctx.new_var(fast);
 
                     rsiSlow = std.rsi2(aAC, iSlow, ctx) - 50;
-                    //rsiSlow = std.rsi(aAC, iSlow) - 50;
+                    // rsiSlow = std.rsi(aAC, iSlow) - 50;
                     slow = std.wma(ctx.new_var(rsiSlow), iMA, ctx);
                     Slow = ctx.new_var(slow);
 
@@ -1812,9 +2372,165 @@ export default {
               };
             },
           },
-          //zo trend
+          // zo trend
+          {
+            name: "ST HTF",
+            metainfo: {
+              _metainfoVersion: 51,
+              description: "ST HTF",
+              shortDescription: "ST HTF",
+              is_hidden_study: false,
+              is_price_study: false,
+              isCustomIndicator: true,
+              linkedToSeries: true,
 
-          //zo signal
+              id: "ST HTF@luuvietha",
+
+              format: {
+                type: "price",
+                precision: 2,
+              },
+              plots: [
+                {
+                  id: "plot_0",
+                  type: "line",
+                },
+                {
+                  id: "plot_1",
+                  type: "line",
+                },
+                {
+                  id: "plot_2",
+                  type: "line",
+                },
+                {
+                  id: "plot_3",
+                  type: "line",
+                },
+              ],
+              styles: {
+                plot_0: {
+                  title: "Trend MTF",
+                  histogramBase: 1,
+                },
+                plot_1: {
+                  title: "Current Trend TF",
+                  histogramBase: 1,
+                },
+                plot_2: {
+                  title: "High IZE Trend",
+                  histogramBase: 1,
+                },
+                plot_3: {
+                  title: "Low IZE Trend",
+                  histogramBase: 1,
+                },
+              },
+              defaults: {
+                styles: {
+                  plot_0: {
+                    linestyle: 0,
+                    visible: true,
+                    linewidth: 1,
+                    plottype: 0,
+                    trackPrice: false,
+                    transparency: 0,
+                    color: "#008FFF",
+                  },
+                  plot_1: {
+                    linestyle: 0,
+                    visible: true,
+                    linewidth: 1,
+                    plottype: 0,
+                    trackPrice: false,
+                    transparency: 0,
+                    color: "#04FF00",
+                  },
+                  plot_2: {
+                    linestyle: 0,
+                    visible: true,
+                    linewidth: 1,
+                    plottype: 0,
+                    trackPrice: false,
+                    transparency: 0,
+                    color: "#FF0000",
+                  },
+                },
+                inputs: {
+                  av: 30,
+                  pr: 14,
+                },
+                precision: 2,
+              },
+              inputs: [
+                {
+                  id: "av",
+                  name: "AV",
+                  type: "integer",
+                  min: 1,
+                  max: 2e3,
+                },
+                {
+                  id: "pr",
+                  name: "PR",
+                  type: "integer",
+                  min: 1,
+                  max: 2e3,
+                },
+              ],
+            },
+            constructor: function () {
+              this.main = function (context, inputCallback) {
+                this._context = context;
+                this._input = inputCallback;
+                var AV = this._input(0);
+                var PR = this._input(1);
+                var high = PineJS.Std.high(this._context);
+                var highS = this._context.new_var(high);
+                var low = PineJS.Std.low(this._context);
+                var lowS = this._context.new_var(low);
+                var upMove = highS.get(0) - highS.get(1);
+                var downMove = lowS.get(0) - lowS.get(1);
+                var plusDM = upMove > downMove && upMove > 0 ? upMove : 0;
+                var plusDMS = this._context.new_var(plusDM);
+                var minusDM = downMove > upMove && downMove > 0 ? downMove : 0;
+                var minusDMS = this._context.new_var(minusDM);
+                var tr1 = highS.get(0) - lowS.get(0);
+                var close = PineJS.Std.low(this._context);
+                var closeS = this._context.new_var(close);
+                var tr2 = Math.abs(highS.get(0) - closeS.get(1));
+                var tr3 = Math.abs(lowS.get(0) - closeS.get(1));
+                var trueRange = Math.max(Math.max(tr1, tr2), tr3);
+                var trueRangeS = this._context.new_var(trueRange);
+                var plusDI =
+                  (PineJS.Std.sma(plusDMS, PR, this._context) /
+                    PineJS.Std.sma(trueRangeS, PR, this._context)) *
+                  100;
+                var minusDI =
+                  (PineJS.Std.sma(minusDMS, PR, this._context) /
+                    PineJS.Std.sma(trueRangeS, PR, this._context)) *
+                  100;
+
+                var DX =
+                  (Math.abs(plusDI - minusDI) / (plusDI + minusDI)) * 100;
+                var DXS = this._context.new_var(DX);
+                var ADX = PineJS.Std.sma(DXS, PR, this._context);
+
+                const A = plusDI < 20;
+                const B = minusDI < 20;
+                const E = ADX > AV;
+                const P = plusDI;
+                const Q = minusDI;
+
+                const HL = P > Q;
+                const LH = Q > P;
+                const X = E && HL && B;
+                const Y = E && LH && A;
+                return [ADX, P, Q];
+              };
+            },
+          },
+          // zo signal
         ]);
       },
     };
@@ -1832,7 +2548,7 @@ export default {
       tvWidget.subscribe("onAutoSaveNeeded", () => {});
 
       var runrot = setInterval(() => {
-        let managerroot = $("#tvWidgetContainer iframe")
+        const managerroot = $("#tvWidgetContainer iframe")
           .contents()
           .find("#overlap-manager-root");
         if (managerroot && managerroot.length > 0) {
@@ -1842,8 +2558,8 @@ export default {
               "#header-toolbar-chart-styles .apply-common-tooltip.isOpened-merBkM5y"
             );
           if (headerchartTypes && headerchartTypes.length > 0) {
-            let htmlpnf = `<div data-value="pnf" class="item-jFqVJoPk withIcon-jFqVJoPk"><span class="icon-jFqVJoPk"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28" fill="currentColor"><path d="M14.5 16a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0-1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm0 7a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0-1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm3.293-15.5l4.707 4.707.707-.707L18.5 4.793z"></path><path d="M18.5 10.207L23.207 5.5l-.707-.707L17.793 9.5zm-.707 1.293l4.707 4.707.707-.707-4.707-4.707z"></path><path d="M18.5 16.207l4.707-4.707-.707-.707-4.707 4.707zM5.793 17.5l4.707 4.707.707-.707L6.5 16.793z"></path><path d="M6.5 22.207l4.707-4.707-.707-.707L5.793 21.5zM5.793 5.5l4.707 4.707.707-.707L6.5 4.793z"></path><path d="M6.5 10.207L11.207 5.5l-.707-.707L5.793 9.5zM5.793 11.5l4.707 4.707.707-.707L6.5 10.793z"></path><path d="M6.5 16.207l4.707-4.707-.707-.707L5.793 15.5z"></path></svg></span><span class="labelRow-jFqVJoPk"><span class="label-jFqVJoPk">ĐIểm &amp; Số liệu</span></span><span class="toolbox-jFqVJoPk showOnHover-jFqVJoPk"></span></div>`;
-            let itempnt = managerroot.find(
+            const htmlpnf = `<div data-value="pnf" class="item-jFqVJoPk withIcon-jFqVJoPk"><span class="icon-jFqVJoPk"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28" fill="currentColor"><path d="M14.5 16a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0-1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm0 7a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0-1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm3.293-15.5l4.707 4.707.707-.707L18.5 4.793z"></path><path d="M18.5 10.207L23.207 5.5l-.707-.707L17.793 9.5zm-.707 1.293l4.707 4.707.707-.707-4.707-4.707z"></path><path d="M18.5 16.207l4.707-4.707-.707-.707-4.707 4.707zM5.793 17.5l4.707 4.707.707-.707L6.5 16.793z"></path><path d="M6.5 22.207l4.707-4.707-.707-.707L5.793 21.5zM5.793 5.5l4.707 4.707.707-.707L6.5 4.793z"></path><path d="M6.5 10.207L11.207 5.5l-.707-.707L5.793 9.5zM5.793 11.5l4.707 4.707.707-.707L6.5 10.793z"></path><path d="M6.5 16.207l4.707-4.707-.707-.707L5.793 15.5z"></path></svg></span><span class="labelRow-jFqVJoPk"><span class="label-jFqVJoPk">ĐIểm &amp; Số liệu</span></span><span class="toolbox-jFqVJoPk showOnHover-jFqVJoPk"></span></div>`;
+            const itempnt = managerroot.find(
               'div[data-name="popup-menu-container"] div[data-name="menu-inner"] div[data-value="pnf"]'
             );
             if (itempnt && itempnt.length > 0) {

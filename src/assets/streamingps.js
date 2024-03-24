@@ -1,5 +1,5 @@
 const channelToSubscription = new Map();
-const socketdchart = io("https://dchart-socket.vndirect.com.vn/socket.io", {
+const socketdchart = io("https://tradingviewrealtime.vps.com.vn", {//io("https://dchart-socket.vndirect.com.vn/socket.io", {
     'transports': ["websocket", "polling"],
     'query': {
         'symbol': "VNINDEX"
@@ -57,34 +57,32 @@ socketdchart.on('price', data => {
     const roundedTimestamp = Math.floor(newData.ts / interval) * interval;
 
     const bar = updateBar(newData, lastDailyBar, subscriptionItem);
-    var upBar;
-
-    if (isNewBar || roundedTimestamp > lastBarTimestamp) {
-        upBar = {
-            ...lastDailyBar,
-            symbol: lastDailyBar.symbol,
-            resolution: subscriptionItem.resolution,
-            time: roundedTimestamp * 1000,
-            open: newData.price,
-            high: isNewBar ? newData.price : lastBar.close,
-            low: isNewBar ? newData.price : lastBar.close,
-            close: newData.price,
-            volume: newData.volume
-        };
-    }
-    else {
-        upBar = {
-            ...lastDailyBar,
-            high: Math.max(lastDailyBar.high, bar.high),
-            low: Math.min(lastDailyBar.low, bar.low),
-            close: newData.price,
-            volume: newData.volume,
-            time: bar.time,
-        };
-    }
-    subscriptionItem.lastDailyBar = upBar;
-    // Send data to every subscriber of that symbol
-    subscriptionItem.handlers.forEach(handler => handler.callback(upBar));
+        var upBar;
+        if (isNewBar || (roundedTimestamp > lastBarTimestamp) ) {
+            upBar = {
+                symbol: lastDailyBar.symbol,
+                resolution: subscriptionItem.resolution,
+                time: roundedTimestamp * 1000,
+                open: newData.Open,
+                high: newData.Hight,
+                low: newData.Low,
+                close: newData.price,
+                volume: newData.volume,
+            };
+        }
+        else {
+            upBar = {
+                ...lastDailyBar,
+                high: Math.max(lastDailyBar.high, bar.high),
+                low: Math.min(lastDailyBar.low, bar.low),
+                close: newData.price,
+                volume: newData.volume,
+                time: bar.time,
+            };
+        }
+        subscriptionItem.lastDailyBar = upBar;
+        // Send data to every subscriber of that symbol
+        subscriptionItem.handlers.forEach(handler => handler.callback(upBar));
 })
 
 
@@ -159,23 +157,22 @@ function updateBar(newData, subscriber, lastDailyBar) {
             symbol: subscriber.symbol,
             resolution: subscriber.resolution,
             time: roundedTimestamp * 1000,
-            open: newData.Open,
+            open: isNewBar ? newData.Open : lastBar.close,
             high: isNewBar ? newData.Hight : lastBar.close,
             low: isNewBar ? newData.Low : lastBar.close,
-            close: newData.Close,
+            close: isNewBar ? newData.Close: lastBar.close,
             volume: newData.volume
         };
     } else {
         if (newData.price < lastBar.low) {
             lastBar.low = newData.price;
-        } else if (newData.price > lastBar.high) {
+        } 
+        if (newData.price > lastBar.high) {
             lastBar.high = newData.price;
         }
-
-        lastBar.volume += newData.volume;
-        lastBar.close = newData.price;
+        lastBar.volume = newData.volume;
+        //lastBar.close = newData.price;
         updatedBar = lastBar;
     }
-
     return updatedBar;
 }

@@ -143,7 +143,7 @@ async function loadDataBarCustom(symbolInfo, urlParameters, timeEnd, firstDataRe
 						...bars[bars.length - 1],
 					});
 				}
-				
+
 				if (bars.length == 0) {
 					onHistoryCallback([], {
 						noData: true,
@@ -157,12 +157,12 @@ async function loadDataBarCustom(symbolInfo, urlParameters, timeEnd, firstDataRe
 			}
 		}
 		if (bars && bars.length > 0) {
-			timeEnd = bars[0].time/1000;
-			if (timeEnd > 1103051358 && countHis > 0) {
-				setTimeout(function() {
+			timeEnd = bars[0].time / 1000;
+			if (timeEnd > 1103051358 && countHis < 20) {
+				setTimeout(function () {
 					loadDataBarCustom(symbolInfo, urlParametersC, timeEnd, firstDataRequest, onHistoryCallback, onErrorCallback);
-				},1000);
-				
+				}, 1000);
+
 			}
 		}
 	} catch (err) {
@@ -200,7 +200,6 @@ export default {
 		onResolveErrorCallback,
 		extension
 	) => {
-		console.log("extension:: ", extension);
 		console.log('[resolveSymbol]: Method call', symbolName);
 		const symbols = await GeSymbolType('search', symbolName);
 		const symbolItem = symbols.find(({
@@ -211,53 +210,42 @@ export default {
 			onResolveErrorCallback('cannot resolve symbol');
 			return;
 		}
-		let symbolInfo;
-		if (symbolItem.exchange == "HOSE" || symbolItem.exchange == "HNX" || symbolItem.exchange == "UPCOM") {
-			symbolInfo = {
-				name: symbolItem.symbol,
-				full_name: symbolItem.full_name,
-				description: symbolItem.description,
-				listed_exchange: '',
-				type: symbolItem.type,
-				ticker: symbolItem.symbol,
-				exchange: symbolItem.exchange,
-				format: 'price',
-				supported_resolutions: configurationData.supported_resolutions,
-				timezone: 'Asia/Ho_Chi_Minh',
-				session: '0900-1445',
-				minmov: 1,
-				pricescale: 1000,
-				has_intraday: true,
-				intraday_multipliers: ['1'],
-				volume_precision: 8,
-				data_status: 'streaming',
-				pathRq: symbolItem.pathRq,
-				id: symbolItem.id,
-			};
+		let symbolInfo = symbolItem;
+		symbolInfo.name = symbolItem.symbol;
+			symbolInfo.full_name = symbolItem.full_name;
+			symbolInfo.description = symbolItem.description;
+			symbolInfo.listed_exchange = '';
+			symbolInfo.type = symbolItem.type;
+			symbolInfo.ticker = symbolItem.symbol;
+			symbolInfo.exchange = symbolItem.exchange;
+			symbolInfo.format = 'price';
+			symbolInfo.supported_resolutions = configurationData.supported_resolutions;
+			symbolInfo.timezone = 'Asia/Ho_Chi_Minh';
+			symbolInfo.minmov = 1;
+			symbolInfo.pricescale = 100;
+			symbolInfo.has_intraday = true;
+			symbolInfo.intraday_multipliers = ['1'],
+			symbolInfo.volume_precision = 8;
+			symbolInfo.data_status = 'streaming';
+			symbolInfo.pathRq = symbolItem.pathRq;
+			symbolInfo.id = symbolItem.id;
+		if (symbolItem.exchange == "HOSE" || symbolItem.exchange == "HNX" || symbolItem.exchange == "UPCOM" || (symbolItem.name == "VN30F1M" || symbolItem.name == "VN30F1Q" || symbolItem.name == "VN30F2M" || symbolItem.name == "VN30F2Q")) {
+			symbolInfo.session = "0830-1530";
+			symbolInfo.session_holidays="20180101,20180214,20180215,20180216,20180217,20180218,20180219,20180220,20180425,20180430,20180501,20180903,20181231,20190101,20190204,20190205,20190206,20190207,20190208,20190415,20190429,20190430,20190501,20190902,20200101,20200123,20200124,20200127,20200128,20200129,20200402,20200430,20200501,20200902,20210101,20210210,20210211,20210212,20210213,20210214,20210215,20210216,20210421,20210430,20210503,20210902,20210903,20220103,20220131,20220201,20220202,20220203,20220204,20220411,20220502,20220503,20220901,20220902,20230102,20230123,20230124,20230125,20230126,20230501,20230502,20230503,20230901,20230904,20240101,20240208,20240209,20240212,20240213,20240214,20240418,20240430,20240501,20240902,20230903";
+			symbolInfo.minmove2 = 0;
+			symbolInfo.session_display = "0830-1530";
 		} else {
-			symbolInfo = {
-				name: symbolItem.symbol,
-				full_name: symbolItem.full_name,
-				description: symbolItem.description,
-				listed_exchange: '',
-				type: symbolItem.type,
-				ticker: symbolItem.symbol,
-				exchange: symbolItem.exchange,
-				format: 'price',
-				supported_resolutions: configurationData.supported_resolutions,
-				timezone: 'Asia/Ho_Chi_Minh',
-				session: "24x7",
-				minmov: 1,
-				pricescale: 1000,
-				has_intraday: true,
-				intraday_multipliers: ['1'],
-				volume_precision: 8,
-				data_status: 'streaming',
-				pathRq: symbolItem.pathRq,
-				id: symbolItem.id,
-			};
+			if (symbolItem.type == "spot") {
+				symbolInfo.session = "24x7";
+			} else {
+				symbolInfo.session = '2;24x7';
+				symbolInfo.minmove2= 10;
+				symbolInfo.pricescale= 100000;
+				symbolInfo.pointvalue= 1;
+				symbolInfo.has_intraday = true;
+			}
+			
 		}
-
 
 		console.log('[resolveSymbol]: Symbol resolved', symbolInfo);
 		onSymbolResolvedCallback(symbolInfo);
@@ -266,9 +254,6 @@ export default {
 	getBars: async (symbolInfo, resolution, periodParams, onHistoryCallback, onErrorCallback) => {
 		let { from, to, firstDataRequest } = periodParams;
 		var resol = resolution;
-		if (resolution == "60" || resolution == "90" || resolution == "120" || resolution == "180" || resolution == "240") {
-			resol = "H";
-		}
 		if ((symbolInfo.name == "VN30F1M" || symbolInfo.name == "VN30F1Q" || symbolInfo.name == "VN30F2M" || symbolInfo.name == "VN30F2Q") || (symbolInfo.exchange == "HNX" || symbolInfo.exchange == "HOSE" || symbolInfo.exchange == "UPCOM")) {
 			if (from > 1103051358) {
 				from = 1103051358;
@@ -288,14 +273,12 @@ export default {
 			firstDataRequest: firstDataRequest,
 			type: symbolInfo.type
 		};
-		//console.log("OK:",symbolInfo);
 		const query = Object.keys(urlParameters)
 			.map(name => `${name}=${encodeURIComponent(urlParameters[name])}`)
 			.join('&');
 		try {
 			const response = await makeApiRequest(`history?${query}`);
 			const data = response.data;
-			console.log(data);
 			let dataBar = [];
 			let bars = [];
 			if (data.nextTime || data.nextTime >= 0) {
@@ -346,17 +329,17 @@ export default {
 						if (symbolInfo.type == "spot" && resol != 1) {
 							if (time >= from && time <= to) {
 								bars = [...bars, {
-									time: dataBar[i].time * 1000,
+									time: parseFloat(dataBar[i].time + "000"),
 									low: parseFloat(dataBar[i].min),
 									high: parseFloat(dataBar[i].max),
 									open: parseFloat(dataBar[i].open),
 									close: parseFloat(dataBar[i].close),
 									volume: parseFloat(dataBar[i].volume),
 								}];
-							} 
+							}
 						} else {
 							bars = [...bars, {
-								time: dataBar[i].time * 1000,
+								time: parseFloat(dataBar[i].time + "000"),
 								low: parseFloat(dataBar[i].min),
 								high: parseFloat(dataBar[i].max),
 								open: parseFloat(dataBar[i].open),
@@ -365,13 +348,8 @@ export default {
 							}];
 						}
 					}
-					if (symbolInfo.type == "spot" && resol != 1) {
-						if (firstDataRequest) {
-							lastBarsCache.set(symbolInfo.full_name, {
-								...bars[bars.length - 1],
-							});
-						}
-					} else {
+					console.log("bars[bars.length - 1]:: ", bars[bars.length - 1].time);
+					if (firstDataRequest) {
 						lastBarsCache.set(symbolInfo.full_name, {
 							...bars[bars.length - 1],
 						});
@@ -390,7 +368,8 @@ export default {
 			}
 			//xử lý lấy data history
 			if (bars && bars.length > 0) {
-				timeEnd = bars[0].time/1000;
+				timeEnd = bars[0].time / 1000;
+
 			} else {
 				if ((resolution == "1" || resolution == "3" || resolution == "5" || resolution == "10" || resolution == "15" || resolution == "30") && timeEnd > 1103051358) {
 					countHis = 1;
@@ -411,7 +390,6 @@ export default {
 		onResetCacheNeededCallback,
 	) => {
 		console.log('[subscribeBars]: Method call with subscriberUID:', subscriberUID);
-		countHis = 1;
 		subscribeOnStream(
 			symbolInfo,
 			resolution,

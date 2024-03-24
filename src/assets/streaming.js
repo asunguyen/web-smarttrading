@@ -8,6 +8,7 @@ const socket = io("https://api.smtchart.vn", {
 });
 socket.on("onData", (data) => {
     let dataBar = data.chart;
+    console.log("data.chart:: ", data.chart)
     if (data.infos.type == "stock" && data.infos.country == "VN") {
         return;
     }
@@ -41,20 +42,18 @@ socket.on("onData", (data) => {
         }
         const interval = resolution * 60;
         const roundedTimestamp = Math.floor(newData.ts / interval) * interval;
-
         const bar = updateBar(newData, lastDailyBar, subscriptionItem);
         var upBar;
-        if (isNewBar || roundedTimestamp > lastBarTimestamp) {
+        if (isNewBar || (roundedTimestamp > lastBarTimestamp) ) {
             upBar = {
-                ...lastDailyBar,
                 symbol: lastDailyBar.symbol,
                 resolution: subscriptionItem.resolution,
                 time: roundedTimestamp * 1000,
                 open: newData.price,
-                high: isNewBar ? newData.price : lastBar.close,
-                low: isNewBar ? newData.price : lastBar.close,
+                high: newData.price,
+                low: newData.price,
                 close: newData.price,
-                volume: newData.volume
+                volume: newData.volume,
             };
         }
         else {
@@ -64,12 +63,10 @@ socket.on("onData", (data) => {
                 low: Math.min(lastDailyBar.low, bar.low),
                 close: newData.price,
                 volume: newData.volume,
-                time: bar.time,
             };
         }
-        if (upBar.time < lastDailyBar.time) {
-            upBar.time = lastDailyBar.time + 1000;
-        }
+        console.log("upbar:: ", upBar);
+        
         subscriptionItem.lastDailyBar = upBar;
         // Send data to every subscriber of that symbol
         subscriptionItem.handlers.forEach(handler => handler.callback(upBar));
@@ -156,23 +153,22 @@ function updateBar(newData, subscriber, lastDailyBar) {
             resolution: subscriber.resolution,
             time: roundedTimestamp * 1000,
             open: isNewBar ? newData.Open : lastBar.close,
-            high: isNewBar ? newData.Hight : lastBar.high,
-            low: isNewBar ? newData.Low : lastBar.low,
-            close: isNewBar ? newData.Close : lastBar.close,
+            high: isNewBar ? newData.Hight : lastBar.close,
+            low: isNewBar ? newData.Low : lastBar.close,
+            close: isNewBar ? newData.Close: lastBar.close,
             volume: newData.volume
         };
     } else {
-        // if (newData.price < lastBar.low) {
-        //     lastBar.low = newData.price;
-        // } else if (newData.price > lastBar.high) {
-        //     lastBar.high = newData.price;
-        // }
-
-        // lastBar.volume += newData.volume;
-        // lastBar.close = newData.price;
+        if (newData.price < lastBar.low) {
+            lastBar.low = newData.price;
+        } 
+        if (newData.price > lastBar.high) {
+            lastBar.high = newData.price;
+        }
+        lastBar.volume = newData.volume;
+        //lastBar.close = newData.price;
         updatedBar = lastBar;
     }
-
     return updatedBar;
 }
 
