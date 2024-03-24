@@ -8,6 +8,7 @@ const socket = io("https://api.smtchart.vn", {
 });
 socket.on("onData", (data) => {
     let dataBar = data.chart;
+    console.log("data.chart:: ", data.chart)
     if (data.infos.type == "stock" && data.infos.country == "VN") {
         return;
     }
@@ -41,22 +42,19 @@ socket.on("onData", (data) => {
         }
         const interval = resolution * 60;
         const roundedTimestamp = Math.floor(newData.ts / interval) * interval;
-        const checknewBar = newData.ts % interval;
-
         const bar = updateBar(newData, lastDailyBar, subscriptionItem);
         var upBar;
-        if (isNewBar || ((roundedTimestamp > lastBarTimestamp && resolution < 1440) ) ) {
+        if (isNewBar || (roundedTimestamp > lastBarTimestamp) ) {
             upBar = {
                 symbol: lastDailyBar.symbol,
                 resolution: subscriptionItem.resolution,
                 time: roundedTimestamp * 1000,
-                open: isNewBar ? newData.Open : lastBar.close,
-                high: newData.Hight,
-                low: newData.Low,
+                open: newData.price,
+                high: newData.price,
+                low: newData.price,
                 close: newData.price,
                 volume: newData.volume,
             };
-            console.log("1:: ", upBar);
         }
         else {
             upBar = {
@@ -65,10 +63,10 @@ socket.on("onData", (data) => {
                 low: Math.min(lastDailyBar.low, bar.low),
                 close: newData.price,
                 volume: newData.volume,
-                time: bar.time,
             };
-            console.log("2:: ", upBar);
         }
+        console.log("upbar:: ", upBar);
+        
         subscriptionItem.lastDailyBar = upBar;
         // Send data to every subscriber of that symbol
         subscriptionItem.handlers.forEach(handler => handler.callback(upBar));

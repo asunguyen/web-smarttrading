@@ -31,7 +31,7 @@ export default {
       type: String
     },
     chartsStorageUrl: {
-      default: '', // "https://api.smtchart.vn/v1/data/dashboard",
+      default: "https://api.smtchart.vn/v1/data/dashboard",
       type: String
     },
     chartsStorageApiVersion: {
@@ -86,7 +86,7 @@ export default {
       charts_storage_api_version: this.chartsStorageApiVersion,
       client_id: this.clientId,
       user_id: this.userId,
-      auto_save_delay: 2,
+      auto_save_delay: 5,
       // fullscreen: this.fullscreen,
       autosize: this.autosize,
       // studies_overrides: this.studiesOverrides,
