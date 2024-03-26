@@ -116,7 +116,11 @@ export function subscribeOnStreamps(
     };
     channelToSubscription.set(symbolList, subscriptionItem);
     socketdchart.emit('addsymbol', symbolInfo.name);
-    socketdchart.emit('regs', symbolInfo.name);
+    const jsonString = JSON.stringify({
+        action: "join",
+        list: symbolList
+    });
+    socketdchart.emit('regs', jsonString);
 }
 
 export function unsubscribeFromStreamps(subscriberUID) {
@@ -137,7 +141,7 @@ export function unsubscribeFromStreamps(subscriberUID) {
         }
     }
 }
-
+// https://chart.vps.com.vn/tv/?symbol=AAH&allowFullscreen=true&resolution=1D&lang=vi
 function updateBar(newData, subscriber, lastDailyBar) {
     var lastBar = subscriber.lastBar || {};
     const isNewBar = JSON.stringify(lastBar) === '{}';
