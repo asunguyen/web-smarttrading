@@ -8,7 +8,6 @@ const socket = io("https://api.smtchart.vn", {
 });
 socket.on("onData", (data) => {
     let dataBar = data.chart;
-    console.log("data.chart:: ", data.chart)
     if (data.infos.type == "stock" && data.infos.country == "VN") {
         return;
     }

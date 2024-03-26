@@ -116,6 +116,7 @@ export function subscribeOnStreamps(
     };
     channelToSubscription.set(symbolList, subscriptionItem);
     socketdchart.emit('addsymbol', symbolInfo.name);
+    socketdchart.emit('regs', symbolInfo.name);
 }
 
 export function unsubscribeFromStreamps(subscriberUID) {
@@ -176,3 +177,37 @@ function updateBar(newData, subscriber, lastDailyBar) {
     }
     return updatedBar;
 }
+socketdchart.on("stockps", function (data) {
+    let parsedData = data;
+    try {
+        parsedData = JSON.parse(data);
+    } catch (error) {}
+    console.log("parsedData:: ", parsedData);
+    if (parsedData.hasOwnProperty('t')) {
+        const newData = {
+            symbol: parsedData.s,
+            ts: parsedData.t,
+            volume: parseFloat(parsedData.lv),
+            price: parseFloat(parsedData.c)
+        };
+
+        var subscriber = subscribers.find(sub => sub.symbol === parsedData.s);
+        if (!subscriber && subscribers.length === 1) {
+            subscriber = subscribers[0];
+        }
+
+        if (subscriber) {
+            if (newData.ts < subscriber.lastBar.time / 1000) {
+                return;
+            }
+
+            subscriber.lastBar = updateBar(newData, subscriber);
+            subscriber.lastBar.source = "VPS";
+
+            // self.postMessage({
+            //     type: "bar_updated",
+            //     data: subscriber.lastBar
+            // });
+        }
+    }
+});
