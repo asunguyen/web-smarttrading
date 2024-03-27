@@ -125,6 +125,11 @@ export function subscribeOnStreamps(
 
 export function unsubscribeFromStreamps(subscriberUID) {
     for (const channelString of channelToSubscription.keys()) {
+        const jsonString = JSON.stringify({
+        action: "leave",
+        list: subscriberUID
+    });
+    socketdchart.emit('regs', jsonString);
         const subscriptionItem = channelToSubscription.get(channelString);
         const handlerIndex = subscriptionItem.handlers
             .findIndex(handler => handler.id === subscriberUID);
@@ -181,37 +186,137 @@ function updateBar(newData, subscriber, lastDailyBar) {
     }
     return updatedBar;
 }
+socketdchart.on("stock", function (data) {
+    let parsedData = data;
+    try {
+        parsedData = JSON.parse(data);
+    } catch (error) {}
+    if (parsedData.hasOwnProperty('t')) {
+        let newData;
+    newData = {
+        symbol: parsedData.s,
+        ts: Math.floor(parsedData.t),
+        volume: parseFloat(parsedData.v),
+        price: parseFloat(parsedData.c),
+        Hight: parseFloat(parsedData.h),
+        Low: parseFloat(parsedData.l),
+        Open: parseFloat(parsedData.o),
+        Close: parseFloat(parsedData.c),
+    };
+
+    const symbolList = "CHART." + parsedData.s;
+    const subscriptionItem = channelToSubscription.get(symbolList);
+    if (subscriptionItem === undefined) {
+        return;
+    }
+    const lastDailyBar = subscriptionItem.lastDailyBar;
+    var lastBar = lastDailyBar;
+    var lastBarTimestamp = Math.floor(lastBar.time / 1000);
+    const isNewBar = JSON.stringify(lastBar) === '{}';
+
+    let resolution = subscriptionItem.resolution;
+    if (resolution.includes('D')) {
+        resolution = 1440;
+    } else if (resolution.includes('W')) {
+        resolution = 10080;
+    }
+
+    const interval = resolution * 60;
+    const roundedTimestamp = Math.floor(newData.ts / interval) * interval;
+
+    const bar = updateBar(newData, lastDailyBar, subscriptionItem);
+        var upBar;
+        if (isNewBar || (roundedTimestamp > lastBarTimestamp) ) {
+            upBar = {
+                symbol: lastDailyBar.symbol,
+                resolution: subscriptionItem.resolution,
+                time: roundedTimestamp * 1000,
+                open: newData.Open,
+                high: newData.Hight,
+                low: newData.Low,
+                close: newData.price,
+                volume: newData.volume,
+            };
+        }
+        else {
+            upBar = {
+                ...lastDailyBar,
+                high: Math.max(lastDailyBar.high, bar.high),
+                low: Math.min(lastDailyBar.low, bar.low),
+                close: newData.price,
+                volume: newData.volume,
+                time: bar.time,
+            };
+        }
+        subscriptionItem.lastDailyBar = upBar;
+        // Send data to every subscriber of that symbol
+        subscriptionItem.handlers.forEach(handler => handler.callback(upBar));
+    }
+});
 socketdchart.on("stockps", function (data) {
     let parsedData = data;
     try {
         parsedData = JSON.parse(data);
     } catch (error) {}
-    console.log("parsedData:: ", parsedData);
     if (parsedData.hasOwnProperty('t')) {
-        const newData = {
-            symbol: parsedData.s,
-            ts: parsedData.t,
-            volume: parseFloat(parsedData.lv),
-            price: parseFloat(parsedData.c)
-        };
+        let newData;
+    newData = {
+        symbol: parsedData.s,
+        ts: Math.floor(parsedData.t),
+        volume: parseFloat(parsedData.v),
+        price: parseFloat(parsedData.c),
+        Hight: parseFloat(parsedData.h),
+        Low: parseFloat(parsedData.l),
+        Open: parseFloat(parsedData.o),
+        Close: parseFloat(parsedData.c),
+    };
 
-        var subscriber = subscribers.find(sub => sub.symbol === parsedData.s);
-        if (!subscriber && subscribers.length === 1) {
-            subscriber = subscribers[0];
+    const symbolList = "CHART." + parsedData.s;
+    const subscriptionItem = channelToSubscription.get(symbolList);
+    if (subscriptionItem === undefined) {
+        return;
+    }
+    const lastDailyBar = subscriptionItem.lastDailyBar;
+    var lastBar = lastDailyBar;
+    var lastBarTimestamp = Math.floor(lastBar.time / 1000);
+    const isNewBar = JSON.stringify(lastBar) === '{}';
+
+    let resolution = subscriptionItem.resolution;
+    if (resolution.includes('D')) {
+        resolution = 1440;
+    } else if (resolution.includes('W')) {
+        resolution = 10080;
+    }
+
+    const interval = resolution * 60;
+    const roundedTimestamp = Math.floor(newData.ts / interval) * interval;
+
+    const bar = updateBar(newData, lastDailyBar, subscriptionItem);
+        var upBar;
+        if (isNewBar || (roundedTimestamp > lastBarTimestamp) ) {
+            upBar = {
+                symbol: lastDailyBar.symbol,
+                resolution: subscriptionItem.resolution,
+                time: roundedTimestamp * 1000,
+                open: newData.Open,
+                high: newData.Hight,
+                low: newData.Low,
+                close: newData.price,
+                volume: newData.volume,
+            };
         }
-
-        if (subscriber) {
-            if (newData.ts < subscriber.lastBar.time / 1000) {
-                return;
-            }
-
-            subscriber.lastBar = updateBar(newData, subscriber);
-            subscriber.lastBar.source = "VPS";
-
-            // self.postMessage({
-            //     type: "bar_updated",
-            //     data: subscriber.lastBar
-            // });
+        else {
+            upBar = {
+                ...lastDailyBar,
+                high: Math.max(lastDailyBar.high, bar.high),
+                low: Math.min(lastDailyBar.low, bar.low),
+                close: newData.price,
+                volume: newData.volume,
+                time: bar.time,
+            };
         }
+        subscriptionItem.lastDailyBar = upBar;
+        // Send data to every subscriber of that symbol
+        subscriptionItem.handlers.forEach(handler => handler.callback(upBar));
     }
 });
