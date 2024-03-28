@@ -230,9 +230,9 @@ export default {
 			symbolInfo.pathRq = symbolItem.pathRq;
 			symbolInfo.id = symbolItem.id;
 		if (symbolItem.exchange == "HOSE" || symbolItem.exchange == "HNX" || symbolItem.exchange == "UPCOM" || (symbolItem.name == "VN30F1M" || symbolItem.name == "VN30F1Q" || symbolItem.name == "VN30F2M" || symbolItem.name == "VN30F2Q")) {
-			symbolInfo.session = "0830-1530";
+			symbolInfo.session = "0845-1500";
 			symbolInfo.minmove2 = 0;
-			symbolInfo.session_display = "0830-1530";
+			symbolInfo.timezone = 'Asia/Ho_Chi_Minh';
 		} else {
 			if (symbolItem.type == "spot") {
 				symbolInfo.session = "24x7";
@@ -293,26 +293,12 @@ export default {
 							volume: data.v[i]
 						}]
 					}
-					lastBarsCache.set(symbolInfo.full_name, {
-						...bars[bars.length - 1],
-					});
-					// if (firstDataRequest) {
-					// 	lastBarsCache.set(symbolInfo.full_name, {
-					// 		...bars[bars.length - 1],
-					// 	});
-					// }
+					if (firstDataRequest) {
+						lastBarsCache.set(symbolInfo.full_name, {
+							...bars[bars.length - 1],
+						});
+					}
 				}
-
-				if (bars && bars.length > 0) {
-					onHistoryCallback(bars, {
-						noData: true
-					});
-				} else {
-					onHistoryCallback([], {
-						noData: true
-					});
-				}
-
 
 			} else {
 				dataBar = data;
@@ -348,22 +334,23 @@ export default {
 							}];
 						}
 					}
-					if (firstDataRequest) {
-						lastBarsCache.set(symbolInfo.full_name, {
-							...bars[bars.length - 1],
-						});
-					}
-					if (bars.length == 0) {
-						onHistoryCallback([], {
-							noData: true,
-						});
-					} else {
-						onHistoryCallback(bars, {
-							noData: false,
-						});
-					}
+					
 
 				}
+			}
+			if (firstDataRequest) {
+				lastBarsCache.set(symbolInfo.full_name, {
+					...bars[bars.length - 1],
+				});
+			}
+			if (bars.length == 0) {
+				onHistoryCallback([], {
+					noData: true,
+				});
+			} else {
+				onHistoryCallback(bars, {
+					noData: false,
+				});
 			}
 			//xử lý lấy data history
 			if (bars && bars.length > 0) {
