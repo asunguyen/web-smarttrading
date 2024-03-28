@@ -90,6 +90,7 @@ export default {
       timezone: 'Asia/Ho_Chi_Minh',
       interval: this.interval,
       container: container,
+      container_id: 'tvWidgetContainer',
       library_path: this.libraryPath,
       logo: {
         image: '@/assets/logo-st.png',
@@ -100,33 +101,39 @@ export default {
       charts_storage_api_version: this.chartsStorageApiVersion,
       client_id: this.clientId,
       user_id: this.userId,
-      fullscreen: this.fullscreen,
+      auto_save_delay: 5,
+      // fullscreen: this.fullscreen,
       autosize: this.autosize,
-      studies_overrides: this.studiesOverrides,
+      // studies_overrides: this.studiesOverrides,
       load_last_chart: true,
+      favorites: {},
+      resolution: 1,
       saveload_separate_drawings_storage: true,
       chart_template_storage: true,
       use_localstorage_for_settings: true,
-      favorites: {
-      },
-      resolution: 1,
+      save_chart_properties_to_local_storage: true,
+      symbol_search_request_delay:1000,
       widgetbar: {
         details: true,
         news: true,
         watchlist: true,
-        datawindow: true,
+        datawindow: true
       },
-      overrides: {
-        'mainSeriesProperties.showCountdown': true
-      },
-      header_widget_buttons_mode: 'fullsize',
-      disabled_features: ["dom_widget"],
+      // overrides: {
+      //   "mainSeriesProperties.showCountdown": true,
+      //   "paneProperties.backgroundGradientStartColor": "#020024",
+      //   "paneProperties.backgroundGradientEndColor": "#4f485e",
+      // },
+      disabled_features: ['dom_widget'],
       enabled_features: [
-        "header_layouttoggle",
-        "right_toolbar",
-        "trading_account_manager",
-        "chart_template_storage",
-        "use_localstorage_for_settings",
+        'header_layouttoggle',
+        'right_toolbar',
+        'trading_account_manager',
+        'watchlist_sections',
+        'show_last_price_and_change_only_in_series_legend',
+        'chart_template_storage',
+        'use_localstorage_for_settings',
+        'save_chart_properties_to_local_storage'
       ],
       custom_indicators_getter: function(PineJS) {
         return Promise.resolve([
