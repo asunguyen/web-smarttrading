@@ -58,7 +58,7 @@ socketdchart.on('price', data => {
 
     const bar = updateBar(newData, lastDailyBar, subscriptionItem);
         var upBar;
-        if (isNewBar || (roundedTimestamp > lastBarTimestamp) ) {
+        if (isNewBar || (roundedTimestamp > lastBarTimestamp && resolution < 1440) || (resolution >= 1440 && new Date(roundedTimestamp).getDate() > new Date(lastBarTimestamp).getDate())) {
             upBar = {
                 symbol: lastDailyBar.symbol,
                 resolution: subscriptionItem.resolution,
@@ -124,12 +124,12 @@ export function subscribeOnStreamps(
 }
 
 export function unsubscribeFromStreamps(subscriberUID) {
-    for (const channelString of channelToSubscription.keys()) {
-        const jsonString = JSON.stringify({
+    const jsonString = JSON.stringify({
         action: "leave",
         list: subscriberUID
     });
     socketdchart.emit('regs', jsonString);
+    for (const channelString of channelToSubscription.keys()) {
         const subscriptionItem = channelToSubscription.get(channelString);
         const handlerIndex = subscriptionItem.handlers
             .findIndex(handler => handler.id === subscriberUID);
@@ -162,7 +162,7 @@ function updateBar(newData, subscriber, lastDailyBar) {
     const lastBarTimestamp = Math.floor(lastBar.time / 1000);
 
     let updatedBar = false;
-    if (isNewBar || roundedTimestamp > lastBarTimestamp) {
+    if (isNewBar || (roundedTimestamp > lastBarTimestamp && resolution < 1440) || (resolution >= 1440 && new Date(roundedTimestamp).getDate() > new Date(lastBarTimestamp).getDate())) {
         updatedBar = {
             symbol: subscriber.symbol,
             resolution: subscriber.resolution,
@@ -226,7 +226,7 @@ socketdchart.on("stock", function (data) {
 
     const bar = updateBar(newData, lastDailyBar, subscriptionItem);
         var upBar;
-        if (isNewBar || (roundedTimestamp > lastBarTimestamp) ) {
+        if (isNewBar || (roundedTimestamp > lastBarTimestamp && resolution < 1440) || (resolution >= 1440 && new Date(roundedTimestamp).getDate() > new Date(lastBarTimestamp).getDate())) {
             upBar = {
                 symbol: lastDailyBar.symbol,
                 resolution: subscriptionItem.resolution,
@@ -293,7 +293,7 @@ socketdchart.on("stockps", function (data) {
 
     const bar = updateBar(newData, lastDailyBar, subscriptionItem);
         var upBar;
-        if (isNewBar || (roundedTimestamp > lastBarTimestamp) ) {
+        if (isNewBar || (roundedTimestamp > lastBarTimestamp && resolution < 1440) || (resolution >= 1440 && new Date(roundedTimestamp).getDate() > new Date(lastBarTimestamp).getDate())) {
             upBar = {
                 symbol: lastDailyBar.symbol,
                 resolution: subscriptionItem.resolution,

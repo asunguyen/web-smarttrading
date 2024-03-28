@@ -41,9 +41,8 @@ socket.on("onData", (data) => {
         }
         const interval = resolution * 60;
         const roundedTimestamp = Math.floor(newData.ts / interval) * interval;
-        const bar = updateBar(newData, lastDailyBar, subscriptionItem);
         var upBar;
-        if (isNewBar || (roundedTimestamp > lastBarTimestamp) ) {
+        if (isNewBar || (roundedTimestamp > lastBarTimestamp && resolution < 1440) || (resolution >= 1440 && new Date(roundedTimestamp).getDate() > new Date(lastBarTimestamp).getDate())) {
             upBar = {
                 symbol: lastDailyBar.symbol,
                 resolution: subscriptionItem.resolution,
@@ -58,8 +57,8 @@ socket.on("onData", (data) => {
         else {
             upBar = {
                 ...lastDailyBar,
-                high: Math.max(lastDailyBar.high, bar.high),
-                low: Math.min(lastDailyBar.low, bar.low),
+                high: Math.max(lastDailyBar.high, newData.price),
+                low: Math.min(lastDailyBar.low, newData.price),
                 close: newData.price,
                 volume: newData.volume,
             };
@@ -146,7 +145,7 @@ function updateBar(newData, subscriber, lastDailyBar) {
     const lastBarTimestamp = Math.floor(lastBar.time / 1000);
 
     let updatedBar = false;
-    if (isNewBar || roundedTimestamp > lastBarTimestamp) {
+    if (isNewBar || (roundedTimestamp > lastBarTimestamp && resolution < 1440) || (resolution >= 1440 && new Date(roundedTimestamp).getDate() > new Date(lastBarTimestamp).getDate())) {
         updatedBar = {
             symbol: subscriber.symbol,
             resolution: subscriber.resolution,
