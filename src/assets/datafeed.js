@@ -35,8 +35,8 @@ const configurationData = {
 	"supports_search": true,
 	"supports_group_request": false,
 	"supports_marks": true,
-	"supports_timescale_marks": true,
-	"supports_time": true,
+	"supports_timescale_marks": false,
+	"supports_time": false,
 };
 
 // Obtains all symbols for all exchanges supported by CryptoCompare API
@@ -220,29 +220,29 @@ export default {
 			symbolInfo.exchange = symbolItem.exchange;
 			symbolInfo.format = 'price';
 			symbolInfo.supported_resolutions = configurationData.supported_resolutions;
-			symbolInfo.timezone = 'Asia/Ho_Chi_Minh';
+			symbolInfo.timezone = 'Etc/UTC';
 			symbolInfo.minmov = 1;
 			symbolInfo.pricescale = 100;
 			symbolInfo.has_intraday = true;
-			symbolInfo.intraday_multipliers = ['1'],
+			symbolInfo.intraday_multipliers = ['1', "3", '5', "10", '15', "20", '30', "45", '1H', '2H', "3H", "4H", 'D', "3D", 'W', "2W", 'M', "3M", "6M", "12M"],
 			symbolInfo.volume_precision = 8;
 			symbolInfo.data_status = 'streaming';
 			symbolInfo.pathRq = symbolItem.pathRq;
 			symbolInfo.id = symbolItem.id;
 		if (symbolItem.exchange == "HOSE" || symbolItem.exchange == "HNX" || symbolItem.exchange == "UPCOM" || (symbolItem.name == "VN30F1M" || symbolItem.name == "VN30F1Q" || symbolItem.name == "VN30F2M" || symbolItem.name == "VN30F2Q")) {
-			symbolInfo.session = "0830-1530";
-			symbolInfo.session_holidays="20180101,20180214,20180215,20180216,20180217,20180218,20180219,20180220,20180425,20180430,20180501,20180903,20181231,20190101,20190204,20190205,20190206,20190207,20190208,20190415,20190429,20190430,20190501,20190902,20200101,20200123,20200124,20200127,20200128,20200129,20200402,20200430,20200501,20200902,20210101,20210210,20210211,20210212,20210213,20210214,20210215,20210216,20210421,20210430,20210503,20210902,20210903,20220103,20220131,20220201,20220202,20220203,20220204,20220411,20220502,20220503,20220901,20220902,20230102,20230123,20230124,20230125,20230126,20230501,20230502,20230503,20230901,20230904,20240101,20240208,20240209,20240212,20240213,20240214,20240418,20240430,20240501,20240902,20230903";
+			symbolInfo.session = "0845-1500";
 			symbolInfo.minmove2 = 0;
-			symbolInfo.session_display = "0830-1530";
+			symbolInfo.timezone = 'Asia/Ho_Chi_Minh';
 		} else {
 			if (symbolItem.type == "spot") {
 				symbolInfo.session = "24x7";
+				symbolInfo.has_intraday = true;
 			} else {
-				symbolInfo.session = '2;24x7';
+				symbolInfo.session = "24x7";
 				symbolInfo.minmove2= 10;
 				symbolInfo.pricescale= 100000;
 				symbolInfo.pointvalue= 1;
-				symbolInfo.has_intraday = true;
+				symbolInfo.has_intraday = false;
 			}
 			
 		}
@@ -293,26 +293,12 @@ export default {
 							volume: data.v[i]
 						}]
 					}
-					lastBarsCache.set(symbolInfo.full_name, {
-						...bars[bars.length - 1],
-					});
-					// if (firstDataRequest) {
-					// 	lastBarsCache.set(symbolInfo.full_name, {
-					// 		...bars[bars.length - 1],
-					// 	});
-					// }
+					if (firstDataRequest) {
+						lastBarsCache.set(symbolInfo.full_name, {
+							...bars[bars.length - 1],
+						});
+					}
 				}
-
-				if (bars && bars.length > 0) {
-					onHistoryCallback(bars, {
-						noData: true
-					});
-				} else {
-					onHistoryCallback([], {
-						noData: true
-					});
-				}
-
 
 			} else {
 				dataBar = data;
@@ -348,23 +334,23 @@ export default {
 							}];
 						}
 					}
-					console.log("bars[bars.length - 1]:: ", bars[bars.length - 1].time);
-					if (firstDataRequest) {
-						lastBarsCache.set(symbolInfo.full_name, {
-							...bars[bars.length - 1],
-						});
-					}
-					if (bars.length == 0) {
-						onHistoryCallback([], {
-							noData: true,
-						});
-					} else {
-						onHistoryCallback(bars, {
-							noData: false,
-						});
-					}
+					
 
 				}
+			}
+			if (firstDataRequest) {
+				lastBarsCache.set(symbolInfo.full_name, {
+					...bars[bars.length - 1],
+				});
+			}
+			if (bars.length == 0) {
+				onHistoryCallback([], {
+					noData: true,
+				});
+			} else {
+				onHistoryCallback(bars, {
+					noData: false,
+				});
 			}
 			//xử lý lấy data history
 			if (bars && bars.length > 0) {

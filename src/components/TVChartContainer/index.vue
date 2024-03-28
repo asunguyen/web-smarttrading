@@ -97,6 +97,7 @@ export default {
       chart_template_storage: true,
       use_localstorage_for_settings: true,
       save_chart_properties_to_local_storage: true,
+      symbol_search_request_delay:1000,
       widgetbar: {
         details: true,
         news: true,
