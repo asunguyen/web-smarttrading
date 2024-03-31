@@ -92,7 +92,6 @@ export default {
       // studies_overrides: this.studiesOverrides,
       load_last_chart: true,
       favorites: {},
-      resolution: 1,
       saveload_separate_drawings_storage: true,
       chart_template_storage: true,
       use_localstorage_for_settings: true,

@@ -210,7 +210,8 @@ export default {
 			onResolveErrorCallback('cannot resolve symbol');
 			return;
 		}
-		let symbolInfo = symbolItem;
+		console.log("symbolItem:: ", symbolItem)
+		let symbolInfo = {...symbolItem};
 		symbolInfo.name = symbolItem.symbol;
 			symbolInfo.full_name = symbolItem.full_name;
 			symbolInfo.description = symbolItem.description;
@@ -241,8 +242,6 @@ export default {
 				symbolInfo.session = "24x7";
 				symbolInfo.minmove2= 10;
 				symbolInfo.pricescale= 100000;
-				symbolInfo.pointvalue= 1;
-				symbolInfo.has_intraday = false;
 			}
 			
 		}
