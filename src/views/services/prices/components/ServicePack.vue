@@ -17,12 +17,13 @@
       <li>Không quảng cáo</li>
       <li>Không giới hạn số lượng chỉ báo trên Biểu đồ</li>
       <li>Tích hợp Robot Phái Sinh vào SmartOnce đi lệnh tự động</li>
-      <div class="text-center w-100 mt-3"><button class="btn btn-thanhtoan">Thanh toán</button></div>
+      <div class="text-center w-100 mt-3"><button class="btn btn-thanhtoan" @click="thanhtoan()">Thanh toán</button></div>
     </ul>
   </el-card>
 </template>
 
 <script>
+import { apiThanhtoan } from '@/api/thanhtoan'
 export default {
   props: {
     months: {
@@ -44,6 +45,13 @@ export default {
         return `${this.months / 12} năm (360 ngày)`
       }
       return `${this.months} tháng (${this.months*30} ngày)`
+    }
+  },
+  methods: {
+    async thanhtoan() {
+      const res = await apiThanhtoan({
+        
+      });
     }
   }
 }
