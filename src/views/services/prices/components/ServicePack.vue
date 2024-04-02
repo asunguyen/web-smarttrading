@@ -15,11 +15,9 @@
       <li>Bộ lọc tín hiệu Mua/Bán Cơ sở</li>
       <li>Công cụ giả lập Phái sinh 24/24</li>
       <li>Không quảng cáo</li>
-      <li v-if="months === 1">5 chỉ báo trên 1 biểu đồ</li>
-      <template v-else>
-        <li>Không giới hạn số lượng chỉ báo trên Biểu đồ</li>
-        <li>Tích hợp Robot Phái Sinh vào SmartOnce đi lệnh tự động</li>
-      </template>
+      <li>Không giới hạn số lượng chỉ báo trên Biểu đồ</li>
+      <li>Tích hợp Robot Phái Sinh vào SmartOnce đi lệnh tự động</li>
+      <div class="text-center w-100 mt-3"><button class="btn btn-thanhtoan">Thanh toán</button></div>
     </ul>
   </el-card>
 </template>
@@ -43,9 +41,9 @@ export default {
   computed: {
     packName() {
       if (this.months >= 12 && this.months % 12 === 0) {
-        return `${this.months / 12} năm`
+        return `${this.months / 12} năm (360 ngày)`
       }
-      return `${this.months} tháng`
+      return `${this.months} tháng (${this.months*30} ngày)`
     }
   }
 }
@@ -80,6 +78,17 @@ export default {
     li {
       line-height: 28px;
     }
+  }
+  .btn-thanhtoan{
+    height: 35px;
+    margin-left: -30px;
+    background: #256ff3;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    padding: 0 10px;
+    cursor: pointer;
   }
 }
 </style>
