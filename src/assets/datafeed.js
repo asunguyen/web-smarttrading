@@ -210,7 +210,6 @@ export default {
 			onResolveErrorCallback('cannot resolve symbol');
 			return;
 		}
-		console.log("symbolItem:: ", symbolItem)
 		let symbolInfo = {...symbolItem};
 		symbolInfo.name = symbolItem.symbol;
 			symbolInfo.full_name = symbolItem.full_name;
