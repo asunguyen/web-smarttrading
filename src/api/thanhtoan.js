@@ -1,8 +1,8 @@
 import request from '@/utils/request'
-export function apiThanhtoan(query) {
+export function apiThanhtoan(data) {
     return request({
-      url: '/order',
+      url: '/order/payment',
       method: 'post',
-      data: query
+      data
     })
   }

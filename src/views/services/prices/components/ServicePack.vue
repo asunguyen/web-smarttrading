@@ -49,9 +49,23 @@ export default {
   },
   methods: {
     async thanhtoan() {
+      let amount = 600000;
+      if (this.months == 3) {
+        amount = 1600000
+      }
+      if (this.months == 6) {
+        amount = 2800000
+      }
+      if (this.months >= 12) {
+        amount = 5000000
+      }
       const res = await apiThanhtoan({
-        
+        amount: amount,
+        months: this.months
       });
+      if (res && res.code == 200) {
+        window.location.href = res.data;
+      }
     }
   }
 }
