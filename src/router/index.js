@@ -111,6 +111,29 @@ export const constantRoutes = [
     ]
   },
   {
+    path: "/bo-loc-co-phieu",
+    component: Layout,
+    name: "Bộ lọc cổ phiếu",
+    meta: {
+      title: 'Bộ lọc cổ phiếu',
+      icon: 'el-icon-s-home'
+    },
+    children: [
+      {
+        path: 'search',
+        component: () => import('@/views/boLocCoPhieu/search'),
+        name: 'Search',
+        meta: { title: 'Search', icon: 'international', affix: true }
+      },
+      {
+        path: 'phai-sinh',
+        component: () => import('@/views/boLocCoPhieu/phaiSinh'),
+        name: 'Phái Sinh',
+        meta: { title: 'Phái Sinh', icon: 'international', affix: true }
+      },
+    ]
+  },
+  {
     path: '/chart',
     component: Layout,
     name: 'Biểu đồ',
@@ -392,6 +415,20 @@ export const asyncRoutes = [
   //     }
   //   ]
   // },
+  {
+    path: "/order/vnpay_return",
+    component: Layout,
+    hidden: true,
+    redirect: '',
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/order/index'),
+        name: 'Guide',
+      }
+    ]
+  },
+  
   {
     path: '/ext-chrome-guide',
     component: Layout,

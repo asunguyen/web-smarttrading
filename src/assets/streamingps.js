@@ -1,5 +1,5 @@
 const channelToSubscription = new Map();
-const socketdchart = io("https://tradingviewrealtime.vps.com.vn", {//io("https://dchart-socket.vndirect.com.vn/socket.io", {
+const socketdchart = io("https://dchart-socket.vndirect.com.vn/socket.io", { //io("https://tradingviewrealtime.vps.com.vn", {//
     'transports': ["websocket", "polling"],
     'query': {
         'symbol': "VNINDEX"
@@ -119,7 +119,7 @@ export function subscribeOnStreamps(
         action: "join",
         list: symbolList
     });
-    socketdchart.emit('regs', jsonString);
+    //socketdchart.emit('regs', jsonString);
 }
 
 export function unsubscribeFromStreamps(subscriberUID) {
@@ -127,7 +127,7 @@ export function unsubscribeFromStreamps(subscriberUID) {
         action: "leave",
         list: subscriberUID
     });
-    socketdchart.emit('regs', jsonString);
+    //socketdchart.emit('regs', jsonString);
     for (const channelString of channelToSubscription.keys()) {
         const subscriptionItem = channelToSubscription.get(channelString);
         const handlerIndex = subscriptionItem.handlers

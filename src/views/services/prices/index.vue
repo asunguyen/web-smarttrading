@@ -3,10 +3,10 @@
     <el-card class="mb-4">
       <h2 class="mt-0">Bảng giá Dịch vụ Web SmartTrading</h2>
       <el-row :gutter="10">
-        <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6"><ServicePack :months="1" :old-price="500000" :new-price="300000" /></el-col>
-        <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6"><ServicePack :months="3" :old-price="1200000" :new-price="800000" /></el-col>
-        <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6"><ServicePack :months="6" :old-price="2300000" :new-price="1500000" /></el-col>
-        <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6"><ServicePack :months="12" :old-price="4500000" :new-price="2900000" /></el-col>
+        <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6"><ServicePack :months="1" :old-price="900000" :new-price="600000" /></el-col>
+        <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6"><ServicePack :months="3" :old-price="2200000" :new-price="1600000" /></el-col>
+        <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6"><ServicePack :months="6" :old-price="4000000" :new-price="2800000" /></el-col>
+        <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6"><ServicePack :months="12" :old-price="7200000" :new-price="5000000" /></el-col>
       </el-row>
     </el-card>
     <el-card class="mb-4">
