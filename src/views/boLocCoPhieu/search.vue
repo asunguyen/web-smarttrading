@@ -1,593 +1,668 @@
 <template>
   <div class="app-container market">
-    <div class="condition-search">
+    <el-card>
+      <div class="condition-search">
+        <el-row>
+          <el-col :span="8">
+            <div class="grid-content">Giá trị giao dịch ròng của NĐTNN</div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">-9.00T</div>
+          </el-col>
+          <el-col :span="10">
+            <div class="grid-content">
+              <el-slider
+                v-model="foreignBuySellValue"
+                range
+                show-stops
+                :max="9.0"
+                :min="-9.0"
+                :step="0.1"
+              >
+              </el-slider>
+            </div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">9.00T</div>
+          </el-col>
+          <el-col :span="4">
+            <div class="grid-content">
+              <el-select
+                v-model="foreignBuySellValuePhien"
+                placeholder="Select"
+              >
+                <el-option
+                  v-for="item in foreignBuySellValueOption"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <div class="grid-content">
+              Biên độ giá đóng cửa theo số phiên (%)
+            </div>
+          </el-col>
+
+          <el-col :span="1">
+            <div class="grid-content">0.00</div>
+          </el-col>
+          <el-col :span="10">
+            <div class="grid-content">
+              <el-slider
+                v-model="BienDoGia"
+                range
+                show-stops
+                :max="1000"
+                :min="-0"
+                :step="0.1"
+              >
+              </el-slider>
+            </div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">1.00K</div>
+          </el-col>
+
+          <el-col :span="4">
+            <div class="grid-content">
+              <el-select v-model="BienDoGiaPhien" placeholder="Select">
+                <el-option
+                  v-for="item in BienDoGiaPhienOption"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <div class="grid-content">
+              Biên độ giá High - Low theo số phiên (%)
+            </div>
+          </el-col>
+
+          <el-col :span="1">
+            <div class="grid-content">0.00</div>
+          </el-col>
+          <el-col :span="10">
+            <div class="grid-content">
+              <el-slider
+                v-model="BienDoGiaHigh"
+                range
+                show-stops
+                :max="1000"
+                :min="-0"
+                :step="0.1"
+              >
+              </el-slider>
+            </div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">1.00k</div>
+          </el-col>
+
+          <el-col :span="4">
+            <div class="grid-content">
+              <el-select v-model="BienDoGiaHighLowPhien" placeholder="Select">
+                <el-option
+                  v-for="item in BienDoGiaHighLowPhienOption"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <div class="grid-content">P/E (TTM)</div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">0.00</div>
+          </el-col>
+          <el-col :span="10">
+            <div class="grid-content">
+              <el-slider
+                v-model="peValue"
+                range
+                show-stops
+                :max="1325"
+                :min="-0"
+                :step="0.1"
+              >
+              </el-slider>
+            </div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">13.25k</div>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="8">
+            <div class="grid-content">EPS (TTM)</div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">-30.00K</div>
+          </el-col>
+          <el-col :span="10">
+            <div class="grid-content">
+              <el-slider
+                v-model="Eps_TTMValue"
+                range
+                show-stops
+                :max="150"
+                :min="30"
+                :step="0.01"
+              >
+              </el-slider>
+            </div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">1.50M</div>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <div class="grid-content">Vốn hóa</div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">0.00</div>
+          </el-col>
+          <el-col :span="10">
+            <div class="grid-content">
+              <el-slider
+                v-model="MarketCap"
+                range
+                show-stops
+                :max="686"
+                :min="-0"
+                :step="0.1"
+              >
+              </el-slider>
+            </div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">686T</div>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <div class="grid-content">Cổ tức bằng tiền (năm gần nhất)</div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">0.00</div>
+          </el-col>
+          <el-col :span="10">
+            <div class="grid-content">
+              <el-slider
+                v-model="CashDividend_LastYear"
+                range
+                show-stops
+                :max="1950"
+                :min="-0"
+                :step="0.1"
+              >
+              </el-slider>
+            </div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">19.50k</div>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <div class="grid-content">Fscore</div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">0.00</div>
+          </el-col>
+          <el-col :span="10">
+            <div class="grid-content">
+              <el-slider
+                v-model="Fscore"
+                range
+                show-stops
+                :max="12"
+                :min="-0"
+                :step="0.1"
+              >
+              </el-slider>
+            </div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">12</div>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <div class="grid-content">Mscore</div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">0.00</div>
+          </el-col>
+          <el-col :span="10">
+            <div class="grid-content">
+              <el-slider
+                v-model="Mscore"
+                range
+                show-stops
+                :max="141"
+                :min="-0"
+                :step="0.1"
+              >
+              </el-slider>
+            </div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">1.41K</div>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <div class="grid-content">Zscore</div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">-978</div>
+          </el-col>
+          <el-col :span="10">
+            <div class="grid-content">
+              <el-slider
+                v-model="Zscore"
+                range
+                show-stops
+                :max="378"
+                :min="-978"
+                :step="0.1"
+              >
+              </el-slider>
+            </div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">378</div>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <div class="grid-content">
+              Thu nhập từ cổ tức năm gần nhất (Dividend Yield %)
+            </div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">0.00</div>
+          </el-col>
+          <el-col :span="10">
+            <div class="grid-content">
+              <el-slider
+                v-model="DividendYield_LastYear"
+                range
+                show-stops
+                :max="7"
+                :min="-0"
+                :step="0.001"
+              >
+              </el-slider>
+            </div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">7.00</div>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <div class="grid-content">KLTB 3 tháng</div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">0.00</div>
+          </el-col>
+          <el-col :span="10">
+            <div class="grid-content">
+              <el-slider
+                v-model="AvgVol3M"
+                range
+                show-stops
+                :max="40"
+                :min="-0"
+                :step="0.1"
+              >
+              </el-slider>
+            </div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">40.00M</div>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <div class="grid-content">RS1m (1 tháng)</div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">1.00</div>
+          </el-col>
+          <el-col :span="10">
+            <div class="grid-content">
+              <el-slider
+                v-model="RS1M"
+                range
+                show-stops
+                :max="99"
+                :min="1"
+                :step="1"
+              >
+              </el-slider>
+            </div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">99</div>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <div class="grid-content">RS3m (3 tháng)</div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">1</div>
+          </el-col>
+          <el-col :span="10">
+            <div class="grid-content">
+              RS3M: [1, 99]
+              <el-slider
+                v-model="RS3M"
+                range
+                show-stops
+                :max="99"
+                :min="1"
+                :step="1"
+              >
+              </el-slider>
+            </div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">99</div>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <div class="grid-content">RS6m (6 tháng)</div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">1</div>
+          </el-col>
+          <el-col :span="10">
+            <div class="grid-content">
+              <el-slider
+                v-model="RS6M"
+                range
+                show-stops
+                :max="99"
+                :min="1"
+                :step="1"
+              >
+              </el-slider>
+            </div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">99</div>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <div class="grid-content">RS52w (52 tuần)</div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">1</div>
+          </el-col>
+          <el-col :span="10">
+            <div class="grid-content">
+              <el-slider
+                v-model="BienDoGiaHigh"
+                range
+                show-stops
+                :max="99"
+                :min="1"
+                :step="1"
+              >
+              </el-slider>
+            </div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">99</div>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <div class="grid-content">Khối lượng</div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">0.00</div>
+          </el-col>
+          <el-col :span="10">
+            <div class="grid-content">
+              <el-slider
+                v-model="TotalDealVol"
+                range
+                show-stops
+                :max="50"
+                :min="0"
+                :step="0.01"
+              >
+              </el-slider>
+            </div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">50.00M</div>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <div class="grid-content">Giá trị giao dịch</div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">0.00</div>
+          </el-col>
+          <el-col :span="10">
+            <div class="grid-content">
+              <el-slider
+                v-model="TotalDealValue"
+                range
+                show-stops
+                :max="132"
+                :min="0"
+                :step="0.01"
+              >
+              </el-slider>
+            </div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">1.32T</div>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <div class="grid-content">Khối lượng Trung bình theo số phiên</div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">0.00</div>
+          </el-col>
+          <el-col :span="10">
+            <div class="grid-content">
+              <el-slider
+                v-model="TotalVolumeAvg"
+                range
+                show-stops
+                :max="1"
+                :min="0"
+                :step="0.01"
+              >
+              </el-slider>
+            </div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">1.00B</div>
+          </el-col>
+          <el-col :span="4">
+            <div class="grid-content">
+              <el-select v-model="TotalVolumeAvgPhien" placeholder="Select">
+                <el-option
+                  v-for="item in TotalVolumeAvgOption"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <div class="grid-content">
+              Giá trị giao dịch Trung bình theo phiên
+            </div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">0.00</div>
+          </el-col>
+          <el-col :span="10">
+            <div class="grid-content">
+              <el-slider
+                v-model="TotalDealValueAvg"
+                range
+                show-stops
+                :max="1"
+                :min="0"
+                :step="0.01"
+              >
+              </el-slider>
+            </div>
+          </el-col>
+          <el-col :span="1">
+            <div class="grid-content">1.00T</div>
+          </el-col>
+          <el-col :span="4">
+            <div class="grid-content">
+              <el-select v-model="TotalDealValueAvgPhien" placeholder="Select">
+                <el-option
+                  v-for="item in TotalDealValueAvgOption"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+            </div>
+          </el-col>
+        </el-row>
+      </div>
+    </el-card>
+    <el-card>
       <el-row>
-        <el-col :span="8">
-          <div class="grid-content">Giá trị giao dịch ròng của NĐTNN</div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">-9.00T</div>
-        </el-col>
-        <el-col :span="10">
+        <el-col :span="12">
           <div class="grid-content">
-            <el-slider
-              v-model="foreignBuySellValue"
-              range
-              show-stops
-              :max="9.0"
-              :min="-9.0"
-              :step="0.1"
-            >
-            </el-slider>
+            <el-checkbox-group v-model="checkList">
+              <el-checkbox label="Có GD 5 phiên gần nhất"></el-checkbox>
+              <el-checkbox label="Có GD 10 phiên gần nhất"></el-checkbox>
+              <el-checkbox label="Có BCTC cập nhật thường xuyên"></el-checkbox>
+            </el-checkbox-group>
           </div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">9.00T</div>
         </el-col>
         <el-col :span="4">
           <div class="grid-content">
-            <el-select v-model="foreignBuySellValuePhien" placeholder="Select">
-              <el-option
-                v-for="item in foreignBuySellValueOption"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
+            <el-date-picker
+              v-model="timeLoc"
+              type="date"
+              placeholder="Chọn thời gian lọc"
+            >
+            </el-date-picker>
+          </div>
+        </el-col>
+        <el-col :span="2">
+          <div class="grid-content">
+            <el-button type="primary" plain @click="getData">Lọc</el-button>
           </div>
         </el-col>
       </el-row>
       <el-row>
-        <el-col :span="8">
-          <div class="grid-content">Biên độ giá đóng cửa theo số phiên (%)</div>
-        </el-col>
-
-        <el-col :span="1">
-          <div class="grid-content">0.00</div>
-        </el-col>
-        <el-col :span="10">
+        <el-col :span="2">
           <div class="grid-content">
-            <el-slider
-              v-model="BienDoGia"
-              range
-              show-stops
-              :max="1000"
-              :min="-0"
-              :step="0.1"
-            >
-            </el-slider>
+            <el-tag>Kết quả lọc: {{ ketquaLoc }}</el-tag>
           </div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">1.00K</div>
-        </el-col>
-
-        <el-col :span="4">
-          <div class="grid-content">
-            <el-select v-model="BienDoGiaPhien" placeholder="Select">
-              <el-option
-                v-for="item in BienDoGiaPhienOption"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
-          </div>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="8">
-          <div class="grid-content">
-            Biên độ giá High - Low theo số phiên (%)
-          </div>
-        </el-col>
-
-        <el-col :span="1">
-          <div class="grid-content">0.00</div>
-        </el-col>
-        <el-col :span="10">
-          <div class="grid-content">
-            <el-slider
-              v-model="BienDoGiaHigh"
-              range
-              show-stops
-              :max="1000"
-              :min="-0"
-              :step="0.1"
-            >
-            </el-slider>
-          </div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">1.00k</div>
-        </el-col>
-
-        <el-col :span="4">
-          <div class="grid-content">
-            <el-select v-model="BienDoGiaHighLowPhien" placeholder="Select">
-              <el-option
-                v-for="item in BienDoGiaHighLowPhienOption"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
-          </div>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="8">
-          <div class="grid-content">P/E (TTM)</div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">0.00</div>
-        </el-col>
-        <el-col :span="10">
-          <div class="grid-content">
-            <el-slider
-              v-model="peValue"
-              range
-              show-stops
-              :max="1325"
-              :min="-0"
-              :step="0.1"
-            >
-            </el-slider>
-          </div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">13.25k</div>
-        </el-col>
-      </el-row>
-
-      <el-row>
-        <el-col :span="8">
-          <div class="grid-content">EPS (TTM)</div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">-30.00K</div>
-        </el-col>
-        <el-col :span="10">
-          <div class="grid-content">
-            <el-slider
-              v-model="Eps_TTMValue"
-              range
-              show-stops
-              :max="150"
-              :min="30"
-              :step="0.01"
-            >
-            </el-slider>
-          </div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">1.50M</div>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="8">
-          <div class="grid-content">Vốn hóa</div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">0.00</div>
-        </el-col>
-        <el-col :span="10">
-          <div class="grid-content">
-            <el-slider
-              v-model="MarketCap"
-              range
-              show-stops
-              :max="686"
-              :min="-0"
-              :step="0.1"
-            >
-            </el-slider>
-          </div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">686T</div>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="8">
-          <div class="grid-content">Cổ tức bằng tiền (năm gần nhất)</div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">0.00</div>
-        </el-col>
-        <el-col :span="10">
-          <div class="grid-content">
-            <el-slider
-              v-model="CashDividend_LastYear"
-              range
-              show-stops
-              :max="1950"
-              :min="-0"
-              :step="0.1"
-            >
-            </el-slider>
-          </div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">19.50k</div>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="8">
-          <div class="grid-content">Fscore</div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">0.00</div>
-        </el-col>
-        <el-col :span="10">
-          <div class="grid-content">
-            <el-slider
-              v-model="Fscore"
-              range
-              show-stops
-              :max="12"
-              :min="-0"
-              :step="0.1"
-            >
-            </el-slider>
-          </div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">12</div>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="8">
-          <div class="grid-content">Mscore</div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">0.00</div>
-        </el-col>
-        <el-col :span="10">
-          <div class="grid-content">
-            <el-slider
-              v-model="Mscore"
-              range
-              show-stops
-              :max="141"
-              :min="-0"
-              :step="0.1"
-            >
-            </el-slider>
-          </div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">1.41K</div>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="8">
-          <div class="grid-content">Zscore</div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">-978</div>
-        </el-col>
-        <el-col :span="10">
-          <div class="grid-content">
-            <el-slider
-              v-model="Zscore"
-              range
-              show-stops
-              :max="378"
-              :min="-978"
-              :step="0.1"
-            >
-            </el-slider>
-          </div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">378</div>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="8">
-          <div class="grid-content">
-            Thu nhập từ cổ tức năm gần nhất (Dividend Yield %)
-          </div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">0.00</div>
-        </el-col>
-        <el-col :span="10">
-          <div class="grid-content">
-            <el-slider
-              v-model="DividendYield_LastYear"
-              range
-              show-stops
-              :max="7"
-              :min="-0"
-              :step="0.001"
-            >
-            </el-slider>
-          </div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">7.00</div>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="8">
-          <div class="grid-content">KLTB 3 tháng</div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">0.00</div>
-        </el-col>
-        <el-col :span="10">
-          <div class="grid-content">
-            <el-slider
-              v-model="AvgVol3M"
-              range
-              show-stops
-              :max="40"
-              :min="-0"
-              :step="0.1"
-            >
-            </el-slider>
-          </div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">40.00M</div>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="8">
-          <div class="grid-content">RS1m (1 tháng)</div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">1.00</div>
-        </el-col>
-        <el-col :span="10">
-          <div class="grid-content">
-            <el-slider
-              v-model="RS1M"
-              range
-              show-stops
-              :max="99"
-              :min="1"
-              :step="1"
-            >
-            </el-slider>
-          </div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">99</div>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="8">
-          <div class="grid-content">RS3m (3 tháng)</div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">1</div>
-        </el-col>
-        <el-col :span="10">
-          <div class="grid-content">
-            RS3M: [1, 99]
-            <el-slider
-              v-model="RS3M"
-              range
-              show-stops
-              :max="99"
-              :min="1"
-              :step="1"
-            >
-            </el-slider>
-          </div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">99</div>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="8">
-          <div class="grid-content">RS6m (6 tháng)</div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">1</div>
-        </el-col>
-        <el-col :span="10">
-          <div class="grid-content">
-            <el-slider
-              v-model="RS6M"
-              range
-              show-stops
-              :max="99"
-              :min="1"
-              :step="1"
-            >
-            </el-slider>
-          </div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">99</div>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="8">
-          <div class="grid-content">RS52w (52 tuần)</div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">1</div>
-        </el-col>
-        <el-col :span="10">
-          <div class="grid-content">
-            <el-slider
-              v-model="BienDoGiaHigh"
-              range
-              show-stops
-              :max="99"
-              :min="1"
-              :step="1"
-            >
-            </el-slider>
-          </div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">99</div>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="8">
-          <div class="grid-content">Khối lượng</div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">0.00</div>
-        </el-col>
-        <el-col :span="10">
-          <div class="grid-content">
-            <el-slider
-              v-model="TotalDealVol"
-              range
-              show-stops
-              :max="50"
-              :min="0"
-              :step="0.01"
-            >
-            </el-slider>
-          </div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">50.00M</div>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="8">
-          <div class="grid-content">Giá trị giao dịch</div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">0.00</div>
-        </el-col>
-        <el-col :span="10">
-          <div class="grid-content">
-            <el-slider
-              v-model="TotalDealValue"
-              range
-              show-stops
-              :max="132"
-              :min="0"
-              :step="0.01"
-            >
-            </el-slider>
-          </div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">1.32T</div>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="8">
-          <div class="grid-content">Khối lượng Trung bình theo số phiên</div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">0.00</div>
-        </el-col>
-        <el-col :span="10">
-          <div class="grid-content">
-            <el-slider
-              v-model="TotalVolumeAvg"
-              range
-              show-stops
-              :max="1"
-              :min="0"
-              :step="0.01"
-            >
-            </el-slider>
-          </div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">1.00B</div>
         </el-col>
         <el-col :span="4">
           <div class="grid-content">
-            <el-select v-model="TotalVolumeAvgPhien" placeholder="Select">
-              <el-option
-                v-for="item in TotalVolumeAvgOption"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
+            <el-tag type="success">Thời gian lọc: {{ timeLoc }}</el-tag>
           </div>
         </el-col>
       </el-row>
-      <el-row>
-        <el-col :span="8">
-          <div class="grid-content">
-            Giá trị giao dịch Trung bình theo phiên
-          </div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">0.00</div>
-        </el-col>
-        <el-col :span="10">
-          <div class="grid-content">
-            <el-slider
-              v-model="TotalDealValueAvg"
-              range
-              show-stops
-              :max="1"
-              :min="0"
-              :step="0.01"
-            >
-            </el-slider>
-          </div>
-        </el-col>
-        <el-col :span="1">
-          <div class="grid-content">1.00T</div>
-        </el-col>
-        <el-col :span="4">
-          <div class="grid-content">
-            <el-select v-model="TotalDealValueAvgPhien" placeholder="Select">
-              <el-option
-                v-for="item in TotalDealValueAvgOption"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
-          </div>
-        </el-col>
-      </el-row>
-    </div>
+    </el-card>
     <el-row>
-      <el-checkbox-group v-model="checkList">
-        <el-checkbox label="Có GD 5 phiên gần nhất"></el-checkbox>
-        <el-checkbox label="Có GD 10 phiên gần nhất"></el-checkbox>
-        <el-checkbox label="Có BCTC cập nhật thường xuyên"></el-checkbox>
-      </el-checkbox-group>
-    </el-row>
-    <el-row>
-      <el-col :span="12">
-        <div class="grid-content">
-          <el-date-picker
-            v-model="timeLoc"
-            type="date"
-            placeholder="Chọn thời gian lọc"
+      <el-card>
+        <el-table :data="dataTable" style="width: 100%;" height="500">
+          <el-table-column fixed prop="Symbol" label="Mã"> </el-table-column>
+          <el-table-column prop="FSCreationTime" label="Ngày BC gần nhất" width="120">
+          </el-table-column>
+          <el-table-column prop="quy" label="Quý BC gần nhất">
+          </el-table-column>
+          <el-table-column
+            prop="ForeignBuySellValue_5"
+            label="Giá trị giao dịch ròng của NĐTNN trong 05 phiên"
           >
-          </el-date-picker>
-        </div>
-      </el-col>
-      <el-col :span="12">
-        <div class="grid-content">
-          <el-button type="primary" plain>Lọc</el-button>
-        </div>
-      </el-col>
+          </el-table-column>
+          <el-table-column
+            prop="BienDoGia_5"
+            label="Biên độ giá đóng cửa trong 05 phiên"
+          >
+          </el-table-column>
+          <el-table-column prop="BienDoGiaHighLow_5" label="Biên độ giá HL trong 05 phiên">
+          </el-table-column>
+          <el-table-column prop="PE" label="P/E (TTM)"> </el-table-column>
+          <el-table-column prop="Eps_TTM" label="EPS (TTM)"> </el-table-column>
+          <el-table-column prop="MarketCap" label="Vốn hóa"> </el-table-column>
+          <el-table-column prop="CashDividend_LastYear" label="Cổ tức bằng tiền (năm gần nhất)">
+          </el-table-column>
+          <el-table-column prop="Fscore" label="Fscore"> </el-table-column>
+          <el-table-column prop="Mscore" label="Mscore"> </el-table-column>
+          <el-table-column prop="Zscore" label="Zscore"> </el-table-column>
+          <el-table-column
+            prop="DividendYield_LastYear100"
+            label="Thu nhập từ cổ tức năm gần nhất (Dividend Yield %)"
+          >
+          </el-table-column>
+          <el-table-column prop="AvgVol3M" label="KLTB 3 tháng"> </el-table-column>
+          <el-table-column prop="RS1M" label="RS1m (1 tháng)"> </el-table-column>
+          <el-table-column prop="RS3M" label="RS3m (3 tháng)"> </el-table-column>
+          <el-table-column prop="RS6M" label="RS6m (6 tháng)"> </el-table-column>
+          <el-table-column prop="RS52W" label="RS52w (52 tuần)">
+          </el-table-column>
+          <el-table-column prop="TotalDealVol" label="Khối lượng"> </el-table-column>
+          <el-table-column prop="TotalDealValue" label="Giá trị giao dịch">
+          </el-table-column>
+          <el-table-column prop="TotalVolumeAvg_20" label="Khối lượng TB 20 phiên">
+          </el-table-column>
+          <el-table-column
+            prop="TotalDealValueAvg_5"
+            label="Giá trị giao dịch TB theo 05 phiên"
+          >
+          </el-table-column>
+        </el-table>
+      </el-card>
     </el-row>
   </div>
 </template>
   
 <script>
-import { bolocSearch } from '@/api/bolocApi'
+import { bolocSearch } from "@/api/bolocApi";
 
 export default {
   data() {
@@ -733,7 +808,8 @@ export default {
         },
       ],
       params: {},
-      data: {}
+      dataTable: [],
+      ketquaLoc: 0,
     };
   },
   created() {},
@@ -741,10 +817,114 @@ export default {
   methods: {
     async getData() {
       this.params = {
-
+        faFilter: {
+          PE: {
+            min: 0,
+            max: 13249,
+          },
+          Eps_TTM: {
+            min: -29710,
+            max: 1495536,
+          },
+          MarketCap: {
+            min: 0,
+            max: 687346443400760,
+          },
+          CashDividend_LastYear: {
+            min: 0,
+            max: 19500,
+          },
+          Fscore: {
+            min: 0,
+            max: 12,
+          },
+          Mscore: {
+            min: -127,
+            max: 1411,
+          },
+          Zscore: {
+            min: -978,
+            max: 378,
+          },
+          DividendYield_LastYear: {
+            min: 0,
+            max: 7,
+          },
+          AvgVol3M: {
+            min: 0,
+            max: 38706194,
+          },
+          RS1M: {
+            min: 1,
+            max: 99,
+          },
+          RS3M: {
+            min: 1,
+            max: 99,
+          },
+          RS6M: {
+            min: 1,
+            max: 99,
+          },
+          RS52W: {
+            min: 1,
+            max: 99,
+          },
+          TotalDealVol: {
+            min: 0,
+            max: 37761880,
+          },
+          TotalDealValue: {
+            min: 0,
+            max: 1088339226000,
+          },
+        },
+        taFilter: null,
+        booleanFilter: {
+          AvailableForFASearching: true,
+        },
+        pageNumber: 1,
+        pageSize: 10000,
+        exchanges: ["HSX", "HNX", "UPCOM"],
+        icbCodes: null,
+        sortColumn: "Symbol",
+        isDesc: false,
+        fAFilterSub: {
+          ForeignBuySellValue_5: {
+            min: null,
+            max: null,
+          },
+          BienDoGia_5: {
+            min: null,
+            max: null,
+          },
+          BienDoGiaHighLow_5: {
+            min: null,
+            max: null,
+          },
+          TotalVolumeAvg_20: {
+            min: null,
+            max: null,
+          },
+          TotalDealValueAvg_5: {
+            min: null,
+            max: null,
+          },
+        },
+        faKeys: null,
+        wlOrPId: null,
+        tradingTime: this.timeLoc,
+      };
+      const res = await bolocSearch(this.params);
+      if (res && res.code == 200) {
+        this.dataTable = res.data.result.items;
+        this.dataTable.map((x) => {
+          x["quy"] = x.Quarter + '.' + x.Year;
+          x["DividendYield_LastYear100"] = x.DividendYield_LastYear*100;
+        })
+        this.ketquaLoc = res.data.result.totalCount;
       }
-      const response = await bolocSearch(params);
-    }
+    },
   },
 };
 </script>

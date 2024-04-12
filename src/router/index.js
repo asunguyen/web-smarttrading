@@ -116,14 +116,14 @@ export const constantRoutes = [
     name: "Bộ lọc cổ phiếu",
     meta: {
       title: 'Bộ lọc cổ phiếu',
-      icon: 'el-icon-s-home'
+      icon: 'el-icon-data-analysis'
     },
     children: [
       {
         path: 'search',
         component: () => import('@/views/boLocCoPhieu/search'),
         name: 'Search',
-        meta: { title: 'Search', icon: 'international', affix: true }
+        meta: { title: 'Search', icon: 'el-icon-search', affix: true }
       },
       {
         path: 'phai-sinh',

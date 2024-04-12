@@ -3,8 +3,8 @@ import moment from 'moment'
 
 export function bolocSearch(data) {
     return request({
-      url: 'vimo/chiso-index-vn',
-      methods: 'post',
+      url: 'boloc/GetDataByFilter',
+      method: 'post',
       data: data
     })
   }
