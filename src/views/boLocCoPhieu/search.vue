@@ -670,26 +670,26 @@ export default {
       checkList: [],
       timeLoc: new Date(),
       foreignBuySellValue: [-9, 9],
-      foreignBuySellValuePhien: "foreignBuySellValue_5",
+      foreignBuySellValuePhien: "ForeignBuySellValue_5",
       foreignBuySellValueOption: [
         {
-          value: "foreignBuySellValue_5",
+          value: "ForeignBuySellValue_5",
           label: "5 phiên",
         },
         {
-          value: "foreignBuySellValue_10",
+          value: "ForeignBuySellValue_10",
           label: "10 phiên",
         },
         {
-          value: "foreignBuySellValue_20",
+          value: "ForeignBuySellValue_20",
           label: "20 phiên",
         },
         {
-          value: "foreignBuySellValue_60",
+          value: "ForeignBuySellValue_60",
           label: "60 phiên",
         },
         {
-          value: "foreignBuySellValue_120",
+          value: "ForeignBuySellValue_120",
           label: "120 phiên",
         },
       ],
@@ -815,8 +815,23 @@ export default {
   created() {},
   mounted() {},
   methods: {
+    convertDate(dt) {
+      let str = dt;
+      if (str < 10) {
+        str = "0"+dt;
+      }
+      return str;
+    },
+    convertTime(time) {
+      let timeCv = "";
+      let thang = "01";
+      timeCv += time.getFullYear()+"-" + this.convertDate(time.getMonth()) + "-" +this.convertDate(time.getDate())+"T"+this.convertDate(time.getHours())+":" + this.convertDate(time.getMinutes())+":"+this.convertDate(time.getSeconds())+".325";//2024-04-03T23:19:16.325
+      return timeCv;
+    },
     async getData() {
-      this.params = {
+    console.log("this.foreignBuySellValue:: ", this.foreignBuySellValue);
+    var thisVue = this;
+      const str = `thisVue.params = {
         faFilter: {
           PE: {
             min: 0,
@@ -890,9 +905,9 @@ export default {
         sortColumn: "Symbol",
         isDesc: false,
         fAFilterSub: {
-          ForeignBuySellValue_5: {
-            min: null,
-            max: null,
+          `+thisVue.foreignBuySellValuePhien+`: {
+            min: "-"+`+thisVue.foreignBuySellValue[0]*(0-10)+`+"12345678912.51",
+            max: `+thisVue.foreignBuySellValue[1]*10+`+"12345678912.26"
           },
           BienDoGia_5: {
             min: null,
@@ -913,8 +928,10 @@ export default {
         },
         faKeys: null,
         wlOrPId: null,
-        tradingTime: this.timeLoc,
-      };
+        tradingTime: "`+thisVue.convertTime(thisVue.timeLoc)+`",
+      };`
+      eval(str);
+      //this.params.fAFilterSub[this.foreignBuySellValuePhien] = {min: null, max: null};//{min: "-"+this.foreignBuySellValue[0]*(0-10)+"12345678912.51", max: this.foreignBuySellValue[1]*10+"12345678912.26"};
       const res = await bolocSearch(this.params);
       if (res && res.code == 200) {
         this.dataTable = res.data.result.items;
