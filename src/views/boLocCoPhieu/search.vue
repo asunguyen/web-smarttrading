@@ -100,7 +100,7 @@
                 range
                 show-stops
                 :max="1000"
-                :min="-0"
+                :min="0"
                 :step="0.1"
               >
               </el-slider>
@@ -376,7 +376,6 @@
           </el-col>
           <el-col :span="10">
             <div class="grid-content">
-              RS3M: [1, 99]
               <el-slider
                 v-model="RS3M"
                 range
@@ -426,7 +425,7 @@
           <el-col :span="10">
             <div class="grid-content">
               <el-slider
-                v-model="BienDoGiaHigh"
+                v-model="RS52W"
                 range
                 show-stops
                 :max="99"
@@ -608,28 +607,46 @@
     </el-card>
     <el-row>
       <el-card>
-        <el-table :data="dataTable" style="width: 100%;" height="500">
+        <el-table
+          :data="dataTable"
+          style="width: 100%"
+          height="500"
+          v-loading="isLoading"
+        >
           <el-table-column fixed prop="Symbol" label="Mã"> </el-table-column>
-          <el-table-column prop="FSCreationTime" label="Ngày BC gần nhất" width="120">
+          <el-table-column
+            prop="FSCreationTime"
+            label="Ngày BC gần nhất"
+            width="120"
+          >
           </el-table-column>
           <el-table-column prop="quy" label="Quý BC gần nhất">
           </el-table-column>
           <el-table-column
-            prop="ForeignBuySellValue_5"
-            label="Giá trị giao dịch ròng của NĐTNN trong 05 phiên"
+            prop="foreignBuySellValue"
+            :label="
+              'Giá trị giao dịch ròng của NĐTNN trong ' +
+              getLable('ForeignBuySellValue')
+            "
           >
           </el-table-column>
           <el-table-column
-            prop="BienDoGia_5"
-            label="Biên độ giá đóng cửa trong 05 phiên"
+            prop="BienDoGia"
+            :label="'Biên độ giá đóng cửa trong ' + getLable('BienDoGia')"
           >
           </el-table-column>
-          <el-table-column prop="BienDoGiaHighLow_5" label="Biên độ giá HL trong 05 phiên">
+          <el-table-column
+            prop="BienDoGiaHighLow"
+            :label="'Biên độ giá HL trong ' + getLable('BienDoGiaHighLow')"
+          >
           </el-table-column>
           <el-table-column prop="PE" label="P/E (TTM)"> </el-table-column>
           <el-table-column prop="Eps_TTM" label="EPS (TTM)"> </el-table-column>
           <el-table-column prop="MarketCap" label="Vốn hóa"> </el-table-column>
-          <el-table-column prop="CashDividend_LastYear" label="Cổ tức bằng tiền (năm gần nhất)">
+          <el-table-column
+            prop="CashDividend_LastYear"
+            label="Cổ tức bằng tiền (năm gần nhất)"
+          >
           </el-table-column>
           <el-table-column prop="Fscore" label="Fscore"> </el-table-column>
           <el-table-column prop="Mscore" label="Mscore"> </el-table-column>
@@ -639,20 +656,30 @@
             label="Thu nhập từ cổ tức năm gần nhất (Dividend Yield %)"
           >
           </el-table-column>
-          <el-table-column prop="AvgVol3M" label="KLTB 3 tháng"> </el-table-column>
-          <el-table-column prop="RS1M" label="RS1m (1 tháng)"> </el-table-column>
-          <el-table-column prop="RS3M" label="RS3m (3 tháng)"> </el-table-column>
-          <el-table-column prop="RS6M" label="RS6m (6 tháng)"> </el-table-column>
+          <el-table-column prop="AvgVol3M" label="KLTB 3 tháng">
+          </el-table-column>
+          <el-table-column prop="RS1M" label="RS1m (1 tháng)">
+          </el-table-column>
+          <el-table-column prop="RS3M" label="RS3m (3 tháng)">
+          </el-table-column>
+          <el-table-column prop="RS6M" label="RS6m (6 tháng)">
+          </el-table-column>
           <el-table-column prop="RS52W" label="RS52w (52 tuần)">
           </el-table-column>
-          <el-table-column prop="TotalDealVol" label="Khối lượng"> </el-table-column>
+          <el-table-column prop="TotalDealVol" label="Khối lượng">
+          </el-table-column>
           <el-table-column prop="TotalDealValue" label="Giá trị giao dịch">
           </el-table-column>
-          <el-table-column prop="TotalVolumeAvg_20" label="Khối lượng TB 20 phiên">
+          <el-table-column
+            prop="TotalVolumeAvg"
+            :label="'Khối lượng TB ' + getLable('TotalVolumeAvg')"
+          >
           </el-table-column>
           <el-table-column
-            prop="TotalDealValueAvg_5"
-            label="Giá trị giao dịch TB theo 05 phiên"
+            prop="TotalDealValueAvg"
+            :label="
+              'Giá trị giao dịch TB theo ' + getLable('TotalDealValueAvg')
+            "
           >
           </el-table-column>
         </el-table>
@@ -667,6 +694,7 @@ import { bolocSearch } from "@/api/bolocApi";
 export default {
   data() {
     return {
+      isLoading: false,
       checkList: [],
       timeLoc: new Date(),
       foreignBuySellValue: [-9, 9],
@@ -814,24 +842,71 @@ export default {
   },
   created() {},
   mounted() {},
+  watch:{
+    "checkList": function(){
+      this.getData();
+    }
+  },
   methods: {
+    getLable(type) {
+      let str = "";
+      switch (type) {
+        case "ForeignBuySellValue":
+          str = this.foreignBuySellValueOption.find(
+            (x) => x.value == this.foreignBuySellValuePhien
+          ).label;
+          break;
+        case "BienDoGia":
+          str = this.BienDoGiaPhienOption.find(
+            (x) => x.value == this.BienDoGiaPhien
+          ).label;
+          break;
+        case "BienDoGiaHighLow":
+          str = this.BienDoGiaHighLowPhienOption.find(
+            (x) => x.value == this.BienDoGiaHighLowPhien
+          ).label;
+          break;
+        case "TotalDealValueAvg":
+          str = this.TotalDealValueAvgOption.find(
+            (x) => x.value == this.TotalDealValueAvgPhien
+          ).label;
+          break;
+        case "TotalVolumeAvg":
+          str = this.TotalVolumeAvgOption.find(
+            (x) => x.value == this.TotalVolumeAvgPhien
+          ).label;
+          break;
+      }
+      return str;
+    },
     convertDate(dt) {
       let str = dt;
       if (str < 10) {
-        str = "0"+dt;
+        str = "0" + dt;
       }
       return str;
     },
     convertTime(time) {
       let timeCv = "";
-      let thang = "01";
-      timeCv += time.getFullYear()+"-" + this.convertDate(time.getMonth()) + "-" +this.convertDate(time.getDate())+"T"+this.convertDate(time.getHours())+":" + this.convertDate(time.getMinutes())+":"+this.convertDate(time.getSeconds())+".325";//2024-04-03T23:19:16.325
+      timeCv +=
+        time.getFullYear() +
+        "-" +
+        this.convertDate(time.getMonth() + 1) +
+        "-" +
+        this.convertDate(time.getDate()) +
+        "T" +
+        this.convertDate(time.getHours()) +
+        ":" +
+        this.convertDate(time.getMinutes()) +
+        ":" +
+        this.convertDate(time.getSeconds()) +
+        ".325"; //2024-04-03T23:19:16.325
       return timeCv;
     },
     async getData() {
-    console.log("this.foreignBuySellValue:: ", this.foreignBuySellValue);
-    var thisVue = this;
-      const str = `thisVue.params = {
+      this.isLoading = true;
+      var thisVue = this;
+      thisVue.params = {
         faFilter: {
           PE: {
             min: 0,
@@ -896,7 +971,7 @@ export default {
         },
         taFilter: null,
         booleanFilter: {
-          AvailableForFASearching: true,
+          
         },
         pageNumber: 1,
         pageSize: 10000,
@@ -904,43 +979,59 @@ export default {
         icbCodes: null,
         sortColumn: "Symbol",
         isDesc: false,
-        fAFilterSub: {
-          `+thisVue.foreignBuySellValuePhien+`: {
-            min: "-"+`+thisVue.foreignBuySellValue[0]*(0-10)+`+"12345678912.51",
-            max: `+thisVue.foreignBuySellValue[1]*10+`+"12345678912.26"
-          },
-          BienDoGia_5: {
-            min: null,
-            max: null,
-          },
-          BienDoGiaHighLow_5: {
-            min: null,
-            max: null,
-          },
-          TotalVolumeAvg_20: {
-            min: null,
-            max: null,
-          },
-          TotalDealValueAvg_5: {
-            min: null,
-            max: null,
-          },
-        },
+        fAFilterSub: {},
         faKeys: null,
         wlOrPId: null,
-        tradingTime: "`+thisVue.convertTime(thisVue.timeLoc)+`",
-      };`
-      eval(str);
-      //this.params.fAFilterSub[this.foreignBuySellValuePhien] = {min: null, max: null};//{min: "-"+this.foreignBuySellValue[0]*(0-10)+"12345678912.51", max: this.foreignBuySellValue[1]*10+"12345678912.26"};
+        tradingTime: thisVue.convertTime(thisVue.timeLoc) + "",
+      };
+      this.params.fAFilterSub[this.foreignBuySellValuePhien] = {
+        min: "-" + this.foreignBuySellValue[0] * (0 - 10) + "12345678912.51",
+        max: this.foreignBuySellValue[1] * 10 + "12345678912.26",
+      };
+      this.params.fAFilterSub[this.BienDoGiaPhien] = {
+        min: this.BienDoGia[0],
+        max: this.BienDoGia[1],
+      };
+      this.params.fAFilterSub[this.BienDoGiaHighLowPhien] = {
+        min: this.BienDoGiaHigh[0],
+        max: this.BienDoGiaHigh[1],
+      };
+      this.params.fAFilterSub[this.TotalDealValueAvgPhien] = {
+        min: this.TotalDealValueAvg[0],
+        max: this.TotalDealValueAvg[1],
+      };
+      this.params.fAFilterSub[this.TotalVolumeAvgPhien] = {
+        min: this.TotalVolumeAvg[0],
+        max: this.TotalVolumeAvg[1],
+      };
+      if(this.checkList.length > 0) {
+        for (var i = 0; i < this.checkList.length; i++) {
+          if (this.checkList[i] == "Có GD 5 phiên gần nhất") {
+            this.params.booleanFilter.Has5ConsecutiveTradingDays = true;
+          }
+          if (this.checkList[i] == "Có GD 10 phiên gần nhất") {
+            this.params.booleanFilter.Has10ConsecutiveTradingDays = true;
+          }
+          if (this.checkList[i] == "Có BCTC cập nhật thường xuyên") {
+            this.params.booleanFilter.AvailableForFASearching = true;
+          }
+        }
+      }
       const res = await bolocSearch(this.params);
       if (res && res.code == 200) {
         this.dataTable = res.data.result.items;
         this.dataTable.map((x) => {
-          x["quy"] = x.Quarter + '.' + x.Year;
-          x["DividendYield_LastYear100"] = x.DividendYield_LastYear*100;
-        })
+          x["quy"] = x.Quarter + "." + x.Year;
+          x["DividendYield_LastYear100"] = x.DividendYield_LastYear * 100;
+          x["foreignBuySellValue"] = x[this.foreignBuySellValuePhien];
+          x["BienDoGia"] = x[this.BienDoGiaPhien];
+          x["BienDoGiaHighLow"] = x[this.BienDoGiaHighLowPhien];
+          x["TotalDealValueAvg"] = x[this.TotalDealValueAvgPhien];
+          x["TotalVolumeAvg"] = x[this.TotalVolumeAvgPhien];
+        });
         this.ketquaLoc = res.data.result.totalCount;
       }
+      this.isLoading = false;
     },
   },
 };
