@@ -256,12 +256,15 @@ export default {
 			if (from > 1103051358) {
 				from = 1103051358;
 			}
+			if (new Date().getTime() > to*1000) {
+				to = new Date().getTime()/1000;
+			}
 		} else {
 			if (to - from < 486000) {
 				from = to - 486000;
 			}
 		}
-
+		
 		let urlParameters = {
 			symbol: symbolInfo.name,
 			exchange: symbolInfo.exchange,
