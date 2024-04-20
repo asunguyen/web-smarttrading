@@ -124,13 +124,13 @@ export const constantRoutes = [
         component: () => import('@/views/boLocCoPhieu/search'),
         name: 'Search',
         meta: { title: 'Search', icon: 'el-icon-search', affix: true }
-      }
-      // {
-      //   path: 'phai-sinh',
-      //   component: () => import('@/views/boLocCoPhieu/phaiSinh'),
-      //   name: 'Phái Sinh',
-      //   meta: { title: 'Phái Sinh', icon: 'international', affix: true }
-      // },
+      },
+      {
+        path: 'phai-sinh',
+        component: () => import('@/views/boLocCoPhieu/phaiSinh'),
+        name: 'Phái Sinh',
+        meta: { title: 'Phái Sinh', icon: 'international', affix: true }
+      },
       // {
       //   path: 'thi-truong-chuyen-sau',
       //   component: () => import('@/views/boLocCoPhieu/thiTruongChuyenSau/index'),

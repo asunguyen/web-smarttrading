@@ -22,3 +22,10 @@ export function GetIndexSeries(data) {
     params: data
   })
 }
+export function GetHtml(data) {
+  return request({
+    url: 'vimo/get-html',
+    method: 'get',
+    params: data
+  })
+}

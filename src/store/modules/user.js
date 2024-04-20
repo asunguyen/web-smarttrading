@@ -46,8 +46,9 @@ const actions = {
 
   // get user info
   getInfo({ commit, state }) {
+    const token = state.token | localStorage.getItem("token");
     return new Promise((resolve, reject) => {
-      getInfo(state.token).then(response => {
+      getInfo(token).then(response => {
         const { data } = response
 
         if (!data) {
