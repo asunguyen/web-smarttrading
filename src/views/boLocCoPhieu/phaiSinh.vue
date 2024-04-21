@@ -1,8 +1,6 @@
 <template>
     <div>
-        <iframe id="chart_dashboard" class="iframe-contain" src="https://fiintrade.vn/" scrolling="no">
-            
-        </iframe>
+        chức năng đang phát triển
     </div>
 </template>
 <script>
@@ -25,9 +23,4 @@ export default {
 }
 </script>
 <style scoped>
-#chart_dashboard{
-    width: 100%;
-    height: 100vh;
-    margin-top: -60px;
-}
 </style>

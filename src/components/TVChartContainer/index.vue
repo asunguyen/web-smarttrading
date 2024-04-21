@@ -1,8 +1,12 @@
 <template>
-  <div id="tvWidgetContainer" ref="chartContainer" class="TVChartContainer" />
+  <div>
+    <div id="tvWidgetContainer" ref="chartContainer" class="TVChartContainer" />
+    <SmtIndicator @dataIndi="dataIndi"></SmtIndicator>
+  </div>
 </template>
 
 <script>
+let tvWidget;
 // require("../../assets/charting_library/charting_library.standalone.js")
 import { widget } from "../../assets/charting_library/";
 // D:\code\smtchart\web-smarttrading\src\assets\charting_library\trading-terminal.min.js
@@ -15,7 +19,11 @@ function getLanguageFromURL() {
     ? null
     : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
+import SmtIndicator from '../SMTIndicator';
 export default {
+  components: {
+    SmtIndicator
+  },
   name: "TVChartContainer",
   props: {
     symbol: {
@@ -62,17 +70,6 @@ export default {
   data: function () {
     return {
       runrot: "",
-      testindi: {
-        id: "PUB;2YTE3ybw6dfE6uqf2Dq8xazUWzCUrwXm",
-        version: "7",
-        name: "Chandelier Exit",
-        author: { id: 1297805, username: "everget" },
-        image: "AqXxNS7j",
-        access: "open_source",
-        source: "",
-        type: "study",
-        visible: true
-      },
     };
   },
   tvWidget: null,
@@ -141,10 +138,8 @@ export default {
     // console.log("widget:: ", widget);
 
     // var app = new chobot.PulbicTradingTerminal(widgetOptions);
-
+    tvWidget = new widget(widgetOptions);
     // app.init();
-
-    const tvWidget = new widget(widgetOptions);
     this.tvWidget = tvWidget;
     tvWidget.onChartReady(() => {
       const listindi = thisVue.getCurrentChartUserIndicators(
@@ -152,10 +147,7 @@ export default {
       );
       if (listindi.length > 0) {
       } else {
-        thisVue.restoreUserIndicators(
-          thisVue.testindi,
-          tvWidget.activeChart()
-        );
+        thisVue.restoreUserIndicators(thisVue.testindi, tvWidget.activeChart());
       }
 
       tvWidget.chart().setChartType(1);
@@ -226,6 +218,9 @@ export default {
     }
   },
   methods: {
+    dataIndi(data) {
+      console.log("data:: ",data)
+    },
     getCurrentChartUserIndicators(activeChart) {
       if (!activeChart) {
         return [];

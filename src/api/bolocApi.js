@@ -29,3 +29,17 @@ export function GetHtml(data) {
     params: data
   })
 }
+export function getListIndi(data) {
+  return request({
+    url: 'data/search-indicator',
+    method: 'get',
+    params: data
+  })
+}
+export function getDetailIndi(data) {
+  return request({
+    url: 'data/get-detail-indicator',
+    method: 'get',
+    params: data
+  })
+}
