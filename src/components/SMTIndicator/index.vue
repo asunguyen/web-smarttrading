@@ -45,7 +45,7 @@
   </div>
 </template>
 <script>
-import { getListIndi, getDetailIndi } from "@/api/bolocApi";
+import { getListIndi, getDetailIndi, convertIndi } from "@/api/bolocApi";
 export default {
   data: function () {
     return {

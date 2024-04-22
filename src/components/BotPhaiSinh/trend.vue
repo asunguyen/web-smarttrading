@@ -1,8 +1,13 @@
 <template>
-  <div ref="chartContainer" class="TVChartContainer" id="tvWidgetContainer" />
+  <div>
+    <div id="tvWidgetContainer" ref="chartContainer" class="TVChartContainer" />
+    <SmtIndicator @dataIndi="dataIndi"></SmtIndicator>
+  </div>
 </template>
 
 <script>
+let tvWidget;
+import SmtIndicator from '../SMTIndicator';
 var signal = NaN;
 import { widget } from "../../assets/charting_library";
 // import { UDFCompatibleDatafeed } from '../../assets/datafeeds/udf/lib/udf-compatible-datafeed'
@@ -15,6 +20,9 @@ import Datafeed from "@/assets/datafeed.js";
 //     : decodeURIComponent(results[1].replace(/\+/g, ' '))
 // }
 export default {
+  components: {
+    SmtIndicator
+  },
   name: "TVChartContainerPhaiSinh",
   props: {
     symbol: {
@@ -362,7 +370,7 @@ export default {
     };
 
     // eslint-disable-next-line new-cap
-    const tvWidget = new widget(widgetOptions);
+    tvWidget = new widget(widgetOptions);
     this.tvWidget = tvWidget;
 
     tvWidget.onChartReady(() => {
@@ -434,6 +442,13 @@ export default {
     }
   },
   methods: {
+    dataIndi(data) {
+      console.log("data:: ",data)
+      if (data && data.source) {
+        console.log("tvWidget.activeChart():: ", tvWidget.activeChart().createStudyTemplate(data));
+        
+      }
+    },
     getCurrentChartUserIndicators(activeChart) {
       if (!activeChart) {
         return [];

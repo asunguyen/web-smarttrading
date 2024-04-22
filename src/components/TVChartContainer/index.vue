@@ -219,7 +219,10 @@ export default {
   },
   methods: {
     dataIndi(data) {
-      console.log("data:: ",data)
+      if (data && data.result) {
+        tvWidget.activeChart().createStudy(data.result.metaInfo)
+        
+      }
     },
     getCurrentChartUserIndicators(activeChart) {
       if (!activeChart) {
@@ -245,7 +248,7 @@ export default {
             const visible = indicator.visible || true;
             console.log("indicator.inputs:: ", indicator.inputs);
             const newStudyID = await activeChart.createStudy(
-              indicator.name,
+              indicator.name || indicator.id,
               false,
               false,
               indicator.inputs,

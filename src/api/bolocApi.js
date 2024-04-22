@@ -43,3 +43,10 @@ export function getDetailIndi(data) {
     params: data
   })
 }
+export function convertIndi(data) {
+  return request({
+    url: 'data/convert-indicator',
+    method: 'post',
+    params: data
+  })
+}
