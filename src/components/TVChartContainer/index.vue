@@ -19,10 +19,10 @@ function getLanguageFromURL() {
     ? null
     : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
-import SmtIndicator from '../SMTIndicator';
+import SmtIndicator from "../SMTIndicator";
 export default {
   components: {
-    SmtIndicator
+    SmtIndicator,
   },
   name: "TVChartContainer",
   props: {
@@ -105,6 +105,7 @@ export default {
       use_localstorage_for_settings: true,
       save_chart_properties_to_local_storage: true,
       symbol_search_request_delay: 1000,
+      study_templates: true,
       widgetbar: {
         details: true,
         news: true,
@@ -120,12 +121,12 @@ export default {
       enabled_features: [
         "header_layouttoggle",
         "right_toolbar",
-        "trading_account_manager",
         "watchlist_sections",
         "show_last_price_and_change_only_in_series_legend",
         "chart_template_storage",
         "use_localstorage_for_settings",
         "save_chart_properties_to_local_storage",
+        "study_templates",
       ],
       custom_indicators_getter: function (PineJS) {
         return Promise.resolve([]);
@@ -220,9 +221,9 @@ export default {
   methods: {
     dataIndi(data) {
       if (data && data.result) {
-        tvWidget.activeChart().createStudy(data.result.metaInfo)
-        
+        tvWidget.activeChart().createStudy(data.result.metaInfo);
       }
+          
     },
     getCurrentChartUserIndicators(activeChart) {
       if (!activeChart) {

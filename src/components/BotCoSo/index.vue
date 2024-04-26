@@ -136,7 +136,6 @@ export default {
       enabled_features: [
         'header_layouttoggle',
         'right_toolbar',
-        'trading_account_manager',
         'watchlist_sections',
         'show_last_price_and_change_only_in_series_legend',
         'chart_template_storage',
