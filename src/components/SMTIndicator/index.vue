@@ -16,9 +16,8 @@
         <el-col :span="16"
           ><div class="grid-content">
             <el-input
-              placeholder="Please input"
+              placeholder="Name indicator"
               v-model="inputSearchIndicator"
-              clearable
             >
             </el-input></div
         ></el-col>
