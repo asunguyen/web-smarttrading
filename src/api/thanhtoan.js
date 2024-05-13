@@ -6,3 +6,10 @@ export function apiThanhtoan(data) {
       data
     })
   }
+  export function apiThanhtoanSS(data) {
+    return request({
+      url: '/order/paymentSS',
+      method: 'post',
+      data
+    })
+  }

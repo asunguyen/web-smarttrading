@@ -260,11 +260,10 @@ export default {
 				to = new Date().getTime()/1000;
 			}
 		} else {
-			if (to - from < 486000) {
-				from = to - 486000;
+			if (to - from < 1486000) {
+				from = to - 1486000;
 			}
 		}
-		
 		let urlParameters = {
 			symbol: symbolInfo.name,
 			exchange: symbolInfo.exchange,
@@ -313,18 +312,7 @@ export default {
 				else {
 					for (let i = 0; i < dataBar.length; i++) {
 						let time = dataBar[i].time;
-						if (symbolInfo.type == "spot" && resol != 1) {
-							if (time >= from && time <= to) {
-								bars = [...bars, {
-									time: parseFloat(dataBar[i].time + "000"),
-									low: parseFloat(dataBar[i].min),
-									high: parseFloat(dataBar[i].max),
-									open: parseFloat(dataBar[i].open),
-									close: parseFloat(dataBar[i].close),
-									volume: parseFloat(dataBar[i].volume),
-								}];
-							}
-						} else {
+						if (time >= from && time <= to) {
 							bars = [...bars, {
 								time: parseFloat(dataBar[i].time + "000"),
 								low: parseFloat(dataBar[i].min),
@@ -354,15 +342,15 @@ export default {
 				});
 			}
 			//xử lý lấy data history
-			if (bars && bars.length > 0) {
-				timeEnd = bars[0].time / 1000;
+			// if (bars && bars.length > 0) {
+			// 	timeEnd = bars[0].time / 1000;
 
-			} else {
-				if ((resolution == "1" || resolution == "3" || resolution == "5" || resolution == "10" || resolution == "15" || resolution == "30") && timeEnd > 1103051358) {
-					countHis = 1;
-					loadDataBarCustom(symbolInfo, urlParameters, timeEnd, firstDataRequest, onHistoryCallback, onErrorCallback);
-				}
-			}
+			// } else {
+			// 	if ((resolution == "1" || resolution == "3" || resolution == "5" || resolution == "10" || resolution == "15" || resolution == "30") && timeEnd > 1103051358) {
+			// 		countHis = 1;
+			// 		loadDataBarCustom(symbolInfo, urlParameters, timeEnd, firstDataRequest, onHistoryCallback, onErrorCallback);
+			// 	}
+			// }
 		} catch (error) {
 			console.log('[getBars]: Get error', error);
 			onErrorCallback(error);

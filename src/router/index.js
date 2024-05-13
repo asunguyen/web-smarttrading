@@ -174,7 +174,7 @@ export const constantRoutes = [
         meta: { title: 'Dashboard', icon: 'handle', affix: true }
       }
     ]
-  }
+  },
   // {
   //   path: '/profile',
   //   component: Layout,
@@ -188,14 +188,7 @@ export const constantRoutes = [
   //       meta: { title: 'Profile', icon: 'user', noCache: true }
   //     }
   //   ]
-  // }
-]
-
-/**
- * asyncRoutes
- * the routes that need to be dynamically loaded based on user roles
- */
-export const asyncRoutes = [
+  // },
   {
     path: '/ai-trading',
     component: Layout,
@@ -372,37 +365,7 @@ export const asyncRoutes = [
       }
     ]
   },
-  {
-    path: '/admin',
-    component: Layout,
-    redirect: 'noRedirect',
-    name: 'Quản trị',
-    meta: {
-      title: 'Quản trị',
-      icon: 'component',
-      roles: ['admin']
-    },
-    children: [
-      {
-        path: 'customer',
-        component: () => import('@/views/customer/index'),
-        name: 'Khách hàng',
-        meta: { title: 'Khách hàng', icon: 'peoples', affix: true }
-      },
-      {
-        path: 'employee',
-        component: () => import('@/views/employee/index'),
-        name: 'Nhân viên',
-        meta: { title: 'Nhân viên', icon: 'user', affix: true }
-      },
-      {
-        path: 'license',
-        component: () => import('@/views/license/index'),
-        name: 'License',
-        meta: { title: 'License', icon: 'skill', affix: true }
-      }
-    ]
-  },
+  
   // {
   //   path: '/profile',
   //   component: Layout,
@@ -548,6 +511,44 @@ export const asyncRoutes = [
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
+]
+
+/**
+ * asyncRoutes
+ * the routes that need to be dynamically loaded based on user roles
+ */
+export const asyncRoutes = [
+  {
+    path: '/admin',
+    component: Layout,
+    redirect: 'noRedirect',
+    name: 'Quản trị',
+    meta: {
+      title: 'Quản trị',
+      icon: 'component',
+      roles: ['admin']
+    },
+    children: [
+      {
+        path: 'customer',
+        component: () => import('@/views/customer/index'),
+        name: 'Khách hàng',
+        meta: { title: 'Khách hàng', icon: 'peoples', affix: true }
+      },
+      {
+        path: 'employee',
+        component: () => import('@/views/employee/index'),
+        name: 'Nhân viên',
+        meta: { title: 'Nhân viên', icon: 'user', affix: true }
+      },
+      // {
+      //   path: 'license',
+      //   component: () => import('@/views/license/index'),
+      //   name: 'License',
+      //   meta: { title: 'License', icon: 'skill', affix: true }
+      // }
+    ]
+  },
 ]
 
 const createRouter = () => new Router({
