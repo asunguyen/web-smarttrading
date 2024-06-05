@@ -1,14 +1,14 @@
 <template>
   <div>
     <div id="tvWidgetContainer" ref="chartContainer" class="TVChartContainer" />
-    <SmtIndicator @dataIndi="dataIndi"></SmtIndicator>
+    <!-- <SmtIndicator @dataIndi="dataIndi"></SmtIndicator> -->
   </div>
 </template>
 
 <script>
 let tvWidget;
 // require("../../assets/charting_library/charting_library.standalone.js")
-import { widget } from "../../assets/charting_library/";
+import { widget } from "../../assets/charting_library/charting_library.esm";
 // D:\code\smtchart\web-smarttrading\src\assets\charting_library\trading-terminal.min.js
 // import { UDFCompatibleDatafeed } from '../../assets/datafeeds/udf/lib/udf-compatible-datafeed'
 import Datafeed from "@/assets/datafeed.js";
@@ -102,25 +102,27 @@ export default {
       favorites: {},
       saveload_separate_drawings_storage: true,
       chart_template_storage: true,
-      use_localstorage_for_settings: true,
-      save_chart_properties_to_local_storage: true,
+      //use_localstorage_for_settings: true,
+      //save_chart_properties_to_local_storage: true,
       symbol_search_request_delay: 1000,
       study_templates: true,
       widgetbar: {
         details: true,
         news: true,
-        watchlist: true,
         datawindow: true,
+        watchlist: true,
+        hotlist: true,
+        calendar: false,
+        support_host: "https://www.tradingview.com",
       },
-      // overrides: {
-      //   "mainSeriesProperties.showCountdown": true,
-      //   "paneProperties.backgroundGradientStartColor": "#020024",
-      //   "paneProperties.backgroundGradientEndColor": "#4f485e",
-      // },
+
+      overrides: {
+        "mainSeriesProperties.showCountdown": true,
+      },
       disabled_features: ["dom_widget"],
       enabled_features: [
         "header_layouttoggle",
-        "right_toolbar",
+        //"right_toolbar",
         "watchlist_sections",
         "show_last_price_and_change_only_in_series_legend",
         "chart_template_storage",
@@ -208,6 +210,10 @@ export default {
         });
         button.textContent = "Change theme";
       });
+      setTimeout(function () {
+        const listWat = tvWidget.watchList();
+        console.log("listWat:: ", listWat);
+      }, 10000);
     });
   },
   beforeDestroy() {
@@ -223,7 +229,6 @@ export default {
       if (data && data.result) {
         tvWidget.activeChart().createStudy(data.result.metaInfo);
       }
-          
     },
     getCurrentChartUserIndicators(activeChart) {
       if (!activeChart) {

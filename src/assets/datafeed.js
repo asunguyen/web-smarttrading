@@ -15,7 +15,7 @@ const lastBarsCache = new Map();
 // DatafeedConfiguration implementation
 const configurationData = {
 	// Represents the resolutions for bars supported by your datafeed
-	supported_resolutions: ['1', "3", '5', "10", '15', "20", '30', "45", '1H', '2H', "3H", "4H", 'D', "3D", 'W', "2W", 'M', "3M", "6M", "12M"],
+	supported_resolutions: ['1', "3", '5', "10", '15', '30', "45", '1H', '2H', "3H", "4H", 'D', "3D", 'W', "2W", 'M', "3M", "6M", "12M"],
 
 	// The `exchanges` arguments are used for the `searchSymbols` method if a user selects the exchange
 	exchanges: [
@@ -105,7 +105,6 @@ async function loadDataBarCustom(symbolInfo, urlParameters, timeEnd, firstDataRe
 				onHistoryCallback([], {
 					noData: true,
 				});
-				console.log('[getBars]: No data');
 			}
 			else {
 				console.log(2);
@@ -219,12 +218,12 @@ export default {
 			symbolInfo.ticker = symbolItem.symbol;
 			symbolInfo.exchange = symbolItem.exchange;
 			symbolInfo.format = 'price';
-			symbolInfo.supported_resolutions = configurationData.supported_resolutions;
+			symbolInfo.supported_resolutions = ['1', "3", '5', "10", '15', '30', "45", '1H', '2H', "3H", "4H", 'D', "3D", 'W', "2W", 'M', "3M", "6M", "12M"];
 			symbolInfo.timezone = 'Etc/UTC';
 			symbolInfo.minmov = 1;
 			symbolInfo.pricescale = 100;
 			symbolInfo.has_intraday = true;
-			symbolInfo.intraday_multipliers = ['1', "3", '5', "10", '15', "20", '30', "45", '1H', '2H', "3H", "4H", 'D', "3D", 'W', "2W", 'M', "3M", "6M", "12M"],
+			symbolInfo.intraday_multipliers = ['1', "3", '5', "10", '15', '30', "45", '60', '120', "180", "240", 'D', "3D", 'W', "2W", 'M', "3M", "6M", "12M"],
 			symbolInfo.volume_precision = 8;
 			symbolInfo.data_status = 'streaming';
 			symbolInfo.pathRq = symbolItem.pathRq;
@@ -257,7 +256,7 @@ export default {
 				from = 1103051358;
 			}
 			if (new Date().getTime() > to*1000) {
-				to = new Date().getTime()/1000;
+				to = Math.floor(new Date().getTime()/1000);
 			}
 		} else {
 			if (to - from < 1486000) {
@@ -307,7 +306,6 @@ export default {
 					onHistoryCallback([], {
 						noData: true,
 					});
-					console.log('[getBars]: No data');
 				}
 				else {
 					for (let i = 0; i < dataBar.length; i++) {
@@ -352,7 +350,6 @@ export default {
 			// 	}
 			// }
 		} catch (error) {
-			console.log('[getBars]: Get error', error);
 			onErrorCallback(error);
 		}
 	},
@@ -389,4 +386,38 @@ export default {
 		unsubscribeFromStream(subscriberUID);
 		unsubscribeFromStreamps(subscriberUID)
 	},
+	getQuotes(symbols, onDataCallback, onErrorCallback) {
+		const data = [];
+		console.log("symbols get quotes::: ", symbols);
+		symbols.forEach((symbol)=>{
+			data.push({
+				n: symbol,
+				s: 'ok',
+				v: {
+					ch: Math.random() * (5 - 1) + 1,
+					chp: Math.random() * (5 - 1) + 1,
+					lp: Math.random() * (10 - 1) + 1,
+					ask: Math.random() * (10 - 1) + 1,
+					bid: Math.random() * (10 - 1) + 1,
+					spread: 0.20,
+					open_price: Math.random() * (5 - 1) + 1,
+					high_price: Math.random() * (5 - 1) + 1,
+					low_price: Math.random() * (5 - 1) + 1,
+					prev_close_price: Math.random() * (5 - 1) + 1,
+					original_name: symbol,
+					volume: Math.random() * (5 - 1) + 1,
+				},
+			});
+		});
+	
+		// To ensure the callback is only evoked when the library is ready - see Asynchronous callbacks
+		setTimeout(() => onDataCallback(data), 0);
+	},
+	subscribeQuotes(symbols, fastSymbols, onRealtimeCallback, listenerGUID) {
+		// In this example, `_quotesSubscriptions` is a global variable used to clear the subscription in `unsubscribeQuotes`
+		this._quotesSubscriptions[listenerGUID] = setInterval(() => this.getQuotes(symbols.concat(fastSymbols), onRealtimeCallback, () => undefined), 5000);
+	},
+	unsubscribeQuotes(listenerGUID) {
+		clearInterval(this._quotesSubscriptions[listenerGUID]);
+	}
 };

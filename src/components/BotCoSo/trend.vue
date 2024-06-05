@@ -1,7 +1,7 @@
 <template>
   <div>
     <div id="tvWidgetContainer" ref="chartContainer" class="TVChartContainer" />
-    <SmtIndicator @dataIndi="dataIndi"></SmtIndicator>
+    <!-- <SmtIndicator @dataIndi="dataIndi"></SmtIndicator> -->
   </div>
 </template>
 
