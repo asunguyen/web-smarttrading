@@ -1,5 +1,5 @@
 <template>
-  <div id="right-bar-custom"></div>
+  <div id="right-bar-custom" />
 </template>
 <script>
 export default {
@@ -8,14 +8,13 @@ export default {
 
     }
   },
+  mounted: function() {
+    var tradingViewHtml = $('#tvWidgetContainer iframe').contents().find('.layout__area--right')
+  },
   methods: {
 
-  },
-  mounted: function() {
-    var tradingViewHtml = $("#tvWidgetContainer iframe").contents().find(".layout__area--right");
-
   }
-};
+}
 </script>
 <style scoped>
 </style>

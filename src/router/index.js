@@ -130,7 +130,7 @@ export const constantRoutes = [
         component: () => import('@/views/boLocCoPhieu/phaiSinh'),
         name: 'Phái Sinh',
         meta: { title: 'Phái Sinh', icon: 'international', affix: true }
-      },
+      }
       // {
       //   path: 'thi-truong-chuyen-sau',
       //   component: () => import('@/views/boLocCoPhieu/thiTruongChuyenSau/index'),
@@ -365,7 +365,7 @@ export const constantRoutes = [
       }
     ]
   },
-  
+
   // {
   //   path: '/profile',
   //   component: Layout,
@@ -540,7 +540,7 @@ export const asyncRoutes = [
         component: () => import('@/views/employee/index'),
         name: 'Nhân viên',
         meta: { title: 'Nhân viên', icon: 'user', affix: true }
-      },
+      }
       // {
       //   path: 'license',
       //   component: () => import('@/views/license/index'),
@@ -548,7 +548,7 @@ export const asyncRoutes = [
       //   meta: { title: 'License', icon: 'skill', affix: true }
       // }
     ]
-  },
+  }
 ]
 
 const createRouter = () => new Router({
