@@ -51,13 +51,16 @@ socketdchart.on('price', data => {
         resolution = 1440;
     } else if (resolution.includes('W')) {
         resolution = 10080;
+    } else if (resolution.includes('M')) {
+        resolution = 432000;
     }
+
 
     const interval = resolution * 60;
     const roundedTimestamp = Math.floor(newData.ts / interval) * interval;
 
     var upBar;
-    if (isNewBar || roundedTimestamp > lastBarTimestamp) {
+    if ((isNewBar || roundedTimestamp > lastBarTimestamp) && resolution < 1440) {
         upBar = {
             symbol: newData.symbol,
             resolution: subscriptionItem.resolution,
