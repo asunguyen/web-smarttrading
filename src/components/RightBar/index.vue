@@ -1,20 +1,15 @@
 <template>
-  <div id="right-bar-custom" />
+  <div id="right-bar-custom">
+  </div>
 </template>
 <script>
 export default {
   data: function() {
     return {
-
+      htmlRender: ""
     }
   },
-  mounted: function() {
-    var tradingViewHtml = $('#tvWidgetContainer iframe').contents().find('.layout__area--right')
-  },
-  methods: {
-
+  created() {
   }
 }
 </script>
-<style scoped>
-</style>

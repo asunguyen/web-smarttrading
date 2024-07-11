@@ -60,7 +60,8 @@ socketdchart.on('price', data => {
     const roundedTimestamp = Math.floor(newData.ts / interval) * interval;
 
     var upBar;
-    if ((isNewBar || roundedTimestamp > lastBarTimestamp) && resolution < 1440) {
+    isNewBar = new Date(lastDailyBar.time).getDay() != new Date().getDay()
+    if ((isNewBar && resolution >= 1440)|| roundedTimestamp > lastBarTimestamp) {
         upBar = {
             symbol: newData.symbol,
             resolution: subscriptionItem.resolution,

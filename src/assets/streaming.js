@@ -8,10 +8,12 @@ const socket = io("https://api.smtchart.vn", {
 });
 socket.on("onData", (data) => {
     let dataBar = data.chart;
+    
     if (data.infos.type == "stock" && data.infos.country == "VN") {
         return;
     }
     try {
+        console.log("data:: ", data);
         const newData = {
             symbol: dataBar.symbol,
             ts: Math.floor(dataBar.time),

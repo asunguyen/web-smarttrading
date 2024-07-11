@@ -15,7 +15,7 @@ const lastBarsCache = new Map();
 // DatafeedConfiguration implementation
 const configurationData = {
 	// Represents the resolutions for bars supported by your datafeed
-	supported_resolutions: ['1', "3", '5', "10", '15', '30', "45", '1H', '2H', "3H", "4H", 'D', "3D", 'W', "2W", 'M', "3M", "6M", "12M"],
+	supported_resolutions: ['1', "3", '5', "10", '15', '30', "45", '1H', '2H', "3H", "4H", 'D'],
 
 	// The `exchanges` arguments are used for the `searchSymbols` method if a user selects the exchange
 	exchanges: [
@@ -33,10 +33,10 @@ const configurationData = {
 		}
 	],
 	"supports_search": true,
-	"supports_group_request": false,
+	"supports_group_request": true,
 	"supports_marks": true,
-	"supports_timescale_marks": false,
-	"supports_time": false,
+	"supports_timescale_marks": true,
+	"supports_time": true,
 };
 
 // Obtains all symbols for all exchanges supported by CryptoCompare API
@@ -218,12 +218,12 @@ export default {
 			symbolInfo.ticker = symbolItem.symbol;
 			symbolInfo.exchange = symbolItem.exchange;
 			symbolInfo.format = 'price';
-			symbolInfo.supported_resolutions = ['1', "3", '5', "10", '15', '30', "45", '1H', '2H', "3H", "4H", 'D', "3D", 'W', "2W", 'M', "3M", "6M", "12M"];
+			symbolInfo.supported_resolutions = ['1', "3", '5', "10", '15', '30', "45", '1H', '2H', "3H", "4H", 'D'];
 			symbolInfo.timezone = 'Etc/UTC';
 			symbolInfo.minmov = 1;
 			symbolInfo.pricescale = 100;
 			symbolInfo.has_intraday = true;
-			symbolInfo.intraday_multipliers = ['1', "3", '5', "10", '15', '30', "45", '60', '120', "180", "240", 'D', "3D", 'W', "2W", 'M', "3M", "6M", "12M"],
+			symbolInfo.intraday_multipliers = ['1', "3", '5', "10", '15', '30', "45", '60', '120', "180", "240", 'D'],
 			symbolInfo.volume_precision = 8;
 			symbolInfo.data_status = 'streaming';
 			symbolInfo.pathRq = symbolItem.pathRq;
@@ -416,8 +416,10 @@ export default {
 	subscribeQuotes(symbols, fastSymbols, onRealtimeCallback, listenerGUID) {
 		// In this example, `_quotesSubscriptions` is a global variable used to clear the subscription in `unsubscribeQuotes`
 		this._quotesSubscriptions[listenerGUID] = setInterval(() => this.getQuotes(symbols.concat(fastSymbols), onRealtimeCallback, () => undefined), 5000);
+		console.log("subscribeQuotes");
 	},
 	unsubscribeQuotes(listenerGUID) {
+		console.log("unsubscribeQuotes");
 		clearInterval(this._quotesSubscriptions[listenerGUID]);
 	}
 };
