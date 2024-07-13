@@ -157,38 +157,18 @@ export default {
       client_id: this.clientId,
       user_id: this.userId,
       auto_save_delay: 5,
-      // fullscreen: this.fullscreen,
       autosize: this.autosize,
-      // studies_overrides: this.studiesOverrides,
       load_last_chart: true,
       favorites: {},
       saveload_separate_drawings_storage: true,
-      // chart_template_storage: true,
-      // use_localstorage_for_settings: true,
-      // save_chart_properties_to_local_storage: true,
       symbol_search_request_delay: 1000,
-      // study_templates: true,
-      // widgetbar: {
-      //   watchlist: true,
-      //   watchlist_settings: {
-      //     default_symbols: ["AAPL", "IBM", "MSFT"],
-      //     readonly: false,
-      //   },
-      // },
-
       overrides: {
         "mainSeriesProperties.showCountdown": true,
       },
       disabled_features: ["dom_widget"],
       enabled_features: [
         "header_layouttoggle",
-        // "right_toolbar",
-        // "watchlist_sections",
         "show_last_price_and_change_only_in_series_legend",
-        // "chart_template_storage",
-        // "use_localstorage_for_settings",
-        // "save_chart_properties_to_local_storage",
-        // "study_templates",
       ],
       custom_indicators_getter: function (PineJS) {
         return Promise.resolve([

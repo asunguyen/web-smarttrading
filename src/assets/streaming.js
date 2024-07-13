@@ -13,7 +13,6 @@ socket.on("onData", (data) => {
         return;
     }
     try {
-        console.log("data:: ", data);
         const newData = {
             symbol: dataBar.symbol,
             ts: Math.floor(dataBar.time),
