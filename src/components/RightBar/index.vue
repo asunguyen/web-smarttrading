@@ -6,7 +6,7 @@
         <li @click="selectContent('news')">News</li>
       </ul>
     </div>
-    <div class="list-item-content" v-show="contentShow != ''">
+    <div v-show="contentShow != ''" class="list-item-content">
       <iframe
         v-show="contentShow == 'watchlist'"
         src="rightbar.html"
@@ -15,7 +15,7 @@
         frameborder="0"
         title="Smtchart.vn watch list"
         lang="en"
-      ></iframe>
+      />
       <iframe
         v-show="contentShow == 'news'"
         src="news.html"
@@ -24,29 +24,29 @@
         frameborder="0"
         title="Smtchart.vn watch list"
         lang="en"
-      ></iframe>
+      />
     </div>
   </div>
 </template>
 <script>
 export default {
-  data: function () {
+  data: function() {
     return {
-      htmlRenderWatch: "",
-      contentShow: '',
-    };
+      htmlRenderWatch: '',
+      contentShow: ''
+    }
   },
   created() {},
   methods: {
     selectContent(value) {
       if (this.contentShow == value) {
-        this.contentShow = '';
+        this.contentShow = ''
       } else {
-        this.contentShow = value;
+        this.contentShow = value
       }
-    },
+    }
   }
-};
+}
 </script>
 <style scoped>
 #right-bar-custom {
