@@ -3,12 +3,22 @@
     <div class="list-item-menu">
       <ul>
         <li @click="selectContent('watchlist')">Watch list</li>
+        <li @click="selectContent('news')">News</li>
       </ul>
     </div>
     <div class="list-item-content" v-show="contentShow != ''">
       <iframe
         v-show="contentShow == 'watchlist'"
         src="rightbar.html"
+        scrolling="no"
+        allowtransparency="true"
+        frameborder="0"
+        title="Smtchart.vn watch list"
+        lang="en"
+      ></iframe>
+      <iframe
+        v-show="contentShow == 'news'"
+        src="news.html"
         scrolling="no"
         allowtransparency="true"
         frameborder="0"

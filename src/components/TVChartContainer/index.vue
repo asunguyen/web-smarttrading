@@ -1,7 +1,11 @@
 <template>
   <div>
     <!-- TradingView Widget BEGIN -->
-    <div id="tvWidgetContainer" ref="chartContainer" class="TVChartContainer tradingview-widget-container"></div>
+    <div
+      id="tvWidgetContainer"
+      ref="chartContainer"
+      class="TVChartContainer tradingview-widget-container"
+    ></div>
     <!-- TradingView Widget END -->
     <RightBar />
     <!-- <SmtIndicator @dataIndi="dataIndi"></SmtIndicator> -->
@@ -165,11 +169,8 @@ export default {
       overrides: {
         "mainSeriesProperties.showCountdown": true,
       },
-      disabled_features: ["dom_widget"],
-      enabled_features: [
-        "header_layouttoggle",
-        "show_last_price_and_change_only_in_series_legend",
-      ],
+      enabled_features: ["show_spread_operators"],
+      disabled_features: ["items_favoriting", "show_object_tree"],
       custom_indicators_getter: function (PineJS) {
         return Promise.resolve([
           // st bot
@@ -3642,15 +3643,12 @@ export default {
       // type: ""
     };
 
-    // eslint-disable-next-line new-cap
-    // console.log("TradingView:: ", TradingView);
-    // console.log("widget:: ", widget);
-
     // var app = new chobot.PulbicTradingTerminal(widgetOptions);
     tvWidget = new widget(widgetOptions);
     // app.init();
     this.tvWidget = tvWidget;
     tvWidget.onChartReady(() => {
+      tvWidget.activeChart().removeAllStudies();
       tvWidget.chart().setChartType(1);
       tvWidget.subscribe("onAutoSaveNeeded", (data) => {
         console.log("data save:: ", data);
@@ -3787,7 +3785,6 @@ export default {
             // myDropdownApi.remove();
           });
       });
-
     });
   },
   beforeDestroy() {
@@ -3833,6 +3830,7 @@ export default {
       if (!indicators || indicators.length === 0) {
         return;
       }
+      activeChart.removeAllStudies();
       try {
         Promise.all(
           indicators.map(async (indicator) => {
@@ -3844,6 +3842,7 @@ export default {
               indicator.inputs,
               { visible }
             );
+            console.log("activeChart:: ", );
             console.log("newStudyID:: ", newStudyID);
             // convert saved styles to overrides format ?
           })
